@@ -77,12 +77,12 @@ public class Mensagem extends Mensagem_Base {
     }
 
     @Override
-    public org.joda.time.DateTime getData_entrega() {
+    public DateTime getData_entrega() {
         return this.data_entrega;
     }
 
     @Override
-    public void setData_entrega(org.joda.time.DateTime data_entrega) {
+    public void setData_entrega(DateTime data_entrega) {
         this.data_entrega = data_entrega;
     }
 
