@@ -1,15 +1,19 @@
 package pt.utl.ist.notifcenter.domain;
 
-import org.fenixedu.bennu.core.domain.User;
 //import pt.ist.fenixframework.dml.runtime.DirectRelation;
 
 public class Contacto extends Contacto_Base {
 
     private org.fenixedu.bennu.core.domain.User utilizador;
-    private String dados_contacto;
     private Canal canal;
 
+    private String dados_contacto;
+
     // Constructors
+    protected  Contacto() {
+        super();
+    }
+
     public Contacto(org.fenixedu.bennu.core.domain.User utilizador, java.lang.String dados_contacto, Canal canal) {
         super();
 
@@ -55,6 +59,5 @@ public class Contacto extends Contacto_Base {
     public void setUtilizador(org.fenixedu.bennu.core.domain.User utilizador) {
         this.utilizador = utilizador;
     }
-
 
 }
