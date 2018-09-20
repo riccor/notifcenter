@@ -6,23 +6,26 @@ import org.fenixedu.bennu.core.domain.User;
 public class Contacto extends Contacto_Base {
 
     private org.fenixedu.bennu.core.domain.User utilizador;
-    private java.lang.String dados_contacto;
+    private String dados_contacto;
     private Canal canal;
 
+    // Constructors
     public Contacto(org.fenixedu.bennu.core.domain.User utilizador, java.lang.String dados_contacto, Canal canal) {
         super();
 
         //DirectRelation<User, Contacto> relationUtilizadorTemContactos = getRelationUtilizadorTemContactos();
-        /// getUtilizador()        SERÁ QUE NAO PRECISAMOS de criar field 'utilizador'?!
 
         setUtilizador(utilizador);
         setDados_contacto(dados_contacto);
         setCanal(canal);
     }
 
+
+    // Getters and Setters
+
     @Override
-    public void setUtilizador(org.fenixedu.bennu.core.domain.User utilizador) {
-        this.utilizador = utilizador;
+    public java.lang.String getDados_contacto() {
+        return dados_contacto;
     }
 
     @Override
@@ -30,8 +33,28 @@ public class Contacto extends Contacto_Base {
         this.dados_contacto = dados_contacto;
     }
 
+
+    // Role Methods
+
+    @Override
+    public pt.utl.ist.notifcenter.domain.Canal getCanal() {
+        return this.canal;
+    }
+
     @Override
     public void setCanal(pt.utl.ist.notifcenter.domain.Canal canal) {
         this.canal = canal;
     }
+
+    @Override
+    public org.fenixedu.bennu.core.domain.User getUtilizador() {
+        return this.utilizador;
+    }
+
+    @Override
+    public void setUtilizador(org.fenixedu.bennu.core.domain.User utilizador) {
+        this.utilizador = utilizador;
+    }
+
+
 }
