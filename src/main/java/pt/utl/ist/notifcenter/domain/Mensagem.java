@@ -7,7 +7,7 @@ public class Mensagem extends Mensagem_Base {
 
     private CanalNotificacao canal_notificacao;
     private java.util.Set<org.fenixedu.bennu.core.domain.groups.PersistentGroup> grupos_destinatarios;
-    private org.fenixedu.bennu.core.domain.User remetente;
+    private Remetente remetente;
     private java.util.Set<org.fenixedu.bennu.io.domain.GenericFile> attachments;
 
     private String assunto;
@@ -23,7 +23,7 @@ public class Mensagem extends Mensagem_Base {
 
     public Mensagem(CanalNotificacao canal_notificacao,
                     java.util.Set<org.fenixedu.bennu.core.domain.groups.PersistentGroup> grupos_destinatarios,
-                    org.fenixedu.bennu.core.domain.User remetente,
+                    Remetente remetente,
                     String assunto,
                     String texto_curto,
                     String texto_longo,
@@ -161,11 +161,11 @@ public class Mensagem extends Mensagem_Base {
         this.canal_notificacao = canal_notificacao;
     }
 
-    public org.fenixedu.bennu.core.domain.User getRemetente() {
+    public Remetente getRemetente() {
         return this.remetente;
     }
 
-    public void setRemetente(org.fenixedu.bennu.core.domain.User remetente) {
+    public void setRemetente(Remetente remetente) {
         this.remetente = remetente;
     }
 
