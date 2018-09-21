@@ -17,7 +17,7 @@ public class Mensagem extends Mensagem_Base {
     private String callback_url_estado_entrega;
 
     // Constructors
-    protected Mensagem() {
+    public Mensagem() {
         super();
     }
 

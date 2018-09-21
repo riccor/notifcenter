@@ -10,7 +10,7 @@ public class Contacto extends Contacto_Base {
     private String dados_contacto;
 
     // Constructors
-    protected  Contacto() {
+    public Contacto() {
         super();
     }
 
