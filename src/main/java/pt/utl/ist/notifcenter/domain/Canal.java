@@ -17,7 +17,7 @@ public class Canal extends Canal_Base {
         super();
     }
 
-    public  Canal(String email,
+    public Canal(String email,
                   String password,
                   SistemaNotificacoes sistema_notificacoes,
                   java.util.Set<Contacto> contactos,
