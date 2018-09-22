@@ -16,6 +16,7 @@ public class Mensagem extends Mensagem_Base {
     private DateTime data_entrega;
     private String callback_url_estado_entrega;
 
+
     // Constructors
     public Mensagem() {
         super();
