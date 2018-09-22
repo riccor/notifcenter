@@ -24,13 +24,13 @@ public class Canal extends Canal_Base {
                   java.util.Set<CanalNotificacao> canal_notificacao) {
         super();
 
-        this.email = email;
-        this.password = password;
-        this.sistema_notificacoes = sistema_notificacoes;
-        this.contactos = contactos;
-        this.canal_notificacao = canal_notificacao;
+        this.setEmail(email);
+        this.setPassword(password);
+        this.setSistema_notificacoes(sistema_notificacoes);
+        this.setContactoSet(contactos);
+        this.setCanal_notificacaoSet(canal_notificacao);
     }
-    
+
 
     // Getters and Setters
 
@@ -86,6 +86,10 @@ public class Canal extends Canal_Base {
         return this.contactos;
     }
 
+    public void setContactoSet(java.util.Set<pt.utl.ist.notifcenter.domain.Contacto> contactoSet) {
+        this.contactos = contactoSet;
+    }
+
     @Override
     public void addCanal_notificacao(pt.utl.ist.notifcenter.domain.CanalNotificacao canal_notificacao) {
 
@@ -103,5 +107,9 @@ public class Canal extends Canal_Base {
     @Override
     public java.util.Set<pt.utl.ist.notifcenter.domain.CanalNotificacao> getCanal_notificacaoSet() {
         return this.canal_notificacao;
+    }
+
+    public void setCanal_notificacaoSet(java.util.Set<pt.utl.ist.notifcenter.domain.CanalNotificacao> canal_notificacaoSet) {
+        this.canal_notificacao = canal_notificacaoSet;
     }
 }

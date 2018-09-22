@@ -22,9 +22,9 @@ public class Aplicacao extends Aplicacao_Base {
                      AppPermissions permissoesAplicacao) {
         super();
 
-        this.sistema_notificacoes = sistema_notificacoes;
-        this.remetentes = remetentes;
-        this.permissoesAplicacao = permissoesAplicacao;
+        this.setSistema_notificacoes(sistema_notificacoes);
+        this.setRemetentesSet(remetentes);
+        this.setPermissoesAplicacao(permissoesAplicacao);
     }
 
 
@@ -70,6 +70,10 @@ public class Aplicacao extends Aplicacao_Base {
     @Override
     public java.util.Set<pt.utl.ist.notifcenter.domain.Remetente> getRemetentesSet() {
         return this.remetentes;
+    }
+
+    public void setRemetentesSet(java.util.Set<pt.utl.ist.notifcenter.domain.Remetente> remetentesSet) {
+        this.remetentes = remetentesSet;
     }
 
 }

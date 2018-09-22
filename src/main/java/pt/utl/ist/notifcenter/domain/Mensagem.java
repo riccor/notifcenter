@@ -33,15 +33,15 @@ public class Mensagem extends Mensagem_Base {
                     String callback_url_estado_entrega) {
         super();
 
-        this.canal_notificacao = canal_notificacao;
-        this.grupos_destinatarios = grupos_destinatarios;
-        this.remetente = remetente;
-        this.assunto = assunto;
-        this.texto_curto = texto_curto;
-        this.attachments = attachments;
-        this.texto_longo = texto_longo;
-        this.data_entrega = data_entrega;
-        this.callback_url_estado_entrega = callback_url_estado_entrega;
+        this.setCanal_notificacao(canal_notificacao);
+        this.setGrupos_destinatariosSet(grupos_destinatarios);
+        this.setRemetente(remetente);
+        this.setAssunto(assunto);
+        this.setTexto_curto(texto_curto);
+        this.setTexto_longo(texto_longo);
+        this.setAttachmentsSet(attachments);
+        this.setData_entrega(data_entrega);
+        this.setCallback_url_estado_entrega(callback_url_estado_entrega);
     }
 
 
@@ -131,6 +131,10 @@ public class Mensagem extends Mensagem_Base {
         return this.attachments;
     }
 
+    public void setAttachmentsSet(java.util.Set<org.fenixedu.bennu.io.domain.GenericFile> attachmentsSet) {
+        this.attachments = attachmentsSet;
+    }
+
     @Override
     public void addGrupos_destinatarios(org.fenixedu.bennu.core.domain.groups.PersistentGroup grupos_destinatarios) {
 
@@ -150,6 +154,10 @@ public class Mensagem extends Mensagem_Base {
     @Override
     public java.util.Set<org.fenixedu.bennu.core.domain.groups.PersistentGroup> getGrupos_destinatariosSet() {
         return this.grupos_destinatarios;
+    }
+
+    public void setGrupos_destinatariosSet(java.util.Set<org.fenixedu.bennu.core.domain.groups.PersistentGroup> grupos_destinatariosSet) {
+        this.grupos_destinatarios = grupos_destinatariosSet;
     }
 
     @Override

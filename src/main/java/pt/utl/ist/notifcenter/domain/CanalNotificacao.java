@@ -1,14 +1,13 @@
 package pt.utl.ist.notifcenter.domain;
 
 /*
-import java.util.Set;
 import org.springframework.util.CollectionUtils;
 */
 
 public class CanalNotificacao extends CanalNotificacao_Base {
 
     /*
-    private Set<Mensagem> mensagem;
+    private java.util.Set<Mensagem> mensagem;
     */
 
     private Canal canal;
@@ -22,8 +21,8 @@ public class CanalNotificacao extends CanalNotificacao_Base {
     public CanalNotificacao(Canal canal, Remetente remetente) {
         super();
 
-        this.canal = canal;
-        this.remetente = remetente;
+        this.setCanal(canal);
+        this.setRemetente(remetente);
     }
 
 

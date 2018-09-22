@@ -20,9 +20,9 @@ public class Contacto extends Contacto_Base {
 
         //DirectRelation<User, Contacto> relationUtilizadorTemContactos = getRelationUtilizadorTemContactos();
 
-        setUtilizador(utilizador);
-        setDados_contacto(dados_contacto);
-        setCanal(canal);
+        this.setUtilizador(utilizador);
+        this.setDados_contacto(dados_contacto);
+        this.setCanal(canal);
     }
 
 
