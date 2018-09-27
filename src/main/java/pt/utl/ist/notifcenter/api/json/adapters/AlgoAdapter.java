@@ -27,7 +27,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-@DefaultJsonAdapter(ExternalApplication.class)
+@DefaultJsonAdapter(ExternalApplication.class) //deve ser: Algo.class --> CRIAR!! em vez de ExternalApplication!!
 public class AlgoAdapter implements JsonAdapter<ExternalApplication> {
 
     protected boolean isManager(User user) {
