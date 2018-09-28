@@ -1,8 +1,44 @@
 package pt.utl.ist.notifcenter.domain;
 
-import org.springframework.util.CollectionUtils;
+//import org.springframework.util.CollectionUtils;
 
 public class Canal extends Canal_Base {
+
+    public Canal() {
+        super();
+    }
+
+
+    /*
+    relation ContactoParaCanal {
+        Contacto playsRole contacto{ multiplicity 0..*; }
+        Canal playsRole canal { multiplicity 1; }
+    }
+    */
+
+    public static int getTotalContactos(Canal canal) {
+        int totalContactos = 0;
+        for (Contacto contac : canal.getContactoSet()) {
+            totalContactos += 1;
+        }
+        return totalContactos;
+    }
+
+    public static void main(String [] args) {
+
+        Canal canal = new Canal();
+        Contacto contacto1 = new Contacto();
+        contacto1.setDados_contacto("9610772");
+        Contacto contacto2 = new Contacto();
+        contacto2.setDados_contacto("962326");
+        canal.addContacto(contacto1);
+        canal.addContacto(contacto2);
+        System.out.println(getTotalContactos(canal));
+    }
+
+
+    /* ///
+
 
     private SistemaNotificacoes sistema_notificacoes;
     private java.util.Set<Contacto> contactos;
@@ -112,4 +148,6 @@ public class Canal extends Canal_Base {
     public void setCanal_notificacaoSet(java.util.Set<pt.utl.ist.notifcenter.domain.CanalNotificacao> canal_notificacaoSet) {
         this.canal_notificacao = canal_notificacaoSet;
     }
+
+    */
 }
