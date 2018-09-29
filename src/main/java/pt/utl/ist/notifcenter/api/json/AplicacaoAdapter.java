@@ -1,4 +1,4 @@
-package pt.utl.ist.notifcenter.api.json.adapters;
+package pt.utl.ist.notifcenter.api.json;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -15,7 +15,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
 
     @Override
     public JsonElement view(Aplicacao obj, JsonBuilder ctx) {
-        JsonObject jObj = new JsonObject();s
+        JsonObject jObj = new JsonObject();
         jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("name", obj.getName());
         jObj.addProperty("permissoes", obj.getPermissoesAplicacao().name());
@@ -71,3 +71,4 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         return app;
     }
 }
+

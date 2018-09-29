@@ -4,7 +4,7 @@
  * This file is part of Bennu OAuth.
  */
 
-package pt.utl.ist.notifcenter.api.json.adapters;
+package pt.utl.ist.notifcenter.api.json;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
