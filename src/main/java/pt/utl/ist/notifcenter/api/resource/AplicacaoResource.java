@@ -1,4 +1,4 @@
-package pt.utl.ist.notifcenter.api;
+package pt.utl.ist.notifcenter.api.resource;
 
 import com.google.gson.JsonElement;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
