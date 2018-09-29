@@ -6,9 +6,10 @@ public class Aplicacao extends Aplicacao_Base {
         super();
     }
 
-    public void updatePermissions(AppPermissions permissions){
+    /*public void updatePermissions(AppPermissions permissions){
 
         this.setPermissoesAplicacao(permissions);
     }
+    */
 
 }

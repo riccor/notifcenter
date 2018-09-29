@@ -5,5 +5,5 @@ public class SistemaNotificacoes extends SistemaNotificacoes_Base {
     public SistemaNotificacoes() {
         super();
     }
-    
+
 }
