@@ -9,6 +9,8 @@ import org.fenixedu.bennu.core.json.JsonBuilder;
 //import org.fenixedu.bennu.core.security.Authenticate;
 import pt.utl.ist.notifcenter.domain.Aplicacao;
 import pt.utl.ist.notifcenter.domain.AppPermissions;
+//import org.fenixedu.bennu.oauth.domain.ApplicationUserAuthorization;
+//import org.fenixedu.bennu.oauth.domain.ExternalApplication;
 
 @DefaultJsonAdapter(Aplicacao.class)
 public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
@@ -59,7 +61,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         Aplicacao app = new Aplicacao();
         app.setName(getRequiredValue(jObj, "name"));
         app.setAuthorName(getRequiredValue(jObj, "authorname"));
-        app.setPermissoesAplicacao(getRequiredValue_AppPermissions(jObj)); //criar adapter (?)
+        ///app.setPermissoesAplicacao(getRequiredValue_AppPermissions(jObj)); //criar adapter (?)
         return app;
     }
 
