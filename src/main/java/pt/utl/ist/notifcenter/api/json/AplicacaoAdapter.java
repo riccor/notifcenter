@@ -12,7 +12,7 @@ import pt.utl.ist.notifcenter.domain.AppPermissions;
 //import org.fenixedu.bennu.oauth.domain.ApplicationUserAuthorization;
 //import org.fenixedu.bennu.oauth.domain.ExternalApplication;
 
-@DefaultJsonAdapter(AplicacaoAdapter.class)
+@DefaultJsonAdapter(Aplicacao.class)
 public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
 
     @Override

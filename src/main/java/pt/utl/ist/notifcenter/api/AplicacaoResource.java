@@ -15,8 +15,8 @@ import pt.utl.ist.notifcenter.domain.Aplicacao;
 
 ///import javax.ws.rs.*;
 
-@RequestMapping("/notifcenter/api")
 //@Path("/notifcenter/api")
+@RequestMapping("/notifcenter/api")
 public class AplicacaoResource extends BennuRestResource {
 
     protected Aplicacao create(/*String json*/ JsonElement jsonElement) {
