@@ -21,10 +21,11 @@ public class NotifcenterController {
         return "notifcenter/home";
     }
 
+    /*
     @ResponseBody
     @RequestMapping(value = "/api/{appname}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String test(@PathVariable("appname") String appName) {
         return "nome da app: " + appName;
     }
-
+    */
 }
