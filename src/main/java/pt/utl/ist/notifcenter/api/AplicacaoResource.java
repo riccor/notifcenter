@@ -44,7 +44,7 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     //NAO funciona
-    ///@ResponseBody
+    @ResponseBody
     @RequestMapping(value = "ola", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Aplicacao ola() {
         Aplicacao app = new Aplicacao();
@@ -55,7 +55,8 @@ public class AplicacaoResource extends BennuRestResource {
         return app;
     }
 
-    @RequestMapping(value = "appname" /* /api/{appname} */, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    @RequestMapping(value = "/appname" /* /api/{appname} */, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String createAplicacao(/*JsonElement jsonElement*/ String jsonString ) {
         ///verifyAndGetRequestAuthor(); OU
         //accessControl("#users");
