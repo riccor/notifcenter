@@ -3,6 +3,7 @@ package org.fenixedu.bennu;
 import org.fenixedu.bennu.spring.BennuSpringModule;
 import org.fenixedu.commons.configuration.ConfigurationInvocationHandler;
 import org.fenixedu.commons.configuration.ConfigurationManager;
+import org.fenixedu.commons.configuration.ConfigurationProperty;
 //import org.fenixedu.commons.configuration.ConfigurationProperty;
 
 //Este procura recursos em ../WEB-INF/resources/[notifcenter e mytest]/Resources.properties
@@ -15,6 +16,16 @@ public class NotifcenterSpringConfiguration {
     @ConfigurationManager(description = "Notifcenter Configuration")
     public interface ConfigurationProperties {
 
+        /*
+        Retirado do DriveSdkConfiguration.java como exemplo:
+
+        onProperty(key = "drive.url", defaultValue = "http://localhost:8080/drive")
+        public String driveUrl();
+
+        Para aceder a estas configuracoes noutra classe:
+        import org.fenixedu.bennu.DriveSdkConfiguration;
+        DriveSdkConfiguration.getConfiguration().driveUrl();
+        */
     }
 
     public static ConfigurationProperties getConfiguration() {

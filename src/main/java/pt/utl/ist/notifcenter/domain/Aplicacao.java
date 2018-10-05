@@ -1,5 +1,7 @@
 package pt.utl.ist.notifcenter.domain;
 
+import pt.ist.fenixframework.Atomic;
+
 public class Aplicacao extends Aplicacao_Base {
     
     public Aplicacao() {
@@ -11,5 +13,12 @@ public class Aplicacao extends Aplicacao_Base {
         this.setPermissoesAplicacao(permissions);
     }
     */
+
+    @Atomic
+    public static Aplicacao createAplicacao(final String nome) {
+        Aplicacao app = new Aplicacao();
+        app.setName(nome);
+        return app;
+    }
 
 }

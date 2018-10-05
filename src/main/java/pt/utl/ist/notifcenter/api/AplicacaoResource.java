@@ -24,12 +24,8 @@ public class AplicacaoResource extends BennuRestResource {
 
     @RequestMapping(value = "test2", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement test2() {
-        Aplicacao app = new Aplicacao();
-        app.setName("app test name");
-        return view(app, AplicacaoAdapter.class);
+        return view(Aplicacao.createAplicacao("app test name"), AplicacaoAdapter.class);
     }
-
-
 
     //@POST
     //@Produces(MediaType.APPLICATION_JSON)
