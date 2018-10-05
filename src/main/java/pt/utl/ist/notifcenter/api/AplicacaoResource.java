@@ -27,13 +27,18 @@ public class AplicacaoResource extends BennuRestResource {
         return view(Aplicacao.createAplicacao("app test name"), AplicacaoAdapter.class);
     }
 
+    @RequestMapping(value = "test3/{appname}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement test3(@PathVariable("appname") String appname) {
+        return view(Aplicacao.createAplicacao(appname), AplicacaoAdapter.class);
+    }
+
     //@POST
     //@Produces(MediaType.APPLICATION_JSON)
     //@Consumes(MediaType.APPLICATION_JSON)
-    @RequestMapping(value = "/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement createAplicacao(JsonElement json) {
         Aplicacao app = create(json);
-        return view(app);
+        return view(app, AplicacaoAdapter.class);
     }
 
     protected Aplicacao create(JsonElement json) {
@@ -51,9 +56,8 @@ public class AplicacaoResource extends BennuRestResource {
 
     protected JsonElement update(Aplicacao app, JsonElement json) {
         app = update(json, app);
-        return view(app);
+        return view(app, AplicacaoAdapter.class);
     }
-
 
     //@GET
     //@Produces(MediaType.APPLICATION_JSON)

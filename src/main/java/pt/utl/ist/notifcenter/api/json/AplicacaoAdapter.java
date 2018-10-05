@@ -12,8 +12,8 @@ import pt.utl.ist.notifcenter.domain.Aplicacao;
 public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
 
     protected Aplicacao create(JsonElement json) {
-        Aplicacao app = new Aplicacao();
-        ///Aplicacao app = Aplicacao.createAplicacao("default name");
+        ///Aplicacao app = new Aplicacao();
+        Aplicacao app = Aplicacao.createAplicacao("default name");
         //app.setAuthor(Authenticate.getUser());
         return app;
     }
