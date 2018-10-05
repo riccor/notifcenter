@@ -13,7 +13,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
 
     protected Aplicacao create(JsonElement json) {
         Aplicacao app = new Aplicacao();
-        ///Aplicacao app = Aplicacao.createAplicacao();
+        ///Aplicacao app = Aplicacao.createAplicacao("default name");
         //app.setAuthor(Authenticate.getUser());
         return app;
     }
