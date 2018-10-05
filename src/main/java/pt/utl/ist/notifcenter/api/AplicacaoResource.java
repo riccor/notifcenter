@@ -7,18 +7,17 @@ import org.fenixedu.bennu.core.rest.BennuRestResource;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
 
 import pt.utl.ist.notifcenter.domain.Aplicacao;
+import pt.utl.ist.notifcenter.domain.Greeting;
 import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 import pt.utl.ist.notifcenter.domain.AppPermissions;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
 //@Path("/api/aplicacoes")
+
 @RequestMapping("/apiaplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api")
 public class AplicacaoResource extends BennuRestResource {
@@ -66,6 +65,21 @@ public class AplicacaoResource extends BennuRestResource {
     @ResponseBody
     @RequestMapping(value = "test5", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement test5() {
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("campo1", "valor1");
+        return jObj;
+    }
+
+    @ResponseBody
+    @RequestMapping("/greeting")
+    public Greeting greeting(@RequestParam(value="name", defaultValue="oi!") String name) {
+        return new Greeting(1234, name);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "test1", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement test1() {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("campo1", "valor1");
         return jObj;

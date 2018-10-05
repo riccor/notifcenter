@@ -6,11 +6,7 @@ import org.fenixedu.bennu.spring.portal.SpringApplication;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/notifcenter")
 @SpringApplication(group = "logged", path = "notifcenter", title = "title.Notifcenter")
@@ -27,14 +23,6 @@ public class NotifcenterController {
     @RequestMapping(value = "/exemplo/{nome}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String exemplo(@PathVariable("nome") String nome) {
         return "nome: " + nome;
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "test1", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement test1() {
-        JsonObject jObj = new JsonObject();
-        jObj.addProperty("campo1", "valor1");
-        return jObj;
     }
 
 }
