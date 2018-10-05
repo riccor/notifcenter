@@ -63,4 +63,12 @@ public class AplicacaoResource extends BennuRestResource {
         return t4;
     }
 
+    @ResponseBody
+    @RequestMapping(value = "test5", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement test5() {
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("campo1", "valor1");
+        return jObj;
+    }
+
 }

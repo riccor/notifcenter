@@ -29,6 +29,7 @@ public class NotifcenterController {
         return "nome: " + nome;
     }
 
+    @ResponseBody
     @RequestMapping(value = "test1", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement test1() {
         JsonObject jObj = new JsonObject();
