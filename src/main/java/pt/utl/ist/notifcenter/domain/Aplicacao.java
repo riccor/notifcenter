@@ -1,7 +1,7 @@
 package pt.utl.ist.notifcenter.domain;
 
 import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.consistencyPredicates.ConsistencyPredicate;
+//import pt.ist.fenixframework.consistencyPredicates.ConsistencyPredicate;
 
 public class Aplicacao extends Aplicacao_Base {
     
@@ -9,19 +9,18 @@ public class Aplicacao extends Aplicacao_Base {
         super();
     }
 
-    /*public void updatePermissions(AppPermissions permissions){
-
+    /*
+    public void updatePermissions(AppPermissions permissions){
         this.setPermissoesAplicacao(permissions);
     }
     */
 
-    /*
     @Atomic
     public static Aplicacao createAplicacao(final String nome) {
         Aplicacao app = new Aplicacao();
         app.setName(nome);
+        app.setPermissoesAplicacao(AppPermissions.RREQUIRES_APPROVAL);
         return app;
     }
-    */
 
 }

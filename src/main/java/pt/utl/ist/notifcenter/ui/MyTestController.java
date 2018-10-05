@@ -21,10 +21,11 @@ public class MyTestController {
         return "mytest/pagina";
     }
 
+    /*
     @ResponseBody
     @RequestMapping(value = "/api/{appname}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String ola(@PathVariable("appname") String appName) {
         return "nomi: " + appName;
     }
-
+    */
 }

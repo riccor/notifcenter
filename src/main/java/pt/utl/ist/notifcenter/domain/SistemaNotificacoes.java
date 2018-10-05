@@ -8,14 +8,5 @@ public class SistemaNotificacoes extends SistemaNotificacoes_Base {
         super();
     }
 
-    @Atomic
-    public static Aplicacao createAplicacao(final String nome) {
-        Aplicacao app = new Aplicacao();
-        app.setName(nome);
-        return app;
-    }
-
-
-
 
 }
