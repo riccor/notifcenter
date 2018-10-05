@@ -1,6 +1,7 @@
 package pt.utl.ist.notifcenter.domain;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.consistencyPredicates.ConsistencyPredicate;
 
 public class Aplicacao extends Aplicacao_Base {
     
@@ -14,11 +15,13 @@ public class Aplicacao extends Aplicacao_Base {
     }
     */
 
+    /*
     @Atomic
     public static Aplicacao createAplicacao(final String nome) {
         Aplicacao app = new Aplicacao();
         app.setName(nome);
         return app;
     }
+    */
 
 }

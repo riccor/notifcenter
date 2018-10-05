@@ -1,5 +1,7 @@
 package pt.utl.ist.notifcenter.ui;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.fenixedu.bennu.spring.portal.SpringApplication;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.http.MediaType;
@@ -25,6 +27,13 @@ public class NotifcenterController {
     @RequestMapping(value = "/exemplo/{nome}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String exemplo(@PathVariable("nome") String nome) {
         return "nome: " + nome;
+    }
+
+    @RequestMapping(value = "test1", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement test1() {
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("campo1", "valor1");
+        return jObj;
     }
 
 }

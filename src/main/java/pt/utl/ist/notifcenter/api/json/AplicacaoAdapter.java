@@ -7,13 +7,14 @@ import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import pt.utl.ist.notifcenter.domain.Aplicacao;
+import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 
 @DefaultJsonAdapter(Aplicacao.class)
 public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
 
     protected Aplicacao create(JsonElement json) {
         ///Aplicacao app = new Aplicacao();
-        Aplicacao app = Aplicacao.createAplicacao("default name");
+        Aplicacao app = SistemaNotificacoes.createAplicacao("default name");
         //app.setAuthor(Authenticate.getUser());
         return app;
     }
