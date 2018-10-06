@@ -16,6 +16,7 @@ public class Canal extends Canal_Base {
         return totalContactos;
     }
 
+    /*
     public static void main(String [] args) {
 
         Canal canal = new Canal();
@@ -27,5 +28,6 @@ public class Canal extends Canal_Base {
         canal.addContacto(contacto2);
         System.out.println(getTotalContactos(canal));
     }
+    */
 
 }

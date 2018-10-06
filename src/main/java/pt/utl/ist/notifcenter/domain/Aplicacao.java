@@ -15,12 +15,6 @@ public class Aplicacao extends Aplicacao_Base {
     }
     */
 
-    @Atomic
-    public static Aplicacao createAplicacao(final String nome) {
-        Aplicacao app = new Aplicacao();
-        app.setName(nome);
-        app.setPermissoesAplicacao(AppPermissions.RREQUIRES_APPROVAL);
-        return app;
-    }
+
 
 }
