@@ -1,21 +1,10 @@
 package pt.utl.ist.notifcenter.domain;
 
-public class Greeting {
+public class Greeting extends GreetingNative {
 
-    private final long id;
-    private final String content;
-
-    public Greeting(long id, String content) {
-        this.id = id;
-        this.content = content;
+    public Greeting() {
+        super();
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public String getContent() {
-        return content;
-    }
 
 }

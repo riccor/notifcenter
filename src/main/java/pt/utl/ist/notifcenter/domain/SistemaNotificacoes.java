@@ -8,7 +8,21 @@ public class SistemaNotificacoes extends SistemaNotificacoes_Base {
         super();
     }
 
+    @Atomic
+    public static SistemaNotificacoes createSistemaNotificacoes() {
+        SistemaNotificacoes sistema = new SistemaNotificacoes();
+        return sistema;
+    }
+
     public static void main() {
+
+
+       // SistemaNotificacoes sistemaNotificacoes = createSistemaNotificacoes();
+
+
+
+       // sistemaNotificacoes.addAplicacoes();
+
 
         //Aplicacao app1 = createAplicacao("app1");
 

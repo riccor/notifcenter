@@ -10,20 +10,35 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
 
-import pt.utl.ist.notifcenter.domain.Aplicacao;
-import pt.utl.ist.notifcenter.domain.ExemploIdentidade;
-import pt.utl.ist.notifcenter.domain.Greeting;
-import pt.utl.ist.notifcenter.domain.AppPermissions;
+import pt.utl.ist.notifcenter.api.json.ExemploIdentidadeAdapter;
+import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
 //@Path("/api/aplicacoes")
+
 @RequestMapping("/apiaplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api")
 public class AplicacaoResource extends BennuRestResource {
 
+    SistemaNotificacoes sistem;
+
+    @ResponseBody
+    @RequestMapping(value = "test2base", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String test2base() {
+        sistem = SistemaNotificacoes.createSistemaNotificacoes();
+        return "SistemaNotificacoes sistem -> external id: " + sistem.getExternalId();
+    }
+
+    @ResponseBody
     @RequestMapping(value = "test2", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement test2() {
-        return view(Aplicacao.createAplicacao("app test name"), AplicacaoAdapter.class);
+        //Aplicacao app = Aplicacao.createAplicacao("app test name");
+        Aplicacao app = Aplicacao.createAplicacao("app test name", sistem);
+        return view(app, AplicacaoAdapter.class);
     }
 
     @ResponseBody
@@ -69,29 +84,17 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @ResponseBody
-    @RequestMapping(value = "test5", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement test5() {
-        JsonObject jObj = new JsonObject();
-        jObj.addProperty("campo1", "valor1");
-        return jObj;
+    @RequestMapping("/greeting")
+    public Greeting greeting(@RequestParam(value="name", defaultValue="oi!") String name) {
+        ///return new Greeting(1234, name);
+        return new Greeting();
     }
 
     @ResponseBody
-    @RequestMapping("/greeting")
-    public Greeting greeting(@RequestParam(value="name", defaultValue="oi!") String name) {
-        return new Greeting(1234, name);
-    }
-
-    @RequestMapping("/aplic")
+    @RequestMapping(value = "aplic", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Aplicacao aplic(@RequestParam(value="name", defaultValue="nome_app") String name) {
         return Aplicacao.createAplicacao(name);
     }
-
-    @RequestMapping("/ex")
-    public ExemploIdentidade ex(@RequestParam(value="name", defaultValue="exemplo de param1") String name) {
-        return ExemploIdentidade.createExemploIdentidade(name);
-    }
-
 
     @ResponseBody
     @RequestMapping(value = "test1", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -100,5 +103,18 @@ public class AplicacaoResource extends BennuRestResource {
         jObj.addProperty("campo1", "valor1");
         return jObj;
     }
+
+    @ResponseBody
+    @RequestMapping(value = "test7", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement test7(@RequestParam(value="name", defaultValue="exemplo de param1") String name) {
+        return view(ExemploIdentidade.createExemploIdentidade(name), ExemploIdentidadeAdapter.class);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "test8", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ExemploIdentidade test8(@RequestParam(value="name", defaultValue="exemplo de param1") String name) {
+        return ExemploIdentidade.createExemploIdentidade(name);
+    }
+
 
 }
