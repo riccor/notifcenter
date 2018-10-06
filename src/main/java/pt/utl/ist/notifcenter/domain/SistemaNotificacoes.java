@@ -8,11 +8,16 @@ public class SistemaNotificacoes extends SistemaNotificacoes_Base {
         super();
     }
 
+
     @Atomic
     public static Aplicacao createAplicacao(final String nome) {
+
+        SistemaNotificacoes sist = new SistemaNotificacoes();
+
         Aplicacao app = new Aplicacao();
         app.setName(nome);
         app.setPermissoesAplicacao(AppPermissions.RREQUIRES_APPROVAL);
+        app.setSistema_notificacoes(sist);
         return app;
     }
 

@@ -2,6 +2,7 @@ package pt.utl.ist.notifcenter.servlet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -26,6 +27,8 @@ public class NotifcenterInitializer implements ServletContextListener {
         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+
+        //SistemaNotificacoes sistemaNotificacoes =
         
     }
 
