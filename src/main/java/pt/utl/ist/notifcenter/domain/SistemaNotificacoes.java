@@ -16,6 +16,7 @@ public class SistemaNotificacoes extends SistemaNotificacoes_Base {
         return app;
     }
 
+    /*
 
     public static void main(String [] args) {
 
@@ -31,5 +32,7 @@ public class SistemaNotificacoes extends SistemaNotificacoes_Base {
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
     }
+
+    */
 
 }
