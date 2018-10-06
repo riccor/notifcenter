@@ -137,6 +137,15 @@ class Contacto {
 }
 
 
+class ExemploIdentidade {
+    String param1;
+    String param2;
+	Integer int1;
+}
+
+
+
+
 /** Relations **/
 
 relation SistemaNotificacoesTemAplicacoes {

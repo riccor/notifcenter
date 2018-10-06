@@ -11,32 +11,31 @@ import org.springframework.web.bind.annotation.*;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
 
 import pt.utl.ist.notifcenter.domain.Aplicacao;
+import pt.utl.ist.notifcenter.domain.ExemploIdentidade;
 import pt.utl.ist.notifcenter.domain.Greeting;
 import pt.utl.ist.notifcenter.domain.AppPermissions;
-import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
 //@Path("/api/aplicacoes")
-
 @RequestMapping("/apiaplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api")
 public class AplicacaoResource extends BennuRestResource {
 
     @RequestMapping(value = "test2", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement test2() {
-        return view(SistemaNotificacoes.createAplicacao("app test name"), AplicacaoAdapter.class);
+        return view(Aplicacao.createAplicacao("app test name"), AplicacaoAdapter.class);
     }
 
     @ResponseBody
     @RequestMapping(value = "test0", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String test0() {
-        ///Aplicacao a = SistemaNotificacoes.createAplicacao("app test name");
+        ///Aplicacao a = Aplicacao.createAplicacao("app test name");
         return "chegou aqui";
     }
 
     @RequestMapping(value = "test3/{appname}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement test3(@PathVariable("appname") String appname) {
-        return view(SistemaNotificacoes.createAplicacao(appname), AplicacaoAdapter.class);
+        return view(Aplicacao.createAplicacao(appname), AplicacaoAdapter.class);
     }
 
     //@POST
@@ -81,6 +80,16 @@ public class AplicacaoResource extends BennuRestResource {
     @RequestMapping("/greeting")
     public Greeting greeting(@RequestParam(value="name", defaultValue="oi!") String name) {
         return new Greeting(1234, name);
+    }
+
+    @RequestMapping("/aplic")
+    public Aplicacao aplic(@RequestParam(value="name", defaultValue="nome_app") String name) {
+        return Aplicacao.createAplicacao(name);
+    }
+
+    @RequestMapping("/ex")
+    public ExemploIdentidade ex(@RequestParam(value="name", defaultValue="exemplo de param1") String name) {
+        return ExemploIdentidade.createExemploIdentidade(name);
     }
 
 

@@ -17,19 +17,10 @@ public class NotifcenterInitializer implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {
 
         logger.info( "Starting application..." );
-        
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 
-        //SistemaNotificacoes sistemaNotificacoes =
-        
+        //A entidate SistemaNotificacoes tem a funcao main() que "gere" as aplicacoes e canais;
+        //(Nota: os utilizadores já sao geridos pelo fenix framework)
+        SistemaNotificacoes.main();
     }
 
     @Override
