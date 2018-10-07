@@ -13,7 +13,7 @@ import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
 
     protected Aplicacao create(JsonElement json) {
-        Aplicacao app = new Aplicacao();
+        Aplicacao app = Aplicacao.createAplicacao("created app example");
         ///Aplicacao app = SistemaNotificacoes.createAplicacao("default name");
         //app.setAuthor(Authenticate.getUser());
         return app;

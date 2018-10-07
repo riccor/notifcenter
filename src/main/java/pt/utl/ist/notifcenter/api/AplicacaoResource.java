@@ -21,23 +21,13 @@ import javax.ws.rs.Produces;
 //@Path("/api/aplicacoes")
 
 @RequestMapping("/apiaplicacoes")
-@SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api")
+@SpringFunctionality(accessGroup = "logged", sapp = NotifcenterController.class, title = "title.Notifcenter.api")
 public class AplicacaoResource extends BennuRestResource {
-
-    SistemaNotificacoes sistem;
-
-    @ResponseBody
-    @RequestMapping(value = "test2base", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String test2base() {
-        sistem = SistemaNotificacoes.createSistemaNotificacoes();
-        return "SistemaNotificacoes sistem -> external id: " + sistem.getExternalId();
-    }
 
     @ResponseBody
     @RequestMapping(value = "test2", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement test2() {
-        //Aplicacao app = Aplicacao.createAplicacao("app test name");
-        Aplicacao app = Aplicacao.createAplicacao("app test name", sistem);
+    public JsonElement test2() {;
+        Aplicacao app = Aplicacao.createAplicacao("app test name");
         return view(app, AplicacaoAdapter.class);
     }
 
@@ -53,9 +43,6 @@ public class AplicacaoResource extends BennuRestResource {
         return view(Aplicacao.createAplicacao(appname), AplicacaoAdapter.class);
     }
 
-    //@POST
-    //@Produces(MediaType.APPLICATION_JSON)
-    //@Consumes(MediaType.APPLICATION_JSON)
     @RequestMapping(value = "create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement createAplic(JsonElement json) {
         Aplicacao app = createApp(json);
@@ -115,6 +102,5 @@ public class AplicacaoResource extends BennuRestResource {
     public ExemploIdentidade test8(@RequestParam(value="name", defaultValue="exemplo de param1") String name) {
         return ExemploIdentidade.createExemploIdentidade(name);
     }
-
 
 }

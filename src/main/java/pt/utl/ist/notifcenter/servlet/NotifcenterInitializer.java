@@ -18,8 +18,6 @@ public class NotifcenterInitializer implements ServletContextListener {
 
         logger.info( "Starting application..." );
 
-        //A entidate SistemaNotificacoes tem a funcao main() que "gere" as aplicacoes e canais;
-        //(Nota: os utilizadores já sao geridos pelo fenix framework)
         SistemaNotificacoes.main();
     }
 

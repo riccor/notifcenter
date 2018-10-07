@@ -13,8 +13,6 @@ public class ExemploIdentidadeAdapter implements JsonAdapter<ExemploIdentidade> 
 
     protected ExemploIdentidade create(JsonElement json) {
         ExemploIdentidade identi = new ExemploIdentidade();
-        ///ExemploIdentidade identi = SistemaNotificacoes.createExemploIdentidade("default name");
-        //identi.setAuthor(Authenticate.getUser());
         return identi;
     }
 

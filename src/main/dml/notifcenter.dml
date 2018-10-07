@@ -144,9 +144,12 @@ class ExemploIdentidade {
 }
 
 
-
-
 /** Relations **/
+
+relation BennuTemSistemaNotificacoes {
+    .pt.ist.fenixframework.DomainRoot playsRole root { multiplicity 1..1; }
+    SistemaNotificacoes playsRole sistema_notificacoes { multiplicity 0..1; }
+}
 
 relation SistemaNotificacoesTemAplicacoes {
     SistemaNotificacoes playsRole sistema_notificacoes { multiplicity 1; }
