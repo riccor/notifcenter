@@ -72,12 +72,12 @@ class Remetente {
 */
 class Mensagem{
     String assunto;
-    String texto_curto;
-    String texto_longo;
+    String textoCurto;
+    String textoLongo;
     // bytearray anexos; 
-    DateTime data_entrega; /* opcional; apenas para o caso em que o remetente queira que a 
+    DateTime dataEntrega; /* opcional; apenas para o caso em que o remetente queira que a 
                               mensagem seja entregue no futuro */    
-    String callback_url_estado_entrega; /*para o caso da aplicacao querer receber os varios estados de entrega
+    String callbackUrlEstadoEntrega; /*para o caso da aplicacao querer receber os varios estados de entrega
                                           da mensagem através de uma callback*/
 }
 
@@ -95,37 +95,37 @@ class Canal {
     }
 
     class Telegram extends Canal{
-        String numero_telemovel;
+        String numeroTelemovel;
         String ID;
-        String token_autorizacao;
+        String tokenAutorizacao;
     }
 
     class Mattermost extends Canal{
-        String oauth2_id_cliente;
-        String oauth2_secredo;
+        String oauth2IdCliente;
+        String oauth2Secredo;
     }
 
     class Twitter extends Canal {
-        String numero_telemovel;
-        String id_aplicacao;
-        String chave_aplicacao;    
+        String numeroTelemovel;
+        String idAplicacao;
+        String chaveAplicacao;    
         /* Alternativa:
-            String oauth2_token_acesso;
-            String oauth2_segredo_do_token;
+            String oauth2TokenAcesso;
+            String oauth2SegredoDoToken;
         */
     }
 
     // Assumo que isto também é um canal
     class Messenger extends Canal {
-        String numero_telemovel;    
-        String token_acesso;
+        String numeroTelemovel;    
+        String tokenAcesso;
     }
 
     // Assumo que isto também é um canal
     class Twilio extends Canal {
         String SID;
-        String chave_api;
-        String segredo_api;
+        String chaveApi;
+        String segredoApi;
     }
 
 
@@ -133,7 +133,7 @@ class CanalNotificacao { /*o mesmo que "Configuracao Canal Remetente"*/
 }
 
 class Contacto {
-    String dados_contacto;
+    String dadosContacto;
 }
 
 
@@ -148,34 +148,34 @@ class ExemploIdentidade {
 
 relation BennuTemSistemaNotificacoes {
     .pt.ist.fenixframework.DomainRoot playsRole root { multiplicity 1..1; }
-    SistemaNotificacoes playsRole sistema_notificacoes { multiplicity 0..1; }
+    SistemaNotificacoes playsRole sistemaNotificacoes { multiplicity 0..1; }
 }
 
 relation SistemaNotificacoesTemAplicacoes {
-    SistemaNotificacoes playsRole sistema_notificacoes { multiplicity 1; }
+    SistemaNotificacoes playsRole sistemaNotificacoes { multiplicity 1..1; }
     Aplicacao playsRole aplicacoes { multiplicity 0..*; }
 }
 
 relation AplicacaoTemRemetentes{
-    Aplicacao playsRole aplicacao { multiplicity 1; }
+    Aplicacao playsRole aplicacao { multiplicity 1..1; }
     Remetente playsRole remetentes { multiplicity 0..*; }
 }
 
 relation SistemaNotificacoesTemCanais {
-    SistemaNotificacoes playsRole sistema_notificacoes { multiplicity 1; }
+    SistemaNotificacoes playsRole sistemaNotificacoes { multiplicity 1..1; }
     Canal playsRole canais { multiplicity 0..*; }
 }
 
-/* Sendo o CanalNotificacao uma relação trenária, então ele associa-se a um 
+/* Sendo o CanalNotificacao uma relação trenária, então ele associa-se a um
 *  remetente e a um canal
 */
 relation RemetenteUsaCanaisNotificacao {
     Remetente playsRole remetente { multiplicity 1..1; }
-    CanalNotificacao playsRole canais_notificacao { multiplicity 0..*; }
+    CanalNotificacao playsRole canaisNotificacao { multiplicity 0..*; }
 }
 
 relation CanalNotificacaoUsaCanal {
-    CanalNotificacao playsRole canal_notificacao { multiplicity 0..*; }
+    CanalNotificacao playsRole canalNotificacao { multiplicity 0..*; }
     Canal playsRole canal { multiplicity 1..1; }
 }
 
@@ -186,22 +186,22 @@ relation RemetentePodeEnviarParaGrupos{
 
 relation MensagemUsaCanalNotificacao {
     Mensagem playsRole mensagem{ multiplicity 0..*; }
-    CanalNotificacao playsRole canal_notificacao { multiplicity 1; }
+    CanalNotificacao playsRole canalNotificacao { multiplicity 1..1; }
 }
 
 relation ContactoParaCanal {
     Contacto playsRole contacto{ multiplicity 0..*; }
-    Canal playsRole canal { multiplicity 1; }
+    Canal playsRole canal { multiplicity 1..1; }
 }
 
 relation UtilizadorTemContactos {
-    .org.fenixedu.bennu.core.domain.User playsRole utilizador { multiplicity 1; }
+    .org.fenixedu.bennu.core.domain.User playsRole utilizador { multiplicity 1..1; }
     Contacto playsRole contactos { multiplicity 0..*; }
 }
 
 relation MensagemEnviadaParaGrupos {
     Mensagem playsRole mensagem { multiplicity 0..*; }
-    .org.fenixedu.bennu.core.domain.groups.PersistentGroup playsRole grupos_destinatarios { multiplicity 1..*; }
+    .org.fenixedu.bennu.core.domain.groups.PersistentGroup playsRole gruposDestinatarios { multiplicity 1..*; }
 }
 
 /* Relação para evitar byteArrays na base de dados */

@@ -12,10 +12,10 @@ public class SistemaNotificacoes extends SistemaNotificacoes_Base {
 
     @Atomic
     public static SistemaNotificacoes getInstance() {
-        if(FenixFramework.getDomainRoot().getSistema_notificacoes() == null) {
+        if(FenixFramework.getDomainRoot().getSistemaNotificacoes() == null) {
             new SistemaNotificacoes();
         }
-        return FenixFramework.getDomainRoot().getSistema_notificacoes();
+        return FenixFramework.getDomainRoot().getSistemaNotificacoes();
     }
 
     public static void main() {

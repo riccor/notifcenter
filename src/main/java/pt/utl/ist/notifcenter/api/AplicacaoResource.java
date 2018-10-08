@@ -21,7 +21,7 @@ import javax.ws.rs.Produces;
 //@Path("/api/aplicacoes")
 
 @RequestMapping("/apiaplicacoes")
-@SpringFunctionality(accessGroup = "logged", sapp = NotifcenterController.class, title = "title.Notifcenter.api")
+@SpringFunctionality(accessGroup = "logged", app = NotifcenterController.class, title = "title.Notifcenter.api")
 public class AplicacaoResource extends BennuRestResource {
 
     @ResponseBody

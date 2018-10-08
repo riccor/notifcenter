@@ -7,7 +7,7 @@ public class Aplicacao extends Aplicacao_Base {
 
     private Aplicacao() {
         super();
-        this.setSistema_notificacoes(SistemaNotificacoes.getInstance());
+        this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
 
         //SistemaNotificacoes.getInstance().addAplicacoes(this); //NOTA: esta linha também não resolve o problema.
     }
