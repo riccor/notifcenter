@@ -18,7 +18,8 @@ public class NotifcenterInitializer implements ServletContextListener {
 
         logger.info( "Starting application..." );
 
-        SistemaNotificacoes.main();
+        String id = SistemaNotificacoes.getInstance().getExternalId();
+        System.out.println("###################################################### SistemaNotificacoes external id:" + id);
     }
 
     @Override

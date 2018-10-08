@@ -98,7 +98,7 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @ResponseBody
-    @RequestMapping(value = "test8", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "test8", method = RequestMethod.GET) ///, produces = MediaType.APPLICATION_JSON_VALUE)
     public ExemploIdentidade test8(@RequestParam(value="name", defaultValue="exemplo de param1") String name) {
         return ExemploIdentidade.createExemploIdentidade(name);
     }

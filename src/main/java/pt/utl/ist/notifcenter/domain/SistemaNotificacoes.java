@@ -12,40 +12,9 @@ public class SistemaNotificacoes extends SistemaNotificacoes_Base {
 
     @Atomic
     public static SistemaNotificacoes getInstance() {
-        if(FenixFramework.getDomainRoot().getSistemaNotificacoes() == null) {
-            new SistemaNotificacoes();
-        }
-        return FenixFramework.getDomainRoot().getSistemaNotificacoes();
+        //LC 8-10-2018
+        final SistemaNotificacoes sistema = FenixFramework.getDomainRoot().getSistemaNotificacoes();
+        return sistema == null ? new SistemaNotificacoes() : sistema;
     }
-
-    public static void main() {
-        String id = SistemaNotificacoes.getInstance().getExternalId();
-        System.out.println("###################################################### SistemaNotificacoes external id:" + id);
-    }
-
-        /*
-        //Aplicacao app1 = createAplicacao("app1");
-
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-    }*/
-
-
 
 }
-
-
-/*
-    @Atomic
-    public static SistemaNotificacoes createSistemaNotificacoes() {
-        SistemaNotificacoes sistema = new SistemaNotificacoes();
-        return sistema;
-    }
- */
