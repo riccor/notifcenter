@@ -24,7 +24,8 @@ public class Aplicacao extends Aplicacao_Base {
         app.setName(nome);
         //app.setPermissoesAplicacao(AppPermissions.RREQUIRES_APPROVAL);
 
-        ///app.setAuthor(Utils.findUserByName("admin")); //também nao resolve
+        //app.setBennu(FenixFramework.getDomainRoot().getBennu()); //também nao resolve
+        //app.setAuthor(Utils.findUserByName("admin")); //também nao resolve
         return app;
     }
 
