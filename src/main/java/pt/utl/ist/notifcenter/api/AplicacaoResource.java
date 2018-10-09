@@ -14,19 +14,21 @@ import pt.utl.ist.notifcenter.api.json.ExemploIdentidadeAdapter;
 import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+/// TEST
+import pt.ist.fenixframework.FenixFramework;
+import org.fenixedu.bennu.core.domain.User;
+
+import java.util.HashSet;
+import java.util.Set;
 
 //@Path("/api/aplicacoes")
-
 @RequestMapping("/apiaplicacoes")
-@SpringFunctionality(accessGroup = "logged", app = NotifcenterController.class, title = "title.Notifcenter.api")
+@SpringFunctionality(accessGroup = "anyone", app = NotifcenterController.class, title = "title.Notifcenter.api")
 public class AplicacaoResource extends BennuRestResource {
 
     @ResponseBody
     @RequestMapping(value = "test2", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement test2() {;
+    public JsonElement test2() {
         Aplicacao app = Aplicacao.createAplicacao("app test name");
         return view(app, AplicacaoAdapter.class);
     }
@@ -45,12 +47,8 @@ public class AplicacaoResource extends BennuRestResource {
 
     @RequestMapping(value = "create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement createAplic(JsonElement json) {
-        Aplicacao app = createApp(json);
+        Aplicacao app = create(json, Aplicacao.class);
         return view(app, AplicacaoAdapter.class);
-    }
-
-    protected Aplicacao createApp(JsonElement json) {
-        return create(json, Aplicacao.class);
     }
 
     @RequestMapping(value = "/update/{app}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -101,6 +99,17 @@ public class AplicacaoResource extends BennuRestResource {
     @RequestMapping(value = "test8", method = RequestMethod.GET) ///, produces = MediaType.APPLICATION_JSON_VALUE)
     public ExemploIdentidade test8(@RequestParam(value="name", defaultValue="exemplo de param1") String name) {
         return ExemploIdentidade.createExemploIdentidade(name);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "test9", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String test9() {
+        User user = Utils.findUserByName("admin");
+        if(user != null)
+            return user.getName();
+        else
+            return "non-existing user name";
     }
 
 }

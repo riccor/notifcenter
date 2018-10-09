@@ -12,26 +12,19 @@ import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 @DefaultJsonAdapter(Aplicacao.class)
 public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
 
-    protected Aplicacao create(JsonElement json) {
-        Aplicacao app = Aplicacao.createAplicacao("created app example");
-        ///Aplicacao app = SistemaNotificacoes.createAplicacao("default name");
-        //app.setAuthor(Authenticate.getUser());
-        return app;
-    }
-
     @Override
     public Aplicacao create(JsonElement jsonElement, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        Aplicacao app = create(jsonElement);
-        app.setName(getRequiredValue(jObj, "name"));
-        return app;
+        String nome = getRequiredValue(jObj, "name");
+        return Aplicacao.createAplicacao(nome);
     }
 
     @Override
     public Aplicacao update(JsonElement jsonElement, Aplicacao app, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        app.setName(getRequiredValue(jObj, "name"));
-        return app;
+        String nome = getRequiredValue(jObj, "name");
+        ///outros parametros (será que ctx pode ajudar?)
+        return app.updateAplicacaoNome(nome);
     }
 
     @Override
@@ -43,7 +36,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         return jObj;
     }
 
-    protected String getRequiredValue(JsonObject obj, String property) {
+    private String getRequiredValue(JsonObject obj, String property) {
         if (obj.has(property)) {
             return obj.get(property).getAsString();
         }
