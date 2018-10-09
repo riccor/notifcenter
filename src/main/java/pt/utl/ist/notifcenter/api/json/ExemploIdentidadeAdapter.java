@@ -11,35 +11,29 @@ import pt.utl.ist.notifcenter.domain.ExemploIdentidade;
 @DefaultJsonAdapter(ExemploIdentidade.class)
 public class ExemploIdentidadeAdapter implements JsonAdapter<ExemploIdentidade> {
 
-    protected ExemploIdentidade create(JsonElement json) {
-        ExemploIdentidade identi = new ExemploIdentidade();
-        return identi;
-    }
-
     @Override
     public ExemploIdentidade create(JsonElement jsonElement, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        ExemploIdentidade identi = create(jsonElement);
-        identi.setParam1(getRequiredValue(jObj, "param 1 name"));
-        return identi;
+        String nome = getRequiredValue(jObj, "name");
+        return ExemploIdentidade.createExemploIdentidade(nome);
     }
 
     @Override
-    public ExemploIdentidade update(JsonElement jsonElement, ExemploIdentidade identi, JsonBuilder ctx) {
+    public ExemploIdentidade update(JsonElement jsonElement, ExemploIdentidade app, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        identi.setParam1(getRequiredValue(jObj, "new param 1 update"));
-        return identi;
+        String param1 = getRequiredValue(jObj, "param1");
+        return app.updateExemploIdentidade(param1);
     }
 
     @Override
     public JsonElement view(ExemploIdentidade obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("id", obj.getExternalId());
-        jObj.addProperty("name", obj.getParam1());
+        jObj.addProperty("param1", obj.getParam1());
         return jObj;
     }
 
-    protected String getRequiredValue(JsonObject obj, String property) {
+    private String getRequiredValue(JsonObject obj, String property) {
         if (obj.has(property)) {
             return obj.get(property).getAsString();
         }

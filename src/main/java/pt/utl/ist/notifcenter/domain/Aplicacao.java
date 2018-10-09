@@ -23,6 +23,8 @@ public class Aplicacao extends Aplicacao_Base {
         Aplicacao app = new Aplicacao();
         app.setName(nome);
         //app.setPermissoesAplicacao(AppPermissions.RREQUIRES_APPROVAL);
+
+        ///app.setAuthor(Utils.findUserByName("admin")); //também nao resolve
         return app;
     }
 

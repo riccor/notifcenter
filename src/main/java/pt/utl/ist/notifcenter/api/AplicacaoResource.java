@@ -23,7 +23,7 @@ import java.util.Set;
 
 //@Path("/api/aplicacoes")
 @RequestMapping("/apiaplicacoes")
-@SpringFunctionality(accessGroup = "anyone", app = NotifcenterController.class, title = "title.Notifcenter.api")
+@SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api")
 public class AplicacaoResource extends BennuRestResource {
 
     @ResponseBody
@@ -96,20 +96,20 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @ResponseBody
-    @RequestMapping(value = "test8", method = RequestMethod.GET) ///, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "test8", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ExemploIdentidade test8(@RequestParam(value="name", defaultValue="exemplo de param1") String name) {
         return ExemploIdentidade.createExemploIdentidade(name);
     }
-
 
     @ResponseBody
     @RequestMapping(value = "test9", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String test9() {
         User user = Utils.findUserByName("admin");
         if(user != null)
-            return user.getName();
+            return "username '" + user.getName() + "' exists!";
         else
             return "non-existing user name";
     }
+
 
 }

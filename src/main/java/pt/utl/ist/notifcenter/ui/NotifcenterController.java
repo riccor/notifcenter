@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/notifcenter")
-@SpringApplication(group = "logged", path = "notifcenter", title = "title.Notifcenter")
+@SpringApplication(group = "anyone", path = "notifcenter", title = "title.Notifcenter")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter")
 public class NotifcenterController {
 
