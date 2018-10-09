@@ -13,9 +13,9 @@ public class Aplicacao extends Aplicacao_Base {
         super();
         this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
 
-        ///this.setAuthor(u1);
-
-        //SistemaNotificacoes.getInstance().addAplicacoes(this); //NOTA: esta linha também não resolve o problema.
+        //acrescentei isto mas também não resolve:
+        this.setBennu(FenixFramework.getDomainRoot().getBennu());
+        this.setAuthor(Utils.findUserByName("admin")); //findUserByName() retorna um objeto utilizador, neste caso o admin
     }
 
     @Atomic
@@ -23,9 +23,6 @@ public class Aplicacao extends Aplicacao_Base {
         Aplicacao app = new Aplicacao();
         app.setName(nome);
         //app.setPermissoesAplicacao(AppPermissions.RREQUIRES_APPROVAL);
-
-        //app.setBennu(FenixFramework.getDomainRoot().getBennu()); //também nao resolve
-        //app.setAuthor(Utils.findUserByName("admin")); //também nao resolve
         return app;
     }
 

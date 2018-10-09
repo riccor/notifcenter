@@ -2,6 +2,7 @@ package pt.utl.ist.notifcenter.domain;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.springframework.util.CollectionUtils;
+import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 
 import java.util.Iterator;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 public class Utils {
 
+    @Atomic
     public static User findUserByName(String name) {
         Set<User> users = FenixFramework.getDomainRoot().getBennu().getUserSet();
         for (User u : users) {
