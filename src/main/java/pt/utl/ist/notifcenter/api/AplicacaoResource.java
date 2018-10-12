@@ -14,36 +14,52 @@ import pt.utl.ist.notifcenter.api.json.ExemploIdentidadeAdapter;
 import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
-/// TEST
-import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.bennu.core.domain.User;
 
-import java.util.HashSet;
-import java.util.Set;
-
-//@Path("/api/aplicacoes")
 @RequestMapping("/apiaplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api")
 public class AplicacaoResource extends BennuRestResource {
 
+    /*
+        3.1.3 Adicão de aplicacao:
+                1. Aplicação regista-se no sistema usando protocolo de autenticação;
+                2. Sistema verifca e guarda dados da aplicação;
+                3. Administrador defne as permissões da aplicação;
+                4. Sistema verifca e guarda confgurações.
+    */
     @ResponseBody
+    @RequestMapping(value = "/oauth/register/{appname}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String registerApp(/*@PathVariable("app") Aplicacao app*/ @PathVariable("appname") String appname) {
+
+        if(Aplicacao.findByAplicacaoName(appname) != null){
+            return "{'error':'applicationNameAlreadyRegistered','error_description':'Aplicacao name is already registered.'}";
+        }
+
+        Aplicacao app = Aplicacao.registerAplicacao(appname);
+        //return "{'success':'application'}";
+        return view(app, AplicacaoAdapter.class).toString();
+    }
+
+    /*AJUDA:
+    Spring will use the same HttpMessageConverter objects to convert the User object as it
+    does with @ResponseBody, except now you have more control over the status code and headers
+    you want to return in the response.
+    @RequestMapping(value = "/user?${id}", method = RequestMethod.GET)
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        User user = ...;
+        if (user != null) {
+            return new ResponseEntity<User>(user, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    */
+
+    /*@ResponseBody
     @RequestMapping(value = "test2", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement test2() {
         Aplicacao app = Aplicacao.createAplicacao("app test name");
         return view(app, AplicacaoAdapter.class);
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "test0", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String test0() {
-        ///Aplicacao a = Aplicacao.createAplicacao("app test name");
-        return "chegou aqui";
-    }
-
-    @RequestMapping(value = "test3/{appname}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement test3(@PathVariable("appname") String appname) {
-        return view(Aplicacao.createAplicacao(appname), AplicacaoAdapter.class);
-    }
+    }*/
 
     @RequestMapping(value = "create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement createAplic(JsonElement json) {
@@ -76,12 +92,6 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @ResponseBody
-    @RequestMapping(value = "aplic", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Aplicacao aplic(@RequestParam(value="name", defaultValue="nome_app") String name) {
-        return Aplicacao.createAplicacao(name);
-    }
-
-    @ResponseBody
     @RequestMapping(value = "test1", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement test1() {
         JsonObject jObj = new JsonObject();
@@ -104,12 +114,11 @@ public class AplicacaoResource extends BennuRestResource {
     @ResponseBody
     @RequestMapping(value = "test9", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String test9() {
-        User user = Utils.findUserByName("admin");
+        User user = User.findByUsername("admin");
         if(user != null)
             return "username '" + user.getName() + "' exists!";
         else
             return "non-existing user name";
     }
-
 
 }

@@ -18,13 +18,11 @@ public class NotifcenterInitializer implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {
 
         logger.info( "Starting application..." );
-
         String id = SistemaNotificacoes.getInstance().getExternalId();
-        System.out.println("###################################################### SistemaNotificacoes external id:" + id);
+        System.out.println("################################################# SistemaNotificacoes external id:" + id);
 
-        //add app test:
-        //Aplicacao app = Aplicacao.createAplicacao("app test nameeeeeeee");
-        //System.out.println("#################################################### app id :" + app.getExternalId().toString());
+        //carregar cache de Aplicacoes (usada para pesquisa rápida de Aplicacoes por nome):
+        Aplicacao.loadCacheAplicacoes();
     }
 
     @Override

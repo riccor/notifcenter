@@ -10,6 +10,7 @@ import java.util.Set;
 
 public class Utils {
 
+    /* já existe no bennu e mais eficiente (usa ConcurrentHashMap como cache):
     @Atomic
     public static User findUserByName(String name) {
         Set<User> users = FenixFramework.getDomainRoot().getBennu().getUserSet();
@@ -19,6 +20,7 @@ public class Utils {
         }
         return null;
     }
+    */
 
     //might be useful ...or not:
     public static <E> void removeElementFromSet(java.util.Set<E> set, E element) {
