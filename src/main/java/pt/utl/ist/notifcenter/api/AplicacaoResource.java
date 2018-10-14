@@ -37,7 +37,7 @@ public class AplicacaoResource extends BennuRestResource {
         return view(create(appJObj, Aplicacao.class), AplicacaoAdapter.class).toString();
     }
     */
-    @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.GET)
+    @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addApplication(@RequestParam(value="name") String name,
                                  @RequestParam(value="redirecturl") String redirectUrl,
                                  @RequestParam(value="description") String description) {
@@ -50,12 +50,6 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class).toString();
     }
 
-
-    @RequestMapping(value = "create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement createAplic(JsonElement json) {
-        Aplicacao app = create(json, Aplicacao.class);
-        return view(app, AplicacaoAdapter.class);
-    }
 
     @RequestMapping(value = "/update/{app}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateAplic(@PathVariable("app") Aplicacao app, JsonElement json) {
