@@ -7,7 +7,6 @@ import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import pt.utl.ist.notifcenter.domain.Aplicacao;
-import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 
 @DefaultJsonAdapter(Aplicacao.class)
 public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
@@ -15,8 +14,10 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
     @Override
     public Aplicacao create(JsonElement jsonElement, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        String nome = getRequiredValue(jObj, "name");
-        return Aplicacao.createAplicacao(nome);
+        String name = getRequiredValue(jObj, "name");
+        String redirectUrl = getRequiredValue(jObj, "redirecturl");
+        String description = getRequiredValue(jObj, "description");
+        return Aplicacao.createAplicacao(name, redirectUrl, description);
     }
 
     @Override

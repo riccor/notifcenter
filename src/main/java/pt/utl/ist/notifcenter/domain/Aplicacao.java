@@ -1,6 +1,7 @@
 package pt.utl.ist.notifcenter.domain;
 
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 
@@ -28,19 +29,26 @@ public class Aplicacao extends Aplicacao_Base {
 
     private Aplicacao() {
         super();
-        this.setPermissoesAplicacao(AppPermissions.NONE);
-        this.setAuthorName("app author name");
-        this.setSiteUrl("app site url");
-        this.setRedirectUrl("redirect url");
-        this.setDescription("app description");
         this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
     }
 
     @Atomic
-    public static Aplicacao createAplicacao(final String nome) {
+    public static Aplicacao createAplicacao(final String name, final String redirectUrl, final String description) {
+
+        if (findByAplicacaoName(name) != null) {
+            throw BennuCoreDomainException.cannotCreateEntity();
+        }
+
         Aplicacao app = new Aplicacao();
-        app.setName(nome);
-        //app.setPermissoesAplicacao(AppPermissions.RREQUIRES_APPROVAL);
+        app.setName(name);
+        app.setRedirectUrl(redirectUrl);
+        app.setDescription(description);
+        app.setPermissoesAplicacao(AppPermissions.NONE);
+        app.setAuthorName("none");
+        app.setSiteUrl("none");
+
+        cacheAplicacao(app);
+
         return app;
     }
 
@@ -55,13 +63,6 @@ public class Aplicacao extends Aplicacao_Base {
         this.setPermissoesAplicacao(permissions);
     }
     */
-
-    // /oauth/register/{appname}
-    public static Aplicacao registerAplicacao(final String nome){
-        Aplicacao app = createAplicacao(nome);
-        cacheAplicacao(app);
-        return app;
-    }
 
     // para otimizacao da pesquisa de determinada Aplicacao por nome (retirado de ../bennu/core/domain/User):
     public static Aplicacao findByAplicacaoName(final String aplicacaoName) {
