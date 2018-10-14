@@ -50,7 +50,6 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class).toString();
     }
 
-
     @RequestMapping(value = "/update/{app}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateAplic(@PathVariable("app") Aplicacao app, JsonElement json) {
         return updateApp(app, json);

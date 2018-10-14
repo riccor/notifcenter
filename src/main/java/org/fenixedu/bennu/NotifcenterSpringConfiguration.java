@@ -16,15 +16,13 @@ public class NotifcenterSpringConfiguration {
     @ConfigurationManager(description = "Notifcenter Configuration")
     public interface ConfigurationProperties {
 
+        @ConfigurationProperty(key = "notifcenter.url", defaultValue = "http://localhost:8080/notifcenter")
+        public String notifcenterUrl();
+
         /*
-        Retirado do DriveSdkConfiguration.java como exemplo:
-
-        onProperty(key = "drive.url", defaultValue = "http://localhost:8080/drive")
-        public String driveUrl();
-
         Para aceder a estas configuracoes noutra classe:
-        import org.fenixedu.bennu.DriveSdkConfiguration;
-        DriveSdkConfiguration.getConfiguration().driveUrl();
+        import org.fenixedu.bennu.NotifcenterSpringConfiguration;
+        NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl();
         */
     }
 

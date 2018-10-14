@@ -1,5 +1,6 @@
 package pt.utl.ist.notifcenter.domain;
 
+import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
 import pt.ist.fenixframework.Atomic;
