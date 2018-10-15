@@ -34,7 +34,7 @@ public class Aplicacao extends Aplicacao_Base {
     }
 
     @Atomic
-    public static Aplicacao createAplicacao(final String name, final String redirectUrl, final String description) {
+    public static Aplicacao createAplicacao(final String name, final String redirectUrl, final String description, final String authorName, final String siteUrl) {
 
         if (findByAplicacaoName(name) != null) {
             throw BennuCoreDomainException.cannotCreateEntity();
@@ -45,8 +45,8 @@ public class Aplicacao extends Aplicacao_Base {
         app.setRedirectUrl(redirectUrl);
         app.setDescription(description);
         app.setPermissoesAplicacao(AppPermissions.NONE);
-        app.setAuthorName("none");
-        app.setSiteUrl("none");
+        app.setAuthorName(authorName);
+        app.setSiteUrl(siteUrl);
 
         cacheAplicacao(app);
 

@@ -15,9 +15,11 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
     public Aplicacao create(JsonElement jsonElement, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String name = getRequiredValue(jObj, "name");
-        String redirectUrl = getRequiredValue(jObj, "redirecturl");
+        String redirectUrl = getRequiredValue(jObj, "redirect_uri");
         String description = getRequiredValue(jObj, "description");
-        return Aplicacao.createAplicacao(name, redirectUrl, description);
+        String authorName = getRequiredValue(jObj, "author");
+        String siteUrl = getRequiredValue(jObj, "site_url");
+        return Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
     }
 
     @Override
@@ -36,7 +38,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         jObj.addProperty("author", obj.getAuthorName());
         jObj.addProperty("permissoes", obj.getPermissoesAplicacao().name());
         jObj.addProperty("description", obj.getDescription());
-        jObj.addProperty("site url", obj.getSiteUrl());
+        jObj.addProperty("site_url", obj.getSiteUrl());
         jObj.addProperty("redirect_uri", obj.getRedirectUrl());
         jObj.addProperty("client_secret", obj.getSecret());
         return jObj;

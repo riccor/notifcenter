@@ -39,8 +39,10 @@ public class AplicacaoResource extends BennuRestResource {
     */
     @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addApplication(@RequestParam(value="name") String name,
-                                 @RequestParam(value="redirecturl") String redirectUrl,
-                                 @RequestParam(value="description") String description) {
+                                 @RequestParam(value="redirect_uri") String redirectUrl,
+                                 @RequestParam(value="description") String description,
+                                 @RequestParam(value="author", defaultValue = "none") String authorName,
+                                 @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
             JsonObject jObj = new JsonObject();
@@ -49,7 +51,7 @@ public class AplicacaoResource extends BennuRestResource {
             return jObj.toString();
         }
 
-        Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description);
+        Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
         return view(app, AplicacaoAdapter.class).toString();
     }
 
