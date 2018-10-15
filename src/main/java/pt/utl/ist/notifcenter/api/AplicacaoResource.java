@@ -43,7 +43,10 @@ public class AplicacaoResource extends BennuRestResource {
                                  @RequestParam(value="description") String description) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
-            return "{'error':'applicationNameAlreadyRegistered','error_description':'Such application name is already registered.'}";
+            JsonObject jObj = new JsonObject();
+            jObj.addProperty("error", "applicationNameAlreadyRegistered");
+            jObj.addProperty("error_description", "Such application name is already registered.");
+            return jObj.toString();
         }
 
         Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description);
