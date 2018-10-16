@@ -17,7 +17,7 @@ import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
 import org.fenixedu.bennu.core.domain.User;
 
-import java.util.Arrays;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
@@ -37,24 +37,23 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class);
     }
 
+    @RequestMapping(value = "/oauth/viewapplication2/{app}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement viewapplication2(@PathVariable("app") Aplicacao app) {
+        return view(app, AplicacaoAdapter.class);
+    }
+
     @RequestMapping(value = "/oauth/viewapplicationsecret/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String viewapplicationsecret(@PathVariable("app") Aplicacao app) {
         return app.getSecret();
     }
 
     //ERRO: "HTTP Status 400 - CSRF Token not present or incorrect!" -> https://pastebin.com/vGe1y97c
-    @RequestMapping(value = "/oauth/addapplicationtest1", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/oauth/addapplicationtest", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addApplicationTest1(@RequestBody Aplicacao jObj) {
         return view(jObj, AplicacaoAdapter.class);
-        //return view(create(jObj, Aplicacao.class), AplicacaoAdapter.class);
     }
 
-    @RequestMapping(value = "/oauth/addapplicationtest2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addApplicationTest2(JsonElement jObj) {
-        return view(create(jObj, Aplicacao.class), AplicacaoAdapter.class);
-    }
-
-    @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addApplication(@RequestParam(value="description") String description, @RequestParam(value="name") String name, @RequestParam(value="redirect_uri") String redirectUrl, @RequestParam(value="author", defaultValue = "none") String authorName, @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
@@ -67,6 +66,40 @@ public class AplicacaoResource extends BennuRestResource {
         Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
         return view(app, AplicacaoAdapter.class);
     }
+
+    /*
+    @RequestMapping(value = "/remetente/{app}/adicionar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement adicionarRemetente(@PathVariable("app") Aplicacao app,
+                                          @RequestParam(value="nome") String nomeRemetente,
+                                          @RequestParam(value="access_token") String accessToken) {
+
+        //como faço aqui para confirmar se o access_token é valido ou não?
+
+        return view(Remetente.createRemetente(app, nomeRemetente), RemetenteAdapter.class);
+    }*/
+
+    @RequestMapping(value = "/remetente/{app}/adicionar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement adicionarRemetente(@PathVariable("app") Aplicacao app, @RequestParam(value="nome") String nomeRemetente) {
+
+        Remetente remetente = Remetente.createRemetente(app, nomeRemetente);
+
+        //Nota: vou mais tarde inserir este código no método RemetenteAdapter.view():
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("remetenteId", remetente.getExternalId());
+        jObj.addProperty("name", remetente.getNome());
+        jObj.addProperty("appID", remetente.getAplicacao().getExternalId());
+        return jObj;
+    }
+
+    @RequestMapping(value = "/remetente/{app}/listar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listarRemetentes(@PathVariable("app") Aplicacao app) {
+
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("appId", app.getExternalId());
+        jObj.addProperty("remetentes", app.getRemetentesSet().toString());
+        return jObj;
+    }
+
 
     @RequestMapping(value = "/update/{app}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateAplic(@PathVariable("app") Aplicacao app, JsonElement json) {
