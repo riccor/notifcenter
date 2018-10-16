@@ -32,6 +32,39 @@ public class AplicacaoResource extends BennuRestResource {
                 4. Sistema verifca e guarda confgurações.
     */
 
+        /*
+
+    Os problemas de CSRF nos posts resolvem-se enviadno o header:
+
+   .header("X-Requested-With", "XMLHttpRequest")
+
+    Todos os requests que alteram o estado do servidor devem ser POST e não GET.
+
+
+
+    Numa API REST, neste caso o resource é aplicação, e queremos adicionar
+    remetentes a essa aplicação. Para mim faria mais sentido ter algo do género:
+
+   /adicionarAplicacao
+   /listarAplicacoes
+   /{app}
+   /{app}/update
+   /{app}/listarRemetentes
+   /{app}/adicionarRemetente
+   /{app}/{remetente}
+   /{app}/{remetente}/update
+   /{app}/{remetente}/remover
+
+    Isto é apenas um exemplo, não sei quais as operações que fazem ou não
+    sentido, mas tentava orientar a API ao recurso.
+
+
+    //addAplicacao:
+    http://localhost:8080/notifcenter/apiaplicacoes/oauth/addapplication?name=app_2&redirect_uri=http://app2_site.com/codedescription=descricao_app2
+
+    */
+
+
     @RequestMapping(value = "/oauth/viewapplication/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement viewapplication(@PathVariable("app") Aplicacao app) {
         return view(app, AplicacaoAdapter.class);
@@ -53,7 +86,7 @@ public class AplicacaoResource extends BennuRestResource {
         return view(jObj, AplicacaoAdapter.class);
     }
 
-    @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addApplication(@RequestParam(value="description") String description, @RequestParam(value="name") String name, @RequestParam(value="redirect_uri") String redirectUrl, @RequestParam(value="author", defaultValue = "none") String authorName, @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
@@ -67,16 +100,25 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class);
     }
 
+
     /*
     @RequestMapping(value = "/remetente/{app}/adicionar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement adicionarRemetente(@PathVariable("app") Aplicacao app,
                                           @RequestParam(value="nome") String nomeRemetente,
                                           @RequestParam(value="access_token") String accessToken) {
 
-        //como faço aqui para confirmar se o access_token é valido ou não?
+        //qual o método para confirmar se o access_token recebido é válido ou não?
 
         return view(Remetente.createRemetente(app, nomeRemetente), RemetenteAdapter.class);
+    }
+    */
+
+    /*
+    @RequestMapping(value = "/restURL")
+    public String serveRest(@RequestBody String body, @RequestHeader HttpHeaders headers) {
+        etc...
     }*/
+
 
     @RequestMapping(value = "/remetente/{app}/adicionar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement adicionarRemetente(@PathVariable("app") Aplicacao app, @RequestParam(value="nome") String nomeRemetente) {
@@ -130,12 +172,12 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
-    @RequestMapping(value = "test7", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "test7", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement test7(@RequestParam(value="name", defaultValue="exemplo de param1") String name) {
         return view(ExemploIdentidade.createExemploIdentidade(name), ExemploIdentidadeAdapter.class);
     }
 
-    @RequestMapping(value = "test8", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "test8", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ExemploIdentidade test8(@RequestParam(value="name", defaultValue="exemplo de param1") String name) {
         return ExemploIdentidade.createExemploIdentidade(name);
     }
