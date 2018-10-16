@@ -17,6 +17,8 @@ import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
 import org.fenixedu.bennu.core.domain.User;
 
+import java.util.Arrays;
+
 @RestController
 @RequestMapping("/apiaplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api")
@@ -30,29 +32,40 @@ public class AplicacaoResource extends BennuRestResource {
                 4. Sistema verifca e guarda confgurações.
     */
 
-    /*
-    //curl --header "Content-Type: application/json" --data '{"name":"nome1", "redirecturl":"https://redirect.url", "description":"descricao1"}' --request POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addapplication
-    @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String addApplication(JsonElement appJObj) { //DÁ ERRO POR CAUSA DO "JsonElement"
-        return view(create(appJObj, Aplicacao.class), AplicacaoAdapter.class).toString();
+    @RequestMapping(value = "/oauth/viewapplication/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement viewapplication(@PathVariable("app") Aplicacao app) {
+        return view(app, AplicacaoAdapter.class);
     }
-    */
-    @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String addApplication(@RequestParam(value="name") String name,
-                                 @RequestParam(value="redirect_uri") String redirectUrl,
-                                 @RequestParam(value="description") String description,
-                                 @RequestParam(value="author", defaultValue = "none") String authorName,
-                                 @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
+
+    @RequestMapping(value = "/oauth/viewapplicationsecret/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String viewapplicationsecret(@PathVariable("app") Aplicacao app) {
+        return app.getSecret();
+    }
+
+    //ERRO: "HTTP Status 400 - CSRF Token not present or incorrect!" -> https://pastebin.com/vGe1y97c
+    @RequestMapping(value = "/oauth/addapplicationtest1", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addApplicationTest1(@RequestBody Aplicacao jObj) {
+        return view(jObj, AplicacaoAdapter.class);
+        //return view(create(jObj, Aplicacao.class), AplicacaoAdapter.class);
+    }
+
+    @RequestMapping(value = "/oauth/addapplicationtest2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addApplicationTest2(JsonElement jObj) {
+        return view(create(jObj, Aplicacao.class), AplicacaoAdapter.class);
+    }
+
+    @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addApplication(@RequestParam(value="description") String description, @RequestParam(value="name") String name, @RequestParam(value="redirect_uri") String redirectUrl, @RequestParam(value="author", defaultValue = "none") String authorName, @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
             JsonObject jObj = new JsonObject();
             jObj.addProperty("error", "applicationNameAlreadyRegistered");
             jObj.addProperty("error_description", "Such application name is already registered.");
-            return jObj.toString();
+            return jObj;
         }
 
         Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
-        return view(app, AplicacaoAdapter.class).toString();
+        return view(app, AplicacaoAdapter.class);
     }
 
     @RequestMapping(value = "/update/{app}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
