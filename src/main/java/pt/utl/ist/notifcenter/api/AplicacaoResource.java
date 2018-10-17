@@ -32,7 +32,7 @@ public class AplicacaoResource extends BennuRestResource {
                 4. Sistema verifca e guarda confgurações.
     */
 
-        /*
+    /*
 
     Os problemas de CSRF nos posts resolvem-se enviadno o header:
 
