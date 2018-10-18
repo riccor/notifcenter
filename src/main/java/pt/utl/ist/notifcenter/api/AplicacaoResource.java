@@ -87,19 +87,18 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addApplication(@RequestParam(value="description") String description, @RequestParam(value="name") String name, @RequestParam(value="redirect_uri") String redirectUrl, @RequestParam(value="author", defaultValue = "none") String authorName, @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
+    public String addApplication(@RequestParam(value="description") String description, @RequestParam(value="name") String name, @RequestParam(value="redirect_uri") String redirectUrl, @RequestParam(value="author", defaultValue = "none") String authorName, @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
             JsonObject jObj = new JsonObject();
             jObj.addProperty("error", "applicationNameAlreadyRegistered");
             jObj.addProperty("error_description", "Such application name is already registered.");
-            return jObj;
+            return jObj.toString();
         }
 
         Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
-        return view(app, AplicacaoAdapter.class);
+        return view(app, AplicacaoAdapter.class).toString();
     }
-
 
     /*
     @RequestMapping(value = "/remetente/{app}/adicionar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
