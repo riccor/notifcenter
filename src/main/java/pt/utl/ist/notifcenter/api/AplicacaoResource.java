@@ -2,14 +2,11 @@ package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.apache.avro.data.Json;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
 import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
-import org.fenixedu.bennu.spring.security.CSRFToken;
-import org.fenixedu.bennu.spring.security.CSRFTokenRepository;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
@@ -19,8 +16,6 @@ import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
 import org.fenixedu.bennu.core.domain.User;
-
-import java.util.Set;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
