@@ -89,7 +89,7 @@ public class AplicacaoResource extends BennuRestResource {
         return view(jObj, AplicacaoAdapter.class);
     }
 
-    //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security
+    //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security //CSRFToken token = new CSRFToken("awd");
     @SkipCSRF
     @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addApplication(@RequestParam(value="description") String description, @RequestParam(value="name") String name, @RequestParam(value="redirect_uri") String redirectUrl, @RequestParam(value="author", defaultValue = "none") String authorName, @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
@@ -100,8 +100,6 @@ public class AplicacaoResource extends BennuRestResource {
             jObj.addProperty("error_description", "Such application name is already registered.");
             return jObj.toString();
         }
-
-        CSRFToken token = new CSRFToken("awd");
 
         Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
         return view(app, AplicacaoAdapter.class).toString();
