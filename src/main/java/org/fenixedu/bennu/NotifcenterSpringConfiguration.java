@@ -19,6 +19,9 @@ public class NotifcenterSpringConfiguration {
         @ConfigurationProperty(key = "notifcenter.url", defaultValue = "http://localhost:8080/notifcenter")
         public String notifcenterUrl();
 
+        //@ConfigurationProperty(key = "access.token.required", defaultValue = "true")
+        //public String accessTokenRequired();
+
         /*
         Para aceder a estas configuracoes noutra classe:
         import org.fenixedu.bennu.NotifcenterSpringConfiguration;
