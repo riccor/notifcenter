@@ -145,6 +145,7 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
+
     // IGNORAR (são apenas testes):
 
     @RequestMapping(value = "/update/{app}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
