@@ -15,4 +15,11 @@ public class Remetente extends Remetente_Base {
         remetente.setNome(nameRemetente);
         return remetente;
     }
+
+    @Atomic
+    public Remetente updateRemetenteName(final String nome) {
+        this.setNome(nome);
+        return this;
+    }
+
 }

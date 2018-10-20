@@ -1,8 +1,10 @@
 package pt.utl.ist.notifcenter.domain;
 
-import org.fenixedu.bennu.NotifcenterSpringConfiguration;
-import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
+import org.fenixedu.bennu.oauth.domain.ApplicationUserAuthorization;
+import org.fenixedu.bennu.oauth.domain.ApplicationUserSession;
+import org.fenixedu.bennu.oauth.domain.ServiceApplication;
+import org.fenixedu.bennu.oauth.domain.ServiceApplicationAuthorization;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 
@@ -54,7 +56,7 @@ public class Aplicacao extends Aplicacao_Base {
     }
 
     @Atomic
-    public Aplicacao updateAplicacaoNome(final String nome) {
+    public Aplicacao updateAplicacaoName(final String nome) {
         this.setName(nome);
         return this;
     }
@@ -100,6 +102,29 @@ public class Aplicacao extends Aplicacao_Base {
         for (final Aplicacao app: SistemaNotificacoes.getInstance().getAplicacoesSet()) {
             cacheAplicacao(app);
         }
+    }
+
+
+    //Nota: a classe Aplicacao estende ExternalApplication, portanto:
+    public boolean isValidAccessToken(final String accessToken) {
+        for (ApplicationUserAuthorization uu : this.getApplicationUserAuthorizationSet()) {
+            for (ApplicationUserSession u : uu.getSessionSet()) {
+                if (u.isAccessTokenValid() && u.matchesAccessToken(accessToken)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //Nota: Usaria isto se a classe Aplicacao fosse um extend de ServiceApplication:
+    static boolean isValidAccessToken2(final ServiceApplication serviceApp, final String accessToken) {
+        for (ServiceApplicationAuthorization u : serviceApp.getServiceAuthorizationSet()) {
+            if (u.matchesAccessToken(accessToken)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

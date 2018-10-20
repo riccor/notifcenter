@@ -27,7 +27,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String nome = getRequiredValue(jObj, "name");
         ///outros parametros (será que ctx pode ajudar?)
-        return app.updateAplicacaoNome(nome);
+        return app.updateAplicacaoName(nome);
     }
 
     @Override

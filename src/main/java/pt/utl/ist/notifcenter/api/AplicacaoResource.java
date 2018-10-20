@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
 
 import pt.utl.ist.notifcenter.api.json.ExemploIdentidadeAdapter;
+import pt.utl.ist.notifcenter.api.json.RemetenteAdapter;
 import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
@@ -22,24 +23,20 @@ import org.fenixedu.bennu.core.domain.User;
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api")
 public class AplicacaoResource extends BennuRestResource {
 
-    /*
-        3.1.3 Adicão de aplicacao:
-                1. Aplicação regista-se no sistema usando protocolo de autenticação;
-                2. Sistema verifca e guarda dados da aplicação;
-                3. Administrador defne as permissões da aplicação;
-                4. Sistema verifca e guarda confgurações.
-    */
+    static JsonObject jObjInvalidTokenError;
+    static JsonObject jObjInvalidAppError;
+
+    static {
+        jObjInvalidTokenError = new JsonObject();
+        jObjInvalidTokenError.addProperty("error", "invalidAccessToken");
+        jObjInvalidTokenError.addProperty("error_description", "Invalid access token.");
+
+        jObjInvalidAppError = new JsonObject();
+        jObjInvalidAppError.addProperty("error", "invalidApp");
+        jObjInvalidAppError.addProperty("error_description", "Invalid application ID.");
+    }
 
     /*
-
-    Os problemas de CSRF nos posts resolvem-se enviadno o header:
-
-   .header("X-Requested-With", "XMLHttpRequest")
-
-    Todos os requests que alteram o estado do servidor devem ser POST e não GET.
-
-
-
     Numa API REST, neste caso o resource é aplicação, e queremos adicionar
     remetentes a essa aplicação. Para mim faria mais sentido ter algo do género:
 
@@ -56,38 +53,24 @@ public class AplicacaoResource extends BennuRestResource {
     Isto é apenas um exemplo, não sei quais as operações que fazem ou não
     sentido, mas tentava orientar a API ao recurso.
 
-
-    //addAplicacao:
-    http://localhost:8080/notifcenter/apiaplicacoes/oauth/addapplication?name=app_2&redirect_uri=http://app2_site.com/codedescription=descricao_app2
-
     */
 
 
-    @RequestMapping(value = "/oauth/viewapplication/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement viewapplication(@PathVariable("app") Aplicacao app) {
-        return view(app, AplicacaoAdapter.class);
-    }
+    //Adicionar aplicacao
 
-    @RequestMapping(value = "/oauth/viewapplication2/{app}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement viewapplication2(@PathVariable("app") Aplicacao app) {
-        return view(app, AplicacaoAdapter.class);
-    }
-
-    @RequestMapping(value = "/oauth/viewapplicationsecret/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String viewapplicationsecret(@PathVariable("app") Aplicacao app) {
-        return app.getSecret();
-    }
-
-    //ERRO: "HTTP Status 400 - CSRF Token not present or incorrect!" -> https://pastebin.com/vGe1y97c
-    @RequestMapping(value = "/oauth/addapplicationtest", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addApplicationTest1(@RequestBody Aplicacao jObj) {
-        return view(jObj, AplicacaoAdapter.class);
-    }
+    /*
+    3.1.3 Adicão de aplicacao:
+            1. Aplicação regista-se no sistema usando protocolo de autenticação;
+            2. Sistema verifca e guarda dados da aplicação;
+            3. Administrador defne as permissões da aplicação;
+            4. Sistema verifca e guarda confgurações.
+    */
 
     //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security //CSRFToken token = new CSRFToken("awd");
+    //exemplo de pedido: http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_2&redirect_uri=http://app2_site.com/codedescription=descricao_app2
     @SkipCSRF
-    @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String addApplication(@RequestParam(value="description") String description, @RequestParam(value="name") String name, @RequestParam(value="redirect_uri") String redirectUrl, @RequestParam(value="author", defaultValue = "none") String authorName, @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
+    @RequestMapping(value = "/oauth/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String addAplicacao(@RequestParam(value="description") String description, @RequestParam(value="name") String name, @RequestParam(value="redirect_uri") String redirectUrl, @RequestParam(value="author", defaultValue = "none") String authorName, @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
             JsonObject jObj = new JsonObject();
@@ -100,47 +83,69 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class).toString();
     }
 
-    /*
-    @RequestMapping(value = "/remetente/{app}/adicionar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement adicionarRemetente(@PathVariable("app") Aplicacao app,
-                                          @RequestParam(value="nome") String nomeRemetente,
-                                          @RequestParam(value="access_token") String accessToken) {
+    //exemplo GET: http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715746?access_token=
+    @RequestMapping(value = "/oauth/viewaplicacao/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String viewAplicacao(@PathVariable("app") Aplicacao app, @RequestParam(value="access_token") String accessToken) {
 
-        //qual o método para confirmar se o access_token recebido é válido ou não?
+        if (app == null) {
+            return jObjInvalidAppError.toString();
+        }
 
-        return view(Remetente.createRemetente(app, nomeRemetente), RemetenteAdapter.class);
+        if (!app.isValidAccessToken(accessToken)) {
+            return jObjInvalidTokenError.toString();
+        }
+
+        return view(app, AplicacaoAdapter.class).toString();
     }
-    */
-
-    /*
-    @RequestMapping(value = "/restURL")
-    public String serveRest(@RequestBody String body, @RequestHeader HttpHeaders headers) {
-        etc...
-    }*/
 
 
-    @RequestMapping(value = "/remetente/{app}/adicionar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement adicionarRemetente(@PathVariable("app") Aplicacao app, @RequestParam(value="nome") String nomeRemetente) {
+    // Adicionar remetente
+
+    //exemplo pedido POST: http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addremetente?name=pessoa2&access_token=
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/addremetente", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addRemetente(@PathVariable("app") Aplicacao app,
+                                    @RequestParam(value="name") String nomeRemetente,
+                                    @RequestParam(value="access_token") String accessToken) {
+
+        if (app == null) {
+            return jObjInvalidAppError;
+        }
+
+        if (!app.isValidAccessToken(accessToken)) {
+            return jObjInvalidTokenError;
+        }
 
         Remetente remetente = Remetente.createRemetente(app, nomeRemetente);
+        return view(remetente, RemetenteAdapter.class);
+    }
+    
+    //exemplo pedido GET: http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/listremetentes?access_token=
+    @RequestMapping(value = "/{app}/listremetentes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listRemetentes(@PathVariable("app") Aplicacao app, @RequestParam(value="access_token") String accessToken) {
 
-        //Nota: vou mais tarde inserir este código no método RemetenteAdapter.view():
+        if (app == null) {
+            return jObjInvalidAppError;
+        }
+
+        if (!app.isValidAccessToken(accessToken)) {
+            return jObjInvalidTokenError;
+        }
+
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("remetenteId", remetente.getExternalId());
-        jObj.addProperty("name", remetente.getNome());
-        jObj.addProperty("appID", remetente.getAplicacao().getExternalId());
+        jObj.addProperty("aplicacao", app.getName());
+
+        String names = "";
+        for (Remetente remetente : app.getRemetentesSet()) {
+            names = names + ", " + remetente.getNome();
+        }
+        jObj.addProperty("remetentes", names);
+
         return jObj;
     }
 
-    @RequestMapping(value = "/remetente/{app}/listar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement listarRemetentes(@PathVariable("app") Aplicacao app) {
 
-        JsonObject jObj = new JsonObject();
-        jObj.addProperty("appId", app.getExternalId());
-        jObj.addProperty("remetentes", app.getRemetentesSet().toString());
-        return jObj;
-    }
-
+    // IGNORAR (são apenas testes):
 
     @RequestMapping(value = "/update/{app}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateAplic(@PathVariable("app") Aplicacao app, JsonElement json) {
@@ -190,7 +195,16 @@ public class AplicacaoResource extends BennuRestResource {
             return "non-existing user name";
     }
 
+
 }
+
+    /*
+    @RequestMapping(value = "/restURL")
+    public String serveRest(@RequestBody String body, @RequestHeader HttpHeaders headers) {
+        etc...
+    }*/
+
+
 
     /*
     @ResponseBody
