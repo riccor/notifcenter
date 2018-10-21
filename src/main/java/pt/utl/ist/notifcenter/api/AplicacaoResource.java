@@ -24,25 +24,7 @@ import org.fenixedu.bennu.core.domain.User;
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api")
 public class AplicacaoResource extends BennuRestResource {
 
-    final static boolean isAccessTokenRequired = false;
-
-    static JsonObject jObjInvalidTokenError;
-    static JsonObject jObjInvalidAppError;
-    static JsonObject jObjInvalidAppNameError;
-    
-    static {
-        jObjInvalidTokenError = new JsonObject();
-        jObjInvalidTokenError.addProperty("error", "invalidAccessToken");
-        jObjInvalidTokenError.addProperty("error_description", "Invalid access token.");
-
-        jObjInvalidAppError = new JsonObject();
-        jObjInvalidAppError.addProperty("error", "invalidApp");
-        jObjInvalidAppError.addProperty("error_description", "Invalid application ID.");
-
-        jObjInvalidAppNameError = new JsonObject();
-        jObjInvalidAppNameError.addProperty("error", "applicationNameAlreadyRegistered");
-        jObjInvalidAppNameError.addProperty("error_description", "Such application name is already registered.");
-    }
+    final static boolean isAccessTokenRequired = true;
 
     /*
     Numa API REST, neste caso o resource é aplicação, e queremos adicionar
@@ -61,6 +43,11 @@ public class AplicacaoResource extends BennuRestResource {
     O que fazer: orientar a API ao recurso.
     */
 
+    @RequestMapping(value = "/invalidaccesstoken", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement invalidAccessToken() {
+        return ErrorsAndWarnings.INVALID_ACCESS_TOKEN_ERROR.toJson();
+    }
+
     //Adicionar aplicacao
 
     //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security //CSRFToken token = new CSRFToken("awd");
@@ -74,8 +61,10 @@ public class AplicacaoResource extends BennuRestResource {
                                @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
-           return jObjInvalidAppNameError.toString();
+           return ErrorsAndWarnings.INVALID_APPNAME_ERROR.toJson().toString();
         }
+
+        ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
 
         Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
         return view(app, AplicacaoAdapter.class).toString();
@@ -87,11 +76,11 @@ public class AplicacaoResource extends BennuRestResource {
                                 @RequestParam(value="access_token", required = isAccessTokenRequired) String accessToken) {
 
         if (app == null) {
-            return jObjInvalidAppError.toString();
+            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
         }
 
         if (isAccessTokenRequired && !app.isValidAccessToken(accessToken)) {
-            return jObjInvalidTokenError.toString();
+            return ErrorsAndWarnings.INVALID_ACCESS_TOKEN_ERROR.toJson().toString();
         }
 
         return view(app, AplicacaoAdapter.class).toString();
@@ -108,11 +97,11 @@ public class AplicacaoResource extends BennuRestResource {
                                     @RequestParam(value="access_token", required = isAccessTokenRequired) String accessToken) {
 
         if (app == null) {
-            return jObjInvalidAppError;
+            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
         }
 
         if (isAccessTokenRequired && !app.isValidAccessToken(accessToken)) {
-            return jObjInvalidTokenError;
+            return ErrorsAndWarnings.INVALID_ACCESS_TOKEN_ERROR.toJson();
         }
 
         Remetente remetente = Remetente.createRemetente(app, nomeRemetente);
@@ -125,11 +114,11 @@ public class AplicacaoResource extends BennuRestResource {
                                       @RequestParam(value="access_token", required = isAccessTokenRequired) String accessToken) {
 
         if (app == null) {
-            return jObjInvalidAppError;
+            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
         }
 
         if (isAccessTokenRequired && !app.isValidAccessToken(accessToken)) {
-            return jObjInvalidTokenError;
+            return ErrorsAndWarnings.INVALID_ACCESS_TOKEN_ERROR.toJson();
         }
 
         JsonObject jObj = new JsonObject();
