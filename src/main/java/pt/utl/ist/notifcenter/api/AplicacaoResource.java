@@ -1,3 +1,10 @@
+// Pedidos disponíveis:
+//POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
+//GET http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715746?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
+//POST http://localhost:8080/notifcenter/oauth/refresh_token?client_id=281736969715746&client_secret=HaEPQ/D6JhIUltRl4MiEvhKIQR52cJuOhQHlCey0ZC/uX8le/LftpRkN9M/4SjslzO6RqRyrYS03QifOLFY%2BsA==&refresh_token=NTYzMTYwNDA2ODE4ODIwOjY3OGI2MTRhOGViYWI2ZDQyYzljZDEwYWJlYTdmNzM4OWMyZTZkN2U5MTgyNjlkODFmMzk1N2QxNWIzMjhlMDM4MWNmZWZlNDBjY2U0M2I1ZWE5ZDNlNmI1Yjc4YWY3NmU5OWQ3MjU0YjIwYjRkNDE3YTVmZDFiNzQ4ODM3YWNk&grant_type=refresh_token
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
+//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/listremetentes?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
+
 package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonElement;
@@ -5,9 +12,12 @@ import com.google.gson.JsonObject;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
+//import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.core.security.SkipCSRF;
+import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
@@ -15,6 +25,7 @@ import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
 import pt.utl.ist.notifcenter.api.json.ExemploIdentidadeAdapter;
 import pt.utl.ist.notifcenter.api.json.RemetenteAdapter;
 import pt.utl.ist.notifcenter.domain.*;
+import pt.utl.ist.notifcenter.security.SkipAccessTokenValidation;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
 import org.fenixedu.bennu.core.domain.User;
@@ -23,8 +34,6 @@ import org.fenixedu.bennu.core.domain.User;
 @RequestMapping("/apiaplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api")
 public class AplicacaoResource extends BennuRestResource {
-
-    final static boolean isAccessTokenRequired = true;
 
     /*
     Numa API REST, neste caso o resource é aplicação, e queremos adicionar
@@ -43,18 +52,15 @@ public class AplicacaoResource extends BennuRestResource {
     O que fazer: orientar a API ao recurso.
     */
 
-    @RequestMapping(value = "/invalidaccesstoken", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement invalidAccessToken() {
-        return ErrorsAndWarnings.INVALID_ACCESS_TOKEN_ERROR.toJson();
-    }
 
     //Adicionar aplicacao
 
     //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security //CSRFToken token = new CSRFToken("awd");
     //exemplo de pedido: http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_2&redirect_uri=http://app2_site.com/codedescription=descricao_app2
     @SkipCSRF
+    @SkipAccessTokenValidation //diz ao método preHandler em "NotifcenterInterceptor.java" para aceitar pedidos sem access_token
     @RequestMapping(value = "/oauth/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String addAplicacao(@RequestParam(value="description") String description, 
+    public String addAplicacao(@RequestParam(value="description") String description,
                                @RequestParam(value="name") String name, 
                                @RequestParam(value="redirect_uri") String redirectUrl, 
                                @RequestParam(value="author", defaultValue = "none") String authorName, 
@@ -64,25 +70,18 @@ public class AplicacaoResource extends BennuRestResource {
            return ErrorsAndWarnings.INVALID_APPNAME_ERROR.toJson().toString();
         }
 
-        ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
-
         Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
         return view(app, AplicacaoAdapter.class).toString();
     }
 
     //exemplo GET: http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715746?access_token=
     @RequestMapping(value = "/oauth/viewaplicacao/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String viewAplicacao(@PathVariable("app") Aplicacao app,
-                                @RequestParam(value="access_token", required = isAccessTokenRequired) String accessToken) {
+    public String viewAplicacao(@PathVariable("app") Aplicacao app) {
 
         if (app == null) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
         }
-
-        if (isAccessTokenRequired && !app.isValidAccessToken(accessToken)) {
-            return ErrorsAndWarnings.INVALID_ACCESS_TOKEN_ERROR.toJson().toString();
-        }
-
+        
         return view(app, AplicacaoAdapter.class).toString();
     }
 
@@ -92,16 +91,10 @@ public class AplicacaoResource extends BennuRestResource {
     //exemplo pedido POST: http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addremetente?name=pessoa2&access_token=
     @SkipCSRF
     @RequestMapping(value = "/{app}/addremetente", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addRemetente(@PathVariable("app") Aplicacao app,
-                                    @RequestParam(value="name") String nomeRemetente,
-                                    @RequestParam(value="access_token", required = isAccessTokenRequired) String accessToken) {
+    public JsonElement addRemetente(@PathVariable("app") Aplicacao app, @RequestParam(value="name") String nomeRemetente) {
 
         if (app == null) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
-        }
-
-        if (isAccessTokenRequired && !app.isValidAccessToken(accessToken)) {
-            return ErrorsAndWarnings.INVALID_ACCESS_TOKEN_ERROR.toJson();
         }
 
         Remetente remetente = Remetente.createRemetente(app, nomeRemetente);
@@ -110,15 +103,10 @@ public class AplicacaoResource extends BennuRestResource {
     
     //exemplo pedido GET: http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/listremetentes?access_token=
     @RequestMapping(value = "/{app}/listremetentes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement listRemetentes(@PathVariable("app") Aplicacao app,
-                                      @RequestParam(value="access_token", required = isAccessTokenRequired) String accessToken) {
+    public JsonElement listRemetentes(@PathVariable("app") Aplicacao app) {
 
         if (app == null) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
-        }
-
-        if (isAccessTokenRequired && !app.isValidAccessToken(accessToken)) {
-            return ErrorsAndWarnings.INVALID_ACCESS_TOKEN_ERROR.toJson();
         }
 
         JsonObject jObj = new JsonObject();
@@ -194,8 +182,6 @@ public class AplicacaoResource extends BennuRestResource {
         etc...
     }*/
 
-
-
     /*
     @ResponseBody
     @RequestMapping(value = urlPattern , method = RequestMethod.POST)
@@ -221,9 +207,3 @@ public class AplicacaoResource extends BennuRestResource {
     }
     */
 
-    /*@ResponseBody
-    @RequestMapping(value = "test2", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement test2() {
-        Aplicacao app = Aplicacao.createAplicacao("app test name");
-        return view(app, AplicacaoAdapter.class);
-    }*/

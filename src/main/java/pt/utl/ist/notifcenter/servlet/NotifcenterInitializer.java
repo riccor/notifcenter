@@ -1,7 +1,9 @@
 package pt.utl.ist.notifcenter.servlet;
 
+import org.fenixedu.bennu.oauth.domain.ExternalApplicationScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.domain.Aplicacao;
 import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 

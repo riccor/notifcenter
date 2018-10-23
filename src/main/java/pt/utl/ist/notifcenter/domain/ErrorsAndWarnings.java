@@ -5,11 +5,11 @@ import com.google.gson.JsonObject;
 
 public enum ErrorsAndWarnings {
 
-    INVALID_ACCESS_TOKEN_ERROR ("invalidAccessToken", "Invalid access token."),
     INVALID_APP_ERROR ("invalidApp", "Invalid application ID."),
     INVALID_APPNAME_ERROR ("applicationNameAlreadyRegistered", "Such application name is already registered.");
 
     //add new errors/warnings above this line
+    //INVALID_ACCESS_TOKEN_ERROR ("invalidAccessToken", "Invalid access token.")
 
     private final String codeId;
     private final String details;
@@ -21,8 +21,8 @@ public enum ErrorsAndWarnings {
 
     public JsonElement toJson() {
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("error", INVALID_ACCESS_TOKEN_ERROR.codeId);
-        jObj.addProperty("error_description", INVALID_ACCESS_TOKEN_ERROR.details);
+        jObj.addProperty("error", this.codeId);
+        jObj.addProperty("error_description", this.details);
         return jObj;
     }
 

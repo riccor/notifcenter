@@ -104,27 +104,4 @@ public class Aplicacao extends Aplicacao_Base {
         }
     }
 
-
-    //Nota: a classe Aplicacao estende ExternalApplication, portanto:
-    public boolean isValidAccessToken(final String accessToken) {
-        for (ApplicationUserAuthorization uu : this.getApplicationUserAuthorizationSet()) {
-            for (ApplicationUserSession u : uu.getSessionSet()) {
-                if (u.isAccessTokenValid() && u.matchesAccessToken(accessToken)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    //Nota: Usaria isto se a classe Aplicacao fosse um extend de ServiceApplication:
-    static boolean isValidAccessToken2(final ServiceApplication serviceApp, final String accessToken) {
-        for (ServiceApplicationAuthorization u : serviceApp.getServiceAuthorizationSet()) {
-            if (u.matchesAccessToken(accessToken)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }
