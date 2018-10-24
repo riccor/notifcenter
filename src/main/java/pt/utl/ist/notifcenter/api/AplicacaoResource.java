@@ -57,7 +57,7 @@ public class AplicacaoResource extends BennuRestResource {
 
     //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security //CSRFToken token = new CSRFToken("awd");
     //exemplo de pedido: http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_2&redirect_uri=http://app2_site.com/codedescription=descricao_app2
-    @SkipCSRF
+    //SkipCSRF - INDIFERENTE USAR ISTO DEVIDO AO MEU INTERCEPTOR
     @SkipAccessTokenValidation //diz ao método preHandler em "NotifcenterInterceptor.java" para aceitar pedidos sem access_token
     @RequestMapping(value = "/oauth/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addAplicacao(@RequestParam(value="description") String description,
@@ -89,7 +89,7 @@ public class AplicacaoResource extends BennuRestResource {
     // Adicionar remetente
 
     //exemplo pedido POST: http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addremetente?name=pessoa2&access_token=
-    @SkipCSRF
+    //SkipCSRF - INDIFERENTE USAR ISTO DEVIDO AO MEU INTERCEPTOR
     @RequestMapping(value = "/{app}/addremetente", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addRemetente(@PathVariable("app") Aplicacao app, @RequestParam(value="name") String nomeRemetente) {
 
@@ -122,8 +122,14 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
-
     // IGNORAR (são apenas testes):
+
+    @RequestMapping(value = "test4", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String test4() {
+        String t4 = "test4";
+        return t4;
+    }
+
 
     @RequestMapping(value = "/update/{app}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateAplic(@PathVariable("app") Aplicacao app, JsonElement json) {
@@ -135,11 +141,7 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class);
     }
 
-    @RequestMapping(value = "test4", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String test4() {
-        String t4 = "test4";
-        return t4;
-    }
+
 
     @RequestMapping("/greeting")
     public Greeting greeting(@RequestParam(value="name", defaultValue="oi!") String name) {
@@ -175,6 +177,11 @@ public class AplicacaoResource extends BennuRestResource {
 
 
 }
+
+//core -> CSRFApiProtectionFilter nao chamado #1 #2 #3
+//spring -> CSRFInterceptor nao chamado #7 #8 #9 //POR CAUSA DE ESTAR OVERRIDDEN PELO MEU INTERCEPTOR
+//core -> CSRFFeature nao chamado (e.g. test4 nao tem a anotacao @skipCSRF e devia ser chamado) #5
+//oauth -> BennuOAuthFeature
 
     /*
     @RequestMapping(value = "/restURL")

@@ -3,6 +3,7 @@ package pt.utl.ist.notifcenter.security;
 import com.google.common.base.Strings;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.security.Authenticate;
+import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.oauth.domain.ApplicationUserSession;
 import org.fenixedu.bennu.oauth.domain.ExternalApplication;
 import org.fenixedu.bennu.oauth.domain.ExternalApplicationScope;
@@ -17,7 +18,9 @@ import pt.utl.ist.notifcenter.domain.Aplicacao;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.ResourceInfo;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
@@ -35,6 +38,20 @@ public class NotifcenterInterceptor implements HandlerInterceptor {
     @Override public void afterCompletion( HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 
     }
+
+    /*
+    public void after(){
+        ResourceInfo resourceInfo;
+        resourceInfo.getResourceMethod()
+        OAuthEndpoint endpoint;
+        endpoint.
+        System.out.println("#11 -> + "resourceInfo.getResourceMethod().toString() + "| endpoint: " + endpoint.value());
+
+
+    }
+    */
+
+
 
     //Importado de https://github.com/FenixEdu/bennu/blob/master/bennu-oauth/src/main/java/org/fenixedu/bennu/oauth/jaxrs/BennuOAuthAuthorizationFilter.java
     private Optional<ApplicationUserSession> extractUserSession(String accessToken) {
@@ -121,6 +138,8 @@ public class NotifcenterInterceptor implements HandlerInterceptor {
 
                 Authenticate.mock(foundUser, "OAuth Access Token");
             }
+
+
         }
 
         return true;

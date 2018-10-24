@@ -23,6 +23,8 @@ public class NotifcenterInitializer implements ServletContextListener {
         String id = SistemaNotificacoes.getInstance().getExternalId();
         System.out.println("################################################# SistemaNotificacoes external id:" + id);
 
+        //System.out.println("#1");
+
         //carregar cache de Aplicacoes (usada para pesquisa rápida de Aplicacoes por nome):
         Aplicacao.loadCacheAplicacoes();
     }
