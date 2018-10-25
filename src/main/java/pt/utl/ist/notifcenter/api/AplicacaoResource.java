@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
 //import org.fenixedu.bennu.core.security.SkipCSRF;
+import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
@@ -54,8 +55,8 @@ public class AplicacaoResource extends BennuRestResource {
 
     //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security //CSRFToken token = new CSRFToken("awd");
     //exemplo de pedido: http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_2&redirect_uri=http://app2_site.com/codedescription=descricao_app2
-    //SkipCSRF - INDIFERENTE USAR ISTO DEVIDO AO MEU INTERCEPTOR
-    @SkipAccessTokenValidation //diz ao método preHandler em "NotifcenterInterceptor.java" para aceitar pedidos sem access_token
+    //@SkipAccessTokenValidation //diz ao método preHandler em "NotifcenterInterceptor.java" para aceitar pedidos sem access_token
+    @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
     @RequestMapping(value = "/oauth/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addAplicacao(@RequestParam(value="description") String description,
                                @RequestParam(value="name") String name, 
@@ -86,7 +87,7 @@ public class AplicacaoResource extends BennuRestResource {
     // Adicionar remetente
 
     //exemplo pedido POST: http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addremetente?name=pessoa2&access_token=
-    //SkipCSRF - INDIFERENTE USAR ISTO DEVIDO AO MEU INTERCEPTOR
+    @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
     @RequestMapping(value = "/{app}/addremetente", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addRemetente(@PathVariable("app") Aplicacao app, @RequestParam(value="name") String nomeRemetente) {
 
@@ -117,6 +118,8 @@ public class AplicacaoResource extends BennuRestResource {
 
         return jObj;
     }
+
+
 
 
     // IGNORAR (são apenas testes):
