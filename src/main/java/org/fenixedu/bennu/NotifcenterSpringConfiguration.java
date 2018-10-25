@@ -13,15 +13,17 @@ import pt.utl.ist.notifcenter.security.NotifcenterInterceptor;
 //Este procura recursos em ../WEB-INF/resources/[notifcenter e mytest]/Resources.properties
 //para o método "addInterceptors" funcionar, adicionei "extends WebMvcConfigurerAdapter"
 @BennuSpringModule(basePackages = "pt.utl.ist.notifcenter", bundles = {"NotifcenterResources", "MyTestResources"})
-public class NotifcenterSpringConfiguration extends WebMvcConfigurationSupport {
+public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport*/ {
 
     // Email LC 3-10-2018:
     public static final String BUNDLE = "resources.NotifcenterResources";
 
+    /*
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new NotifcenterInterceptor());
     }
+    */
 
     @ConfigurationManager(description = "Notifcenter Configuration")
     public interface ConfigurationProperties {

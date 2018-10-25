@@ -21,6 +21,7 @@ public class NotifcenterInitializer implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(NotifcenterInitializer.class);
 
+    /*
     //My scopes:
     private static final Locale enUS = Locale.forLanguageTag("en-US");
     private static final String[] scopeKeys = {"scope1", "scope2", "scope3"};
@@ -39,7 +40,7 @@ public class NotifcenterInitializer implements ServletContextListener {
                 eas.setBennu(FenixFramework.getDomainRoot().getBennu());
             }
         }
-    }
+    }*/
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
@@ -51,7 +52,7 @@ public class NotifcenterInitializer implements ServletContextListener {
         Aplicacao.loadCacheAplicacoes();
 
         //carregar scopes:
-        bootUpMyScopes();
+        //bootUpMyScopes();
     }
 
     @Override
