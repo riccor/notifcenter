@@ -8,23 +8,16 @@ import org.fenixedu.bennu.oauth.domain.ApplicationUserSession;
 import org.fenixedu.bennu.oauth.domain.ExternalApplication;
 import org.fenixedu.bennu.oauth.domain.ExternalApplicationScope;
 import org.fenixedu.bennu.oauth.util.OAuthUtils;
-import org.fenixedu.commons.i18n.LocalizedString;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.FenixFramework;
-import pt.utl.ist.notifcenter.domain.Aplicacao;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.container.ResourceInfo;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
-import java.util.Set;
 
 public class NotifcenterInterceptor implements HandlerInterceptor {
 
@@ -38,20 +31,6 @@ public class NotifcenterInterceptor implements HandlerInterceptor {
     @Override public void afterCompletion( HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 
     }
-
-    /*
-    public void after(){
-        ResourceInfo resourceInfo;
-        resourceInfo.getResourceMethod()
-        OAuthEndpoint endpoint;
-        endpoint.
-        System.out.println("#11 -> + "resourceInfo.getResourceMethod().toString() + "| endpoint: " + endpoint.value());
-
-
-    }
-    */
-
-
 
     //Importado de https://github.com/FenixEdu/bennu/blob/master/bennu-oauth/src/main/java/org/fenixedu/bennu/oauth/jaxrs/BennuOAuthAuthorizationFilter.java
     private Optional<ApplicationUserSession> extractUserSession(String accessToken) {
@@ -112,12 +91,21 @@ public class NotifcenterInterceptor implements HandlerInterceptor {
                     return false;
                 }
 
-                /*
-                if (!app.getScopesSet().contains(scope.get())) {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Application doesn't have permissions to this endpoint!");
-                    return false;
+                //My scopes:
+                if (doesHandlerHasAnnotation(handler, OAuthEndpoint.class)) {
+                    final OAuthEndpoint endpoint = ((HandlerMethod) handler).getMethod().getAnnotation(OAuthEndpoint.class);
+                    Optional<ExternalApplicationScope> scope = ExternalApplicationScope.forKey(endpoint.value());
+
+                    if (scope.isPresent()) {
+                        if (!app.getScopesSet().contains(scope.get())) {
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Application doesn't have scope permissions to this endpoint!");
+                            return false;
+                        }
+                    }
+                    else{
+                        System.out.println("WARNING: Scope '" + endpoint.value() + "' on handler method '" + ((HandlerMethod) handler).getMethod().toString() + "' is not registered in Bennu!");
+                    }
                 }
-                */
 
                 if (!appUserSession.matchesAccessToken(accessToken)) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Access token doesn't match!");

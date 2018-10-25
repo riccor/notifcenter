@@ -1,17 +1,17 @@
 package pt.utl.ist.notifcenter.domain;
 
 import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
-import org.fenixedu.bennu.oauth.domain.ApplicationUserAuthorization;
-import org.fenixedu.bennu.oauth.domain.ApplicationUserSession;
-import org.fenixedu.bennu.oauth.domain.ServiceApplication;
-import org.fenixedu.bennu.oauth.domain.ServiceApplicationAuthorization;
+import org.fenixedu.bennu.oauth.domain.*;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-//import pt.ist.fenixframework.consistencyPredicates.ConsistencyPredicate;
+//TEST:
+//List<ExternalApplicationScope> mainList = new ArrayList<>(FenixFramework.getDomainRoot().getBennu().getScopesSet());
+//app.updateAplicacaoScopes(mainList);
 
 public class Aplicacao extends Aplicacao_Base {
 
@@ -60,7 +60,13 @@ public class Aplicacao extends Aplicacao_Base {
         this.setName(nome);
         return this;
     }
-    
+
+    @Atomic
+    public Aplicacao updateAplicacaoScopes(List<ExternalApplicationScope> newScopes) {
+        this.setScopeList(newScopes);
+        return this;
+    }
+
     /*
     public void updatePermissions(AppPermissions permissions){
         this.setPermissoesAplicacao(permissions);

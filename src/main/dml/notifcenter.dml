@@ -136,7 +136,6 @@ class Contacto {
     String dadosContacto;
 }
 
-
 class ExemploIdentidade {
     String param1;
     String param2;

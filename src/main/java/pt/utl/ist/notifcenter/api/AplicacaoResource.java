@@ -9,15 +9,12 @@ package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
 //import org.fenixedu.bennu.core.security.SkipCSRF;
-import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
@@ -81,7 +78,7 @@ public class AplicacaoResource extends BennuRestResource {
         if (app == null) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
         }
-        
+
         return view(app, AplicacaoAdapter.class).toString();
     }
 
@@ -123,13 +120,19 @@ public class AplicacaoResource extends BennuRestResource {
 
 
     // IGNORAR (são apenas testes):
-
+    @OAuthEndpoint("scope2")
     @RequestMapping(value = "test4", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String test4() {
         String t4 = "test4";
         return t4;
     }
 
+    @OAuthEndpoint("scope3")
+    @RequestMapping(value = "test5", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String test5() {
+        String t4 = "test5";
+        return t4;
+    }
 
     @RequestMapping(value = "/update/{app}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateAplic(@PathVariable("app") Aplicacao app, JsonElement json) {
