@@ -146,13 +146,24 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
-    @RequestMapping(value = "viewaplicacaoclientsyncget", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "viewaplicacaoclientsync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement viewAplicacaoClientSync(@RequestParam(value = "app", defaultValue = "281736969715746") Aplicacao app) {
 
         String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/" + app.getExternalId() + "/?access_token=NTYz";
 
         return restSyncClient(HttpMethod.GET, uri, "none");
     }
+
+    @RequestMapping(value = "addaplicacaoclientsync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addAplicacaoClientSync(@RequestParam(value = "app") String app) {
+
+        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=" + app + "&redirect_uri=http://app7777_site.com/code&description=descricao_app7777";
+
+        return restSyncClient(HttpMethod.POST, uri, "none");
+    }
+
+
+
 
 
 
