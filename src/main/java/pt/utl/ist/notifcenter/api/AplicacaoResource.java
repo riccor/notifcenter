@@ -9,6 +9,9 @@ package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import jdk.nashorn.internal.parser.JSONParser;
+import org.codehaus.jackson.map.util.JSONPObject;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
 //import org.fenixedu.bennu.core.security.SkipCSRF;
@@ -16,8 +19,10 @@ import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
 
 import pt.utl.ist.notifcenter.api.json.ExemploIdentidadeAdapter;
@@ -27,6 +32,8 @@ import pt.utl.ist.notifcenter.security.SkipAccessTokenValidation;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
 import org.fenixedu.bennu.core.domain.User;
+
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
@@ -76,12 +83,13 @@ public class AplicacaoResource extends BennuRestResource {
     @RequestMapping(value = "/oauth/viewaplicacao/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String viewAplicacao(@PathVariable("app") Aplicacao app) {
 
-        if (app == null) {
+        if (app == null || !FenixFramework.isDomainObjectValid(app)) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
         }
 
         return view(app, AplicacaoAdapter.class).toString();
     }
+
 
 
     // Adicionar remetente
@@ -120,6 +128,32 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
+    //REST client
+
+    private static JsonElement restSyncClient(final HttpMethod method, final String uri, final String bodyParameters) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        //headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        //headers.setAccept(Arrays.asList(headerAcceptParameters));
+        HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(uri, method, entity, String.class);
+        //String result = restTemplate.getForObject(uri, String.class);
+        //System.out.println(result);
+
+        JsonParser parser = new JsonParser();
+        JsonObject jObj = parser.parse(response.getBody()).getAsJsonObject();
+        return jObj;
+    }
+
+    @RequestMapping(value = "viewaplicacaoclientsyncget", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement viewAplicacaoClientSync(@RequestParam(value = "app", defaultValue = "281736969715746") Aplicacao app) {
+
+        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/" + app.getExternalId() + "/?access_token=NTYz";
+
+        return restSyncClient(HttpMethod.GET, uri, "none");
+    }
+
 
 
     // IGNORAR (são apenas testes):
@@ -135,6 +169,11 @@ public class AplicacaoResource extends BennuRestResource {
     public String test5() {
         String t4 = "test5";
         return t4;
+    }
+
+    @RequestMapping(value = "/oauth/viewaplicacao2/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> viewAplicacao2(@PathVariable("app") Aplicacao app) {
+        return new ResponseEntity<String>(view(app, AplicacaoAdapter.class).toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/update/{app}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
