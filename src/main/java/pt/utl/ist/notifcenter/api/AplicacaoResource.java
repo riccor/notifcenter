@@ -20,11 +20,17 @@ import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
+import org.omg.CORBA.portable.ApplicationException;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.FenixFramework;
@@ -40,9 +46,7 @@ import org.fenixedu.bennu.core.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.*;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
@@ -188,6 +192,74 @@ public class AplicacaoResource extends BennuRestResource {
         return "ok!";
     }
 
+
+    @RequestMapping(value = "testingasync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public DeferredResult<String> value() throws ExecutionException, InterruptedException, TimeoutException {
+        AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+        String baseUrl = "https://api.github.com/users/riccor";
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        String value = "";
+
+        HttpEntity<String> entity = new HttpEntity<String>("parameters", requestHeaders);
+        final DeferredResult<String> result = new DeferredResult<>();
+        ListenableFuture<ResponseEntity<String>> futureEntity = restTemplate.getForEntity(baseUrl, String.class);
+
+        futureEntity.addCallback(new ListenableFutureCallback<ResponseEntity<String>>() {
+            @Override
+            public void onSuccess(ResponseEntity<String> result2) {
+                //System.out.println(result.getBody().getName());
+                result.setResult(result2.getBody());
+            }
+
+            @Override
+            public void onFailure(Throwable ex) {
+                result.setErrorResult(ex.getMessage());
+            }
+        });
+
+        return result;
+    }
+
+    /*
+    @GetMapping("/rest")
+    public String rest(int idx) {
+
+        AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+
+        List<ListenableFuture<ResponseEntity<String>>> responseFutures = new ArrayList<>();
+
+        String a[] = new String[]{"abc","klm","xyz","pqr"};
+
+        List<String> list1 = Arrays.asList(a);
+
+        String url = "url.com";
+
+        HttpHeaders headers = new HttpHeaders();
+        //headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        //headers.setAccept(Arrays.asList(headerAcceptParameters));
+        String bodyParameters = "nothingthismoment";
+        HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
+
+        for (String studentId : list1) {
+            ListenableFuture<ResponseEntity<String>> responseEntityFuture = restTemplate.exchange(url, RequestMethod.GET, entity, String.class);
+            responseFutures.add(responseEntityFuture);
+        }
+
+        // now all requests were send, so we can process the responses
+        List<String> listOfResponses = new ArrayList<>();
+        for (ListenableFuture<ResponseEntity<String>> future: responseFutures) {
+            try {
+                String respBody = future.get().getBody();
+                listOfResponses.add(respBody);
+            } catch (Exception ex) {
+                throw new ApplicationContextException("Exception while making Rest call.", ex);
+            }
+        }
+    }
+    */
+
+    /*
     @GetMapping("/async1")
     public DeferredResult<ResponseEntity<?>> handleReqDefResult(Model model) {
         System.out.println("Received async-deferredresult request");
@@ -205,7 +277,7 @@ public class AplicacaoResource extends BennuRestResource {
         System.out.println("servlet thread freed");
         return output;
     }
-    
+    */
     
     @RequestMapping(value = "async", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public DeferredResult<ResponseEntity<?>> handleReqDefResult() {
