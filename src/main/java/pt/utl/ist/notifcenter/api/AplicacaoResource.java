@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import jdk.nashorn.internal.parser.JSONParser;
+import org.apache.avro.data.Json;
 import org.codehaus.jackson.map.util.JSONPObject;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
@@ -20,8 +21,12 @@ import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
 
@@ -33,7 +38,11 @@ import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
 import org.fenixedu.bennu.core.domain.User;
 
-import java.util.Arrays;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ForkJoinPool;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
@@ -128,7 +137,7 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
-    //REST client
+    //SYNC client
 
     private static JsonElement restSyncClient(final HttpMethod method, final String uri, final String bodyParameters) {
         RestTemplate restTemplate = new RestTemplate();
@@ -165,9 +174,82 @@ public class AplicacaoResource extends BennuRestResource {
 
 
 
+    @RequestMapping(value = "viewaplicacaoclientasync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String viewAplicacaoClientASync(@RequestParam(value = "app", defaultValue = "281736969715746") Aplicacao app) /*throws Exception*/ {
+
+        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/" + app.getExternalId() + "/?access_token=NTYz";
+
+        //CompletableFuture<JsonElement> comp1 =
+        AsyncHTTPRequest.restASyncClient(HttpMethod.GET, uri, "none", HttpMethod.GET, app.getRedirectUrl());
+
+        //CompletableFuture.allOf(comp1).join();
+        //return comp1.get();
+
+        return "ok!";
+    }
+
+    @GetMapping("/async1")
+    public DeferredResult<ResponseEntity<?>> handleReqDefResult(Model model) {
+        System.out.println("Received async-deferredresult request");
+        DeferredResult<ResponseEntity<?>> output = new DeferredResult<>();
+
+        ForkJoinPool.commonPool().submit(() -> {
+            System.out.println("Processing in separate thread");
+            try {
+                Thread.sleep(6000);
+            } catch (InterruptedException e) {
+            }
+            output.setResult(ResponseEntity.ok("ok"));
+        });
+
+        System.out.println("servlet thread freed");
+        return output;
+    }
+    
+    
+    @RequestMapping(value = "async", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public DeferredResult<ResponseEntity<?>> handleReqDefResult() {
+        System.out.println("1. Received async-deferredresult request");
+        DeferredResult<ResponseEntity<?>> output = new DeferredResult<>();
+
+        //output.onCompletion(() -> System.out.println("4.2 Processing complete"));
+        output.onTimeout(() -> output.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
+
+        //ForkJoinPool.commonPool().submit(() -> {
+        CompletableFuture.supplyAsync(() -> {
+            System.out.println("3. Processing in separate thread");
+            //int result = 0;
+            try {
+                //result = 5*5*5*5*5;
+                Thread.sleep(3*1000);
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "ok!";
+            //output.setResult(ResponseEntity.ok("4.1 end! here is the result: " + result));
+        }).whenCompleteAsync((result, exc) -> output.setResult(ResponseEntity.ok(result)));
+
+        System.out.println("2. servlet thread freed");
+        return output;
+    }
+
+
+    //Notifcenter callback:
+
+    @RequestMapping(value="/notifcentercallback")
+    public String notifcenterCallback(HttpServletRequest request){
+        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
+        for (String name : parameterNames) {
+            System.out.println(name + "=" + request.getParameter(name));
+        }
+        return "param names: " + parameterNames.toString();
+    }
+
 
 
     // IGNORAR (são apenas testes):
+
     @OAuthEndpoint("scope2")
     @RequestMapping(value = "test4", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String test4() {
@@ -238,6 +320,14 @@ public class AplicacaoResource extends BennuRestResource {
 //spring -> CSRFInterceptor nao chamado #7 #8 #9 //POR CAUSA DE ESTAR OVERRIDDEN PELO MEU INTERCEPTOR
 //core -> CSRFFeature nao chamado (e.g. test4 nao tem a anotacao @skipCSRF e devia ser chamado) #5
 //oauth -> BennuOAuthFeature
+
+    /*
+    @RequestMapping(value = "notifcentercallback2", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String notifcenterCallback2(HttpServletRequest request) {
+        Map<String, String[]> map = request.getParameterMap();
+        return "ok! Here: " + Arrays.toString(map.entrySet().toArray());
+    }*/
+
 
     /*
     @RequestMapping(value = "/restURL")

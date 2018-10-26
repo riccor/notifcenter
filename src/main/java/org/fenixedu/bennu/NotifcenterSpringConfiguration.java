@@ -5,6 +5,7 @@ import org.fenixedu.commons.configuration.ConfigurationInvocationHandler;
 import org.fenixedu.commons.configuration.ConfigurationManager;
 import org.fenixedu.commons.configuration.ConfigurationProperty;
 //import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import pt.utl.ist.notifcenter.security.NotifcenterInterceptor;
@@ -12,6 +13,8 @@ import pt.utl.ist.notifcenter.security.NotifcenterInterceptor;
 
 //Este procura recursos em ../WEB-INF/resources/[notifcenter e mytest]/Resources.properties
 //para o método "addInterceptors" funcionar, adicionei "extends WebMvcConfigurerAdapter"
+
+@EnableAsync
 @BennuSpringModule(basePackages = "pt.utl.ist.notifcenter", bundles = {"NotifcenterResources", "MyTestResources"})
 public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport*/ {
 
