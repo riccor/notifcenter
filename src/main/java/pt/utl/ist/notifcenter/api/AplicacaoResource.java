@@ -26,6 +26,7 @@ import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
@@ -103,6 +104,23 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class).toString();
     }
 
+    @RequestMapping(value = "/oauth/viewaplicacaodelayed/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String viewAplicacaoDelayed(@PathVariable("app") Aplicacao app) {
+
+        try {
+            Thread.sleep(3000);
+        }
+        catch (InterruptedException e) { }
+
+        if (app == null || !FenixFramework.isDomainObjectValid(app)) {
+            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
+        }
+
+        return view(app, AplicacaoAdapter.class).toString();
+    }
+
+
+
 
 
     // Adicionar remetente
@@ -143,12 +161,17 @@ public class AplicacaoResource extends BennuRestResource {
 
     //SYNC client
 
-    private static JsonElement restSyncClient(final HttpMethod method, final String uri, final String bodyParameters) {
+    private static JsonElement restSyncClient(final HttpMethod method,
+                                              final String uri,
+                                              final MultiValueMap<String, String> headerParameters,
+                                              final MultiValueMap<String, String> bodyParameters) {
         RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
+        ///HttpHeaders headers = new HttpHeaders();
         //headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         //headers.setAccept(Arrays.asList(headerAcceptParameters));
-        HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
+
+        ///HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headerParameters);
 
         ResponseEntity<String> response = restTemplate.exchange(uri, method, entity, String.class);
         //String result = restTemplate.getForObject(uri, String.class);
@@ -156,166 +179,111 @@ public class AplicacaoResource extends BennuRestResource {
 
         JsonParser parser = new JsonParser();
         JsonObject jObj = parser.parse(response.getBody()).getAsJsonObject();
+
         return jObj;
     }
 
     @RequestMapping(value = "viewaplicacaoclientsync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement viewAplicacaoClientSync(@RequestParam(value = "app", defaultValue = "281736969715746") Aplicacao app) {
 
-        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/" + app.getExternalId() + "/?access_token=NTYz";
+        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacaodelayed/" + app.getExternalId() + "/?access_token=NTYz";
 
-        return restSyncClient(HttpMethod.GET, uri, "none");
-    }
+        final MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+        header.put("headerParam1", Arrays.asList("headerParamValue1")); //Collections.singletonList
 
-    @RequestMapping(value = "addaplicacaoclientsync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addAplicacaoClientSync(@RequestParam(value = "app") String app) {
+        final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.put("bodyParam1", Arrays.asList("bodyParamValue1")); //Collections.singletonList
 
-        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=" + app + "&redirect_uri=http://app7777_site.com/code&description=descricao_app7777";
-
-        return restSyncClient(HttpMethod.POST, uri, "none");
-    }
-
-
-
-
-    @RequestMapping(value = "viewaplicacaoclientasync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String viewAplicacaoClientASync(@RequestParam(value = "app", defaultValue = "281736969715746") Aplicacao app) /*throws Exception*/ {
-
-        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/" + app.getExternalId() + "/?access_token=NTYz";
-
-        //CompletableFuture<JsonElement> comp1 =
-        AsyncHTTPRequest.restASyncClient(HttpMethod.GET, uri, "none", HttpMethod.GET, app.getRedirectUrl());
-
-        //CompletableFuture.allOf(comp1).join();
-        //return comp1.get();
-
-        return "ok!";
+        return restSyncClient(HttpMethod.GET, uri, header, body);
     }
 
 
-    @RequestMapping(value = "testingasync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public DeferredResult<String> value() throws ExecutionException, InterruptedException, TimeoutException {
+    //ASYNC client
+
+    private static void restASyncClient(final HttpMethod method,
+                                        final String uri,
+                                        final MultiValueMap<String, String> headerParameters,
+                                        final MultiValueMap<String, String> bodyParameters,
+                                        final String callbackURL) {
         AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-        String baseUrl = "https://api.github.com/users/riccor";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        String value = "";
+        ///HttpHeaders headers = new HttpHeaders();
+        //headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        //headers.setAccept(Arrays.asList(headerAcceptParameters));
 
-        HttpEntity<String> entity = new HttpEntity<String>("parameters", requestHeaders);
-        final DeferredResult<String> result = new DeferredResult<>();
-        ListenableFuture<ResponseEntity<String>> futureEntity = restTemplate.getForEntity(baseUrl, String.class);
+        ///HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headerParameters);
+
+        ListenableFuture<ResponseEntity<String>> futureEntity = restTemplate.exchange(uri, method, entity, String.class);
 
         futureEntity.addCallback(new ListenableFutureCallback<ResponseEntity<String>>() {
             @Override
-            public void onSuccess(ResponseEntity<String> result2) {
-                //System.out.println(result.getBody().getName());
-                result.setResult(result2.getBody());
+            public void onSuccess(ResponseEntity<String> result) {
+                System.out.println(" ");
+                System.out.println("FINALLY GOT A RESPONSE:");
+                System.out.println("response status code: " + result.getStatusCode());
+                System.out.println("response header: " + result.getHeaders());
+                System.out.println("response body: " + result.getBody());
+                System.out.println(" ");
+
+                /////////////////////////////////////////////////////////////////////////
+                //think about this soon:
+                final MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+                header.put("header fwd", Arrays.asList(result.getHeaders().toString())); //Collections.singletonList
+
+                final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+                body.put("body fwd", Arrays.asList(result.getBody())); //Collections.singletonList
+
+                //"generate some code" simulation:
+                String queryParams = "?code=1223456789";
+
+                System.out.println(restSyncClient(HttpMethod.GET, callbackURL + queryParams, header, body).toString());
+
+                /////////////////////////////////////////////////////////////////////////
+
+                //ou fazer algo diferente aqui conforme o pretendido!
             }
 
             @Override
             public void onFailure(Throwable ex) {
-                result.setErrorResult(ex.getMessage());
+                System.out.println("erro no onFailure(): " + ex.getMessage());
             }
         });
-
-        return result;
     }
 
-    /*
-    @GetMapping("/rest")
-    public String rest(int idx) {
+    @RequestMapping(value = "viewaplicacaoclientasync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement viewAplicacaoClientASync(@RequestParam(value = "app", defaultValue = "281736969715746") Aplicacao app) {
 
-        AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacaodelayed/" + app.getExternalId() + "/?access_token=NTYz";
+        String callbackURL = "http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback";
 
-        List<ListenableFuture<ResponseEntity<String>>> responseFutures = new ArrayList<>();
+        final MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+        header.put("headerParam1", Arrays.asList("headerParamValue1")); //Collections.singletonList
 
-        String a[] = new String[]{"abc","klm","xyz","pqr"};
+        final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.put("bodyParam1", Arrays.asList("bodyParamValue1")); //Collections.singletonList
 
-        List<String> list1 = Arrays.asList(a);
+        restASyncClient(HttpMethod.GET, uri, header, body, callbackURL);
 
-        String url = "url.com";
-
-        HttpHeaders headers = new HttpHeaders();
-        //headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        //headers.setAccept(Arrays.asList(headerAcceptParameters));
-        String bodyParameters = "nothingthismoment";
-        HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
-
-        for (String studentId : list1) {
-            ListenableFuture<ResponseEntity<String>> responseEntityFuture = restTemplate.exchange(url, RequestMethod.GET, entity, String.class);
-            responseFutures.add(responseEntityFuture);
-        }
-
-        // now all requests were send, so we can process the responses
-        List<String> listOfResponses = new ArrayList<>();
-        for (ListenableFuture<ResponseEntity<String>> future: responseFutures) {
-            try {
-                String respBody = future.get().getBody();
-                listOfResponses.add(respBody);
-            } catch (Exception ex) {
-                throw new ApplicationContextException("Exception while making Rest call.", ex);
-            }
-        }
-    }
-    */
-
-    /*
-    @GetMapping("/async1")
-    public DeferredResult<ResponseEntity<?>> handleReqDefResult(Model model) {
-        System.out.println("Received async-deferredresult request");
-        DeferredResult<ResponseEntity<?>> output = new DeferredResult<>();
-
-        ForkJoinPool.commonPool().submit(() -> {
-            System.out.println("Processing in separate thread");
-            try {
-                Thread.sleep(6000);
-            } catch (InterruptedException e) {
-            }
-            output.setResult(ResponseEntity.ok("ok"));
-        });
-
-        System.out.println("servlet thread freed");
-        return output;
-    }
-    */
-    
-    @RequestMapping(value = "async", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public DeferredResult<ResponseEntity<?>> handleReqDefResult() {
-        System.out.println("1. Received async-deferredresult request");
-        DeferredResult<ResponseEntity<?>> output = new DeferredResult<>();
-
-        //output.onCompletion(() -> System.out.println("4.2 Processing complete"));
-        output.onTimeout(() -> output.setErrorResult(ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Request timeout occurred.")));
-
-        //ForkJoinPool.commonPool().submit(() -> {
-        CompletableFuture.supplyAsync(() -> {
-            System.out.println("3. Processing in separate thread");
-            //int result = 0;
-            try {
-                //result = 5*5*5*5*5;
-                Thread.sleep(3*1000);
-            }
-            catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return "ok!";
-            //output.setResult(ResponseEntity.ok("4.1 end! here is the result: " + result));
-        }).whenCompleteAsync((result, exc) -> output.setResult(ResponseEntity.ok(result)));
-
-        System.out.println("2. servlet thread freed");
-        return output;
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("info", "waiting/processing answer...");
+        return jObj;
     }
 
 
     //Notifcenter callback:
 
-    @RequestMapping(value="/notifcentercallback")
-    public String notifcenterCallback(HttpServletRequest request){
+    @RequestMapping(value = "notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement notifcenterCallback(HttpServletRequest request){
         List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("response", "elements are these:");
+
         for (String name : parameterNames) {
-            System.out.println(name + "=" + request.getParameter(name));
+            jObj.addProperty(name, request.getParameter(name));
+            //System.out.println(name + "=" + request.getParameter(name));
         }
-        return "param names: " + parameterNames.toString();
+
+        return jObj;
     }
 
 
