@@ -10,9 +10,6 @@ package pt.utl.ist.notifcenter.api;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import jdk.nashorn.internal.parser.JSONParser;
-import org.apache.avro.data.Json;
-import org.codehaus.jackson.map.util.JSONPObject;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
 //import org.fenixedu.bennu.core.security.SkipCSRF;
@@ -20,12 +17,7 @@ import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
-import org.omg.CORBA.portable.ApplicationException;
-import org.springframework.context.ApplicationContextException;
 import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -33,21 +25,18 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
 
 import pt.utl.ist.notifcenter.api.json.ExemploIdentidadeAdapter;
 import pt.utl.ist.notifcenter.api.json.RemetenteAdapter;
 import pt.utl.ist.notifcenter.domain.*;
-import pt.utl.ist.notifcenter.security.SkipAccessTokenValidation;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
 import org.fenixedu.bennu.core.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.concurrent.*;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
@@ -118,7 +107,6 @@ public class AplicacaoResource extends BennuRestResource {
 
         return view(app, AplicacaoAdapter.class).toString();
     }
-
 
 
 
@@ -273,7 +261,7 @@ public class AplicacaoResource extends BennuRestResource {
     //Notifcenter callback:
 
     @RequestMapping(value = "notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement notifcenterCallback(HttpServletRequest request){
+    public JsonElement notifcenterCallback(HttpServletRequest request) {
         List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
         JsonObject jObj = new JsonObject();
         jObj.addProperty("response", "elements are these:");
@@ -285,7 +273,6 @@ public class AplicacaoResource extends BennuRestResource {
 
         return jObj;
     }
-
 
 
     // IGNORAR (são apenas testes):
