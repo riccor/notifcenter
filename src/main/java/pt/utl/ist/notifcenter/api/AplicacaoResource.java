@@ -34,6 +34,7 @@ import org.fenixedu.bennu.core.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
@@ -116,7 +117,7 @@ public class AplicacaoResource extends BennuRestResource {
 
         JsonObject jObj = new JsonObject();
         jObj.addProperty("aplicacao", app.getName());
-        jObj.addProperty("remetentes", app.getRemetentesSet().toString());
+        jObj.addProperty("remetentes", app.getRemetentesSet().stream().map(Remetente::getNome).collect(Collectors.joining(",")));
         return jObj;
     }
 
@@ -309,3 +310,12 @@ public class AplicacaoResource extends BennuRestResource {
 //String callbackURL = "http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback";
 //String queryParams = "?code=1223456789";
 //HTTPClient.restSyncClient(HttpMethod.GET, callbackURL + queryParams, header, body);
+
+
+//TIPS:
+
+//print to console (nice ways):
+/*
+app.getRemetentesSet().forEach(System.out::println);
+System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).collect(Collectors.joining(",")));
+*/
