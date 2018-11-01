@@ -4,12 +4,12 @@
 //POST http://localhost:8080/notifcenter/oauth/refresh_token?client_id=281736969715746&client_secret=HaEPQ/D6JhIUltRl4MiEvhKIQR52cJuOhQHlCey0ZC/uX8le/LftpRkN9M/4SjslzO6RqRyrYS03QifOLFY%2BsA==&refresh_token=NTYzMTYwNDA2ODE4ODIwOjY3OGI2MTRhOGViYWI2ZDQyYzljZDEwYWJlYTdmNzM4OWMyZTZkN2U5MTgyNjlkODFmMzk1N2QxNWIzMjhlMDM4MWNmZWZlNDBjY2U0M2I1ZWE5ZDNlNmI1Yjc4YWY3NmU5OWQ3MjU0YjIwYjRkNDE3YTVmZDFiNzQ4ODM3YWNk&grant_type=refresh_token
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/listremetentes?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
+//http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback
 
 package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
 //import org.fenixedu.bennu.core.security.SkipCSRF;
@@ -20,11 +20,8 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.AsyncRestTemplate;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
 
@@ -93,23 +90,6 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class).toString();
     }
 
-    @RequestMapping(value = "/oauth/viewaplicacaodelayed/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String viewAplicacaoDelayed(@PathVariable("app") Aplicacao app) {
-
-        try {
-            Thread.sleep(3000);
-        }
-        catch (InterruptedException e) { }
-
-        if (app == null || !FenixFramework.isDomainObjectValid(app)) {
-            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
-        }
-
-        return view(app, AplicacaoAdapter.class).toString();
-    }
-
-
-
 
     // Adicionar remetente
 
@@ -136,129 +116,11 @@ public class AplicacaoResource extends BennuRestResource {
 
         JsonObject jObj = new JsonObject();
         jObj.addProperty("aplicacao", app.getName());
-
-        String names = "";
-        for (Remetente remetente : app.getRemetentesSet()) {
-            names = names + ", " + remetente.getNome();
-        }
-        jObj.addProperty("remetentes", names);
-
+        jObj.addProperty("remetentes", app.getRemetentesSet().toString());
         return jObj;
     }
 
-
-    //SYNC client
-
-    private static JsonElement restSyncClient(final HttpMethod method,
-                                              final String uri,
-                                              final MultiValueMap<String, String> headerParameters,
-                                              final MultiValueMap<String, String> bodyParameters) {
-        RestTemplate restTemplate = new RestTemplate();
-        ///HttpHeaders headers = new HttpHeaders();
-        //headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        //headers.setAccept(Arrays.asList(headerAcceptParameters));
-
-        ///HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headerParameters);
-
-        ResponseEntity<String> response = restTemplate.exchange(uri, method, entity, String.class);
-        //String result = restTemplate.getForObject(uri, String.class);
-        //System.out.println(result);
-
-        JsonParser parser = new JsonParser();
-        JsonObject jObj = parser.parse(response.getBody()).getAsJsonObject();
-
-        return jObj;
-    }
-
-    @RequestMapping(value = "viewaplicacaoclientsync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement viewAplicacaoClientSync(@RequestParam(value = "app", defaultValue = "281736969715746") Aplicacao app) {
-
-        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacaodelayed/" + app.getExternalId() + "/?access_token=NTYz";
-
-        final MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-        header.put("headerParam1", Arrays.asList("headerParamValue1")); //Collections.singletonList
-
-        final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.put("bodyParam1", Arrays.asList("bodyParamValue1")); //Collections.singletonList
-
-        return restSyncClient(HttpMethod.GET, uri, header, body);
-    }
-
-
-    //ASYNC client
-
-    private static void restASyncClient(final HttpMethod method,
-                                        final String uri,
-                                        final MultiValueMap<String, String> headerParameters,
-                                        final MultiValueMap<String, String> bodyParameters,
-                                        final String callbackURL) {
-        AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-        ///HttpHeaders headers = new HttpHeaders();
-        //headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        //headers.setAccept(Arrays.asList(headerAcceptParameters));
-
-        ///HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headerParameters);
-
-        ListenableFuture<ResponseEntity<String>> futureEntity = restTemplate.exchange(uri, method, entity, String.class);
-
-        futureEntity.addCallback(new ListenableFutureCallback<ResponseEntity<String>>() {
-            @Override
-            public void onSuccess(ResponseEntity<String> result) {
-                System.out.println(" ");
-                System.out.println("FINALLY GOT A RESPONSE:");
-                System.out.println("response status code: " + result.getStatusCode());
-                System.out.println("response header: " + result.getHeaders());
-                System.out.println("response body: " + result.getBody());
-                System.out.println(" ");
-
-                /////////////////////////////////////////////////////////////////////////
-                //think about this soon:
-                final MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-                header.put("header fwd", Arrays.asList(result.getHeaders().toString())); //Collections.singletonList
-
-                final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-                body.put("body fwd", Arrays.asList(result.getBody())); //Collections.singletonList
-
-                //"generate some code" simulation:
-                String queryParams = "?code=1223456789";
-
-                System.out.println(restSyncClient(HttpMethod.GET, callbackURL + queryParams, header, body).toString());
-
-                /////////////////////////////////////////////////////////////////////////
-
-                //ou fazer algo diferente aqui conforme o pretendido!
-            }
-
-            @Override
-            public void onFailure(Throwable ex) {
-                System.out.println("erro no onFailure(): " + ex.getMessage());
-            }
-        });
-    }
-
-    @RequestMapping(value = "viewaplicacaoclientasync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement viewAplicacaoClientASync(@RequestParam(value = "app", defaultValue = "281736969715746") Aplicacao app) {
-
-        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacaodelayed/" + app.getExternalId() + "/?access_token=NTYz";
-        String callbackURL = "http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback";
-
-        final MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-        header.put("headerParam1", Arrays.asList("headerParamValue1")); //Collections.singletonList
-
-        final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.put("bodyParam1", Arrays.asList("bodyParamValue1")); //Collections.singletonList
-
-        restASyncClient(HttpMethod.GET, uri, header, body, callbackURL);
-
-        JsonObject jObj = new JsonObject();
-        jObj.addProperty("info", "waiting/processing answer...");
-        return jObj;
-    }
-
-
-    //Notifcenter callback:
+    //Notifcenter callback
 
     @RequestMapping(value = "notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement notifcenterCallback(HttpServletRequest request) {
@@ -268,14 +130,70 @@ public class AplicacaoResource extends BennuRestResource {
 
         for (String name : parameterNames) {
             jObj.addProperty(name, request.getParameter(name));
-            //System.out.println(name + "=" + request.getParameter(name));
         }
 
         return jObj;
     }
 
 
-    // IGNORAR (são apenas testes):
+    // IGNORAR (HTTP client sync and async tests):
+
+    @RequestMapping(value = "/oauth/viewaplicacaodelayed/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String viewAplicacaoDelayed(@PathVariable("app") Aplicacao app) {
+
+        try {
+            Thread.sleep(3000);
+        }
+        catch (InterruptedException e) { }
+
+        if (app == null || !FenixFramework.isDomainObjectValid(app)) {
+            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
+        }
+
+        return view(app, AplicacaoAdapter.class).toString();
+    }
+
+
+    @RequestMapping(value = "viewaplicacaoclientsync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> viewAplicacaoClientSync(@RequestParam(value = "app", defaultValue = "281736969715746") Aplicacao app) {
+
+        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacaodelayed/" + app.getExternalId() + "/?access_token=NTYz";
+
+        final MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+        header.put("headerParam1", Arrays.asList("headerParamValue1")); //Collections.singletonList
+
+        final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.put("bodyParam1", Arrays.asList("bodyParamValue1")); //Collections.singletonList
+
+        return HTTPClient.restSyncClient(HttpMethod.GET, uri, header, body);
+    }
+
+
+    @RequestMapping(value = "viewaplicacaoclientasync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement viewAplicacaoClientASync(@RequestParam(value = "app", defaultValue = "281736969715746") Aplicacao app) {
+
+        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacaodelayed/" + app.getExternalId() + "/?access_token=NTYz";
+
+        final MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+        header.put("headerParam1", Arrays.asList("headerParamValue1")); //Collections.singletonList
+
+        final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.put("bodyParam1", Arrays.asList("bodyParamValue1")); //Collections.singletonList
+
+        DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+        deferredResult.setResultHandler((Object responseEntity) -> {
+            HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity);
+        });
+
+        HTTPClient.restASyncClient(HttpMethod.GET, uri, header, body, deferredResult);
+
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("info", "waiting/processing answer...");
+        return jObj;
+    }
+
+
+    // IGNORAR (outros testes):
 
     @OAuthEndpoint("scope2")
     @RequestMapping(value = "test4", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -387,3 +305,7 @@ public class AplicacaoResource extends BennuRestResource {
     }
     */
 
+//Notifcenter callback:
+//String callbackURL = "http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback";
+//String queryParams = "?code=1223456789";
+//HTTPClient.restSyncClient(HttpMethod.GET, callbackURL + queryParams, header, body);
