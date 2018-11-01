@@ -70,9 +70,9 @@ public class HTTPClient {
     public static void printResponseEntity(ResponseEntity<String> response) {
         System.out.println(" ");
         System.out.println("RESPONSE ENTITY:");
-        System.out.println("response status code: " + response.getStatusCode());
-        System.out.println("response header: " + response.getHeaders());
-        System.out.println("response body: " + response.getBody());
+        System.out.println("status code: " + response.getStatusCode());
+        System.out.println("header: " + response.getHeaders());
+        System.out.println("body: " + response.getBody());
         System.out.println(" ");
     }
 
