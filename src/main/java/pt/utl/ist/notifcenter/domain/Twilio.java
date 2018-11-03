@@ -27,8 +27,8 @@ public class Twilio extends Twilio_Base {
     //"config.properties"
     public static Twilio createTwilioFromFile(SistemaNotificacoes sistemaNotificacoes, final String filename) {
         Map<String, String> propertiesMap = new ConcurrentHashMap<>();
-        propertiesMap.putIfAbsent("accountSID", "null");
-        propertiesMap.putIfAbsent("authToken", "null");
+        propertiesMap.put("accountSID", "null");
+        propertiesMap.put("authToken", "null");
 
         LoadPropertiesFromFile(Twilio.class, filename, propertiesMap);
 
