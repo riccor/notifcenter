@@ -78,7 +78,7 @@ public class Twilio extends Twilio_Base {
             // get the property values
             for(Map.Entry<String, String> entry : propertiesMap.entrySet()) {
                 if (!entry.getKey().isEmpty()) {
-                    propertiesMap.put(entry.getValue(), prop.getProperty(entry.getKey()));
+                    propertiesMap.put(entry.getKey(), prop.getProperty(entry.getKey()));
                 }
             }
         }
