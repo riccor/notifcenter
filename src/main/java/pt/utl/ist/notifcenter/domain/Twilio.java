@@ -60,7 +60,13 @@ public class Twilio extends Twilio_Base {
         InputStream input = null;
 
         try {
+            //clazz.getResourceAsStream() - procura o resource no mesmo diretorio do ficheiro .class
+            //clazz.getClassLoader().getResourceAsStream() - procura no CLASSPATH
             input = clazz.getClassLoader().getResourceAsStream(filename);
+
+            System.out.println("clazz: " + clazz);
+            System.out.println("clazz.getClassLoader(): " + clazz.getClassLoader());
+
             if (input == null) {
                 System.out.println("Error: Unable to find file " + filename + "!");
                 return;
@@ -69,7 +75,7 @@ public class Twilio extends Twilio_Base {
             // load a properties file
             prop.load(input);
 
-            // get the property value and print it out
+            // get the property values
             for(Map.Entry<String, String> entry : propertiesMap.entrySet()) {
                 if (!entry.getValue().isEmpty()) {
                     propertiesMap.put(entry.getValue(), prop.getProperty(entry.getValue()));
