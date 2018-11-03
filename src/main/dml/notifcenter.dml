@@ -123,9 +123,8 @@ class Canal {
 
     // Assumo que isto também é um canal
     class Twilio extends Canal {
-        String SID;
-        String chaveApi;
-        String segredoApi;
+        String accountSID;
+        String authToken;
     }
 
 
