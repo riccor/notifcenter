@@ -10,6 +10,7 @@ package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
 //import org.fenixedu.bennu.core.security.SkipCSRF;
@@ -90,6 +91,28 @@ public class AplicacaoResource extends BennuRestResource {
 
         return view(app, AplicacaoAdapter.class).toString();
     }
+
+    @RequestMapping(value = "/twilio", method = RequestMethod.GET)
+    public String twilio() {
+        Twilio.createTwilio(SistemaNotificacoes.getInstance(), "some_sid", "some_auth_token");
+
+        String t = SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
+
+        return "emails dos canais: " + t;
+    }
+
+    @RequestMapping(value = "/twiliofile", method = RequestMethod.GET)
+    public String twiliofile() {
+
+        //opens file /channelscredentials/twilio.properties:
+        Twilio.createTwilioFromPropertiesFile(SistemaNotificacoes.getInstance(), "twilio");
+
+        String t = SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
+
+        return "emails dos canais: " + t;
+    }
+
+
 
 
     // Adicionar remetente

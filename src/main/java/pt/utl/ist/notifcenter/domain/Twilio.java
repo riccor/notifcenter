@@ -1,8 +1,8 @@
 package pt.utl.ist.notifcenter.domain;
 
+import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import pt.ist.fenixframework.Atomic;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -21,15 +21,19 @@ public class Twilio extends Twilio_Base {
         Twilio twilio = new Twilio(sistemaNotificacoes);
         twilio.setAccountSID(accountSID);
         twilio.setAuthToken(authToken);
+
+        //Debug
+        twilio.setEmail("example3@defaultemail.com");
+
         return twilio;
     }
 
-    //"config.properties"
-    public static Twilio createTwilioFromFile(SistemaNotificacoes sistemaNotificacoes, final String filename) {
+    public static Twilio createTwilioFromPropertiesFile(SistemaNotificacoes sistemaNotificacoes, final String file) {
         Map<String, String> propertiesMap = new ConcurrentHashMap<>();
         propertiesMap.put("accountSID", "null");
         propertiesMap.put("authToken", "null");
 
+        String filename = String.format(NotifcenterSpringConfiguration.getConfiguration().notifcenterChannelsCredentials(), file);
         LoadPropertiesFromFile(Twilio.class, filename, propertiesMap);
 
         if (!IsMapFilled(propertiesMap)) {
@@ -48,7 +52,7 @@ public class Twilio extends Twilio_Base {
                 return false;
             }
 
-            System.out.println("key = " + entry.getKey() + ", value = " + entry.getValue() + ";");
+            //System.out.println("key = " + entry.getKey() + ", value = " + entry.getValue() + ";");
         }
 
         return true;
@@ -64,8 +68,7 @@ public class Twilio extends Twilio_Base {
             //clazz.getClassLoader().getResourceAsStream() - procura no CLASSPATH
             input = clazz.getClassLoader().getResourceAsStream(filename);
 
-            System.out.println("clazz: " + clazz);
-            System.out.println("clazz.getClassLoader(): " + clazz.getClassLoader());
+            //System.out.println("clazz.getClassLoader().getResource(filename): " + clazz.getClassLoader().getResource(filename));
 
             if (input == null) {
                 System.out.println("Error: Unable to find file " + filename + "!");
@@ -78,11 +81,12 @@ public class Twilio extends Twilio_Base {
             // get the property values
             for(Map.Entry<String, String> entry : propertiesMap.entrySet()) {
                 if (!entry.getKey().isEmpty()) {
+                    //System.out.println("key: " + entry.getKey());
                     propertiesMap.put(entry.getKey(), prop.getProperty(entry.getKey()));
                 }
             }
         }
-        catch (IOException ex) {
+        catch (NullPointerException | IOException ex) {
             ex.printStackTrace();
         }
         finally {

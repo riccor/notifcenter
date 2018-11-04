@@ -5,10 +5,7 @@ import org.fenixedu.commons.configuration.ConfigurationInvocationHandler;
 import org.fenixedu.commons.configuration.ConfigurationManager;
 import org.fenixedu.commons.configuration.ConfigurationProperty;
 //import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import pt.utl.ist.notifcenter.security.NotifcenterInterceptor;
+
 //import org.fenixedu.commons.configuration.ConfigurationProperty;
 
 //Este procura recursos em ../WEB-INF/resources/[notifcenter e mytest]/Resources.properties
@@ -33,6 +30,9 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport
 
         @ConfigurationProperty(key = "notifcenter.url", defaultValue = "http://localhost:8080/notifcenter")
         public String notifcenterUrl();
+
+        @ConfigurationProperty(key = "notifcenter.channels.credentials", defaultValue = "channelscredentials/%s.properties")
+        public String notifcenterChannelsCredentials();
 
         //@ConfigurationProperty(key = "access.token.required", defaultValue = "true")
         //public String accessTokenRequired();
