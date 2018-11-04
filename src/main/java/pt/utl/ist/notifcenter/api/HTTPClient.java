@@ -1,8 +1,6 @@
 package pt.utl.ist.notifcenter.api;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
@@ -10,7 +8,54 @@ import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 public class HTTPClient {
+
+    public static String base64Encode(String token) {
+        return new String(Base64.getEncoder().encode(token.getBytes()));
+    }
+
+    public static String base64Decode(String encodedToken) {
+        return new String(Base64.getDecoder().decode(encodedToken), StandardCharsets.UTF_8);
+    }
+
+    public static HttpHeaders createAuthHeader(String username, String password){
+        return new HttpHeaders() {{
+            String auth = username + ":" + password;
+            set("Authorization", "Basic " + base64Encode(auth));
+        }};
+    }
+
+    //SYNC client
+
+    public static ResponseEntity<String> restSyncClientHeaders(final HttpMethod method,
+                                                              final String uri,
+                                                              final HttpHeaders headers,
+                                                              final MultiValueMap<String, String> bodyParameters) {
+        ///HttpHeaders headers = new HttpHeaders();
+        //headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        //headers.setAccept(Arrays.asList(headerAcceptParameters));
+
+        ///HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
+
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headers);
+        //instead of:
+        //HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headerParameters);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(uri, method, entity, String.class);
+        //String result = restTemplate.getForObject(uri, String.class);
+        //System.out.println(result);
+
+        //JsonParser parser = new JsonParser();
+        //JsonObject jObj = parser.parse(response.getBody()).getAsJsonObject();
+        //return jObj;
+
+        return response;
+    }
+
 
     //SYNC client
 
@@ -23,6 +68,7 @@ public class HTTPClient {
         //headers.setAccept(Arrays.asList(headerAcceptParameters));
 
         ///HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
+
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headerParameters);
 
         RestTemplate restTemplate = new RestTemplate();

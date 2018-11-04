@@ -92,6 +92,8 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class).toString();
     }
 
+    //TWILIO
+
     @RequestMapping(value = "/twilio", method = RequestMethod.GET)
     public String twilio() {
         Twilio.createTwilio(SistemaNotificacoes.getInstance(), "some_sid", "some_auth_token");
@@ -111,6 +113,22 @@ public class AplicacaoResource extends BennuRestResource {
 
         return "emails dos canais: " + t;
     }
+
+        @RequestMapping(value = "/twiliowhatsappsms", method = RequestMethod.GET)
+    public ResponseEntity<String> twilioWhatsappSMS(@RequestParam(value="message",
+            defaultValue = "mensagem teste do notifcenter 1 =D") String message) {
+
+        Twilio twilio = Twilio.createTwilioFromPropertiesFile(SistemaNotificacoes.getInstance(), "twilio");
+
+        ResponseEntity<String> responseEntity = twilio.sendWhatsAppSMS("whatsapp:+351961077271", "whatsapp:+14155238886", message);
+
+        if (responseEntity == null) {
+            return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.FORBIDDEN);
+        }
+
+        return responseEntity;
+    }
+
 
 
 
@@ -155,6 +173,8 @@ public class AplicacaoResource extends BennuRestResource {
         for (String name : parameterNames) {
             jObj.addProperty(name, request.getParameter(name));
         }
+
+        System.out.println(jObj.toString());
 
         return jObj;
     }

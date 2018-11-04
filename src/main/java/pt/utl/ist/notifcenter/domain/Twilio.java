@@ -1,12 +1,21 @@
 package pt.utl.ist.notifcenter.domain;
 
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import pt.ist.fenixframework.Atomic;
+import pt.utl.ist.notifcenter.api.HTTPClient;
+import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.Properties;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Twilio extends Twilio_Base {
@@ -101,4 +110,40 @@ public class Twilio extends Twilio_Base {
         }
     }
 
+    //SEND WHATSAPP MESSAGE:
+    public ResponseEntity<String> sendWhatsAppSMS(final String to, final String from, final String message){
+
+        //String uri = "https://api.twilio.com/2010-04-01/Accounts/" + this.getAccountSID() + "/Messages.json";
+
+        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback";
+
+        //MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+
+        HttpHeaders header = HTTPClient.createAuthHeader(this.getAccountSID(), this.getAuthToken());
+        header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        body.put("To", Arrays.asList(to));
+        body.put("From", Arrays.asList(from));
+        body.put("Body", Arrays.asList(message));
+
+        /*
+        try {
+            ///header.put("Content-Type", Arrays.asList("application/x-www-form-urlencoded"));
+            //header.put("Authorization", Arrays.asList("Basic QUM2Y2JiZDdkNmViMjZkOGRjMzRmY2U0NGE0YmVhOGExYzoyM2M1ZjhiNzUxZWJmZjgxNjNhYTBjNTZmMWVhZGU1Yg=="));
+            //header.put("Authorization", Arrays.asList("Basic " + HTTPClient.base64Encode(this.getAccountSID() + ":" + this.getAuthToken())));
+
+            //body.put("To", Arrays.asList(URLEncoder.encode(to, "UTF-8")));
+            //body.put("From", Arrays.asList(URLEncoder.encode(from, "UTF-8")));
+            //body.put("Body", Arrays.asList(URLEncoder.encode(message, "UTF-8")));
+
+        }
+        catch (UnsupportedEncodingException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        */
+
+        return HTTPClient.restSyncClientHeaders(HttpMethod.POST, uri, header, body);
+    }
 }
