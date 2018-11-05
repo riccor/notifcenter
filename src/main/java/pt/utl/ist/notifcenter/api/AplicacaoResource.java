@@ -114,7 +114,7 @@ public class AplicacaoResource extends BennuRestResource {
         return "emails dos canais: " + t;
     }
 
-        @RequestMapping(value = "/twiliowhatsappsms", method = RequestMethod.GET)
+    @RequestMapping(value = "/twiliowhatsappsms", method = RequestMethod.GET)
     public ResponseEntity<String> twilioWhatsappSMS(@RequestParam(value="message",
             defaultValue = "mensagem teste do notifcenter 1 =D") String message) {
 
@@ -123,13 +123,11 @@ public class AplicacaoResource extends BennuRestResource {
         ResponseEntity<String> responseEntity = twilio.sendWhatsAppSMS("whatsapp:+351961077271", "whatsapp:+14155238886", message);
 
         if (responseEntity == null) {
-            return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.NOT_FOUND);
         }
 
         return responseEntity;
     }
-
-
 
 
 
