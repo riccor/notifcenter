@@ -45,7 +45,9 @@ public class HTTPClient {
         //HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headerParameters);
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(uri, method, entity, String.class);
+        ///ResponseEntity<String> response = restTemplate.exchange(uri, method, entity, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(uri, entity, String.class);
+
         //String result = restTemplate.getForObject(uri, String.class);
         //System.out.println(result);
 

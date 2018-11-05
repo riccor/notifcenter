@@ -22,6 +22,7 @@ import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
@@ -34,6 +35,7 @@ import pt.utl.ist.notifcenter.ui.NotifcenterController;
 import org.fenixedu.bennu.core.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,14 +69,14 @@ public class AplicacaoResource extends BennuRestResource {
     //@SkipAccessTokenValidation //diz ao método preHandler em "NotifcenterInterceptor.java" para aceitar pedidos sem access_token
     @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
     @RequestMapping(value = "/oauth/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String addAplicacao(@RequestParam(value="description") String description,
-                               @RequestParam(value="name") String name, 
-                               @RequestParam(value="redirect_uri") String redirectUrl, 
-                               @RequestParam(value="author", defaultValue = "none") String authorName, 
-                               @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
+    public String addAplicacao(@RequestParam(value = "description") String description,
+                               @RequestParam(value = "name") String name,
+                               @RequestParam(value = "redirect_uri") String redirectUrl,
+                               @RequestParam(value = "author", defaultValue = "none") String authorName,
+                               @RequestParam(value = "site_url", defaultValue = "none") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
-           return ErrorsAndWarnings.INVALID_APPNAME_ERROR.toJson().toString();
+            return ErrorsAndWarnings.INVALID_APPNAME_ERROR.toJson().toString();
         }
 
         Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
@@ -114,20 +116,68 @@ public class AplicacaoResource extends BennuRestResource {
         return "emails dos canais: " + t;
     }
 
-        @RequestMapping(value = "/twiliowhatsappsms", method = RequestMethod.GET)
-    public ResponseEntity<String> twilioWhatsappSMS(@RequestParam(value="message",
+    @RequestMapping(value = "/twiliowhatsappsms", method = RequestMethod.GET)
+    public /*ResponseEntity<String>*/ String twilioWhatsappSMS(@RequestParam(value = "message",
             defaultValue = "mensagem teste do notifcenter 1 =D") String message) {
 
         Twilio twilio = Twilio.createTwilioFromPropertiesFile(SistemaNotificacoes.getInstance(), "twilio");
 
-        ResponseEntity<String> responseEntity = twilio.sendWhatsAppSMS("whatsapp:+351961077271", "whatsapp:+14155238886", message);
-
+        //ResponseEntity<String> responseEntity = twilio.sendWhatsAppSMS("whatsapp:+351961077271", "whatsapp:+14155238886", message);
+        ///ResponseEntity<String> responseEntity = twilio.sendWhatsAppSMS("totototo", "from", "message");
+        ResponseEntity<String> responseEntity = twilio.sendWhatsAppSMSOriginal("totototo", "from", "message");
+/*
         if (responseEntity == null) {
             return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.FORBIDDEN);
         }
 
         return responseEntity;
+        */
+
+        return "ok!!";
     }
+
+
+    @RequestMapping(value = "/post", method = RequestMethod.GET)
+    public String twilioWhatsappSMS() {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        map.add("email", "first.last@example.com");
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+        String uri = "http://localhost:8000/myapp/post";
+
+        ///ResponseEntity<String> response = restTemplate.postForEntity(uri, request , String.class );
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, request, String.class);
+
+        return "post!";
+    }
+
+    @RequestMapping(value = "/post2", method = RequestMethod.GET)
+    public String twilioWhatsappSMS2() {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        map.add("email", "first.last@example.com");
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+        ///ResponseEntity<String> response = restTemplate.postForEntity("https://trollspt.club", request , String.class );
+
+        HTTPClient.restSyncClient(HttpMethod.POST,"http://localhost:8000/myapp/post", headers,map);
+
+        return "post!";
+    }
+
 
 
 

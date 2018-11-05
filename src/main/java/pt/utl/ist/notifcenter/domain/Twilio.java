@@ -55,9 +55,9 @@ public class Twilio extends Twilio_Base {
 
     public static boolean IsMapFilled(Map<String, String> propertiesMap) {
 
-        for(Map.Entry<String, String> entry : propertiesMap.entrySet()) {
+        for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
 
-            if(entry.getValue().equals("null")) {
+            if (entry.getValue().equals("null")) {
                 return false;
             }
 
@@ -68,7 +68,7 @@ public class Twilio extends Twilio_Base {
     }
 
 
-    public static <T> void LoadPropertiesFromFile(Class<T> clazz,final String filename, Map<String, String> propertiesMap) {
+    public static <T> void LoadPropertiesFromFile(Class<T> clazz, final String filename, Map<String, String> propertiesMap) {
         Properties prop = new Properties();
         InputStream input = null;
 
@@ -88,22 +88,19 @@ public class Twilio extends Twilio_Base {
             prop.load(input);
 
             // get the property values
-            for(Map.Entry<String, String> entry : propertiesMap.entrySet()) {
+            for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
                 if (!entry.getKey().isEmpty()) {
                     //System.out.println("key: " + entry.getKey());
                     propertiesMap.put(entry.getKey(), prop.getProperty(entry.getKey()));
                 }
             }
-        }
-        catch (NullPointerException | IOException ex) {
+        } catch (NullPointerException | IOException ex) {
             ex.printStackTrace();
-        }
-        finally {
+        } finally {
             if (input != null) {
                 try {
                     input.close();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -111,13 +108,16 @@ public class Twilio extends Twilio_Base {
     }
 
     //SEND WHATSAPP MESSAGE:
-    public ResponseEntity<String> sendWhatsAppSMS(final String to, final String from, final String message){
+    public ResponseEntity<String> sendWhatsAppSMSOriginal(final String to, final String from, final String message) {
 
         //String uri = "https://api.twilio.com/2010-04-01/Accounts/" + this.getAccountSID() + "/Messages.json";
 
-        String uri = "http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback";
+        ///String uri = "http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback";
 
-        //MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+        String uri = "http://localhost:8000/myapp/post";
+
+
+        ///MultiValueMap<String, String> header = new LinkedMultiValueMap<>(); //
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 
         HttpHeaders header = HTTPClient.createAuthHeader(this.getAccountSID(), this.getAuthToken());
@@ -145,5 +145,24 @@ public class Twilio extends Twilio_Base {
         */
 
         return HTTPClient.restSyncClientHeaders(HttpMethod.POST, uri, header, body);
+        ///return HTTPClient.restSyncClient(HttpMethod.POST, uri, header, body);
+    }
+
+
+    public ResponseEntity<String> sendWhatsAppSMS(final String to, final String from, final String message) {
+
+        //String uri = "https://api.twilio.com/2010-04-01/Accounts/" + this.getAccountSID() + "/Messages.json";
+
+        //String uri = "http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback";
+        String uri = "https://trollspt.club";
+
+    final MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+        header.put("to",Arrays.asList(to)); //Collections.singletonList
+
+    final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.put("from",Arrays.asList(from)); //Collections.singletonList
+
+        //DA ERRO AO METER "POST"!!
+        return HTTPClient.restSyncClient(HttpMethod.POST,uri,header,body);
     }
 }
