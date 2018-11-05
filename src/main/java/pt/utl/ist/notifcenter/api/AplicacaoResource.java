@@ -360,3 +360,5 @@ public class AplicacaoResource extends BennuRestResource {
 app.getRemetentesSet().forEach(System.out::println);
 System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).collect(Collectors.joining(",")));
 */
+
+//URLEncoder.encode(string, "UTF-8")

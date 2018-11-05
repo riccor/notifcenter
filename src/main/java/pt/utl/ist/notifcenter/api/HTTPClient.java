@@ -21,12 +21,17 @@ public class HTTPClient {
         return new String(Base64.getDecoder().decode(encodedToken), StandardCharsets.UTF_8);
     }
 
-    public static HttpHeaders createAuthHeader(String username, String password){
+    public static String createBasicAuthString(String username, String password){
+        return String.format("Basic %s", base64Encode(username + ":" + password));
+    }
+
+    public static HttpHeaders createBasicAuthHeader(String username, String password){
         return new HttpHeaders() {{
-            String auth = username + ":" + password;
-            set("Authorization", "Basic " + base64Encode(auth));
+            String auth = createBasicAuthString(username, password);
+            set("Authorization", auth);
         }};
     }
+
 
     //SYNC client
 
