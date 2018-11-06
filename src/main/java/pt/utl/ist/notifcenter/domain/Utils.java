@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Utils {
 
@@ -58,7 +59,19 @@ public class Utils {
     }
 
 
-    public static <T> void LoadPropertiesFromPropertiesFile(Class<T> clazz,final String filename, Map<String, String> propertiesMap) {
+    public static <T> Map<String, String> loadPropertiesFromFile(Class<T> clazz, final String filename, final String... params) {
+        Map<String, String> propertiesMap = new ConcurrentHashMap<>();
+
+        for (String s : params) {
+            propertiesMap.put(s, "null");
+        }
+
+        LoadPropertiesFromPropertiesFile(clazz, filename, propertiesMap);
+
+        return propertiesMap;
+    }
+
+    public static <T> void LoadPropertiesFromPropertiesFile(Class<T> clazz, final String filename, Map<String, String> propertiesMap) {
         Properties prop = new Properties();
         InputStream input = null;
 

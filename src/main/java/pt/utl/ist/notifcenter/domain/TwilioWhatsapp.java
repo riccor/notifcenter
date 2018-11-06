@@ -34,14 +34,8 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCa
     }
 
     public static TwilioWhatsapp createTwilioWhatsappFromPropertiesFile(final String file) {
-        Map<String, String> propertiesMap = new ConcurrentHashMap<>();
-        propertiesMap.put("accountSID", "null");
-        propertiesMap.put("authToken", "null");
-        propertiesMap.put("fromPhoneNumber", "null");
-        propertiesMap.put("uri", "null");
-
         String filename = String.format(NotifcenterSpringConfiguration.getConfiguration().notifcenterChannelsCredentials(), file);
-        Utils.LoadPropertiesFromPropertiesFile(TwilioWhatsapp.class, filename, propertiesMap);
+        Map<String, String> propertiesMap = Utils.loadPropertiesFromFile(TwilioWhatsapp.class, filename, "accountSID", "authToken", "fromPhoneNumber", "uri");
 
         if (!Utils.IsMapFilled(propertiesMap)) {
             System.out.println("Error: Cannot create entity from file.");
