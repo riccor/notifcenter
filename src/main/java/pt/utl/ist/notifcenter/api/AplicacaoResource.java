@@ -96,18 +96,18 @@ public class AplicacaoResource extends BennuRestResource {
 
     @RequestMapping(value = "/twilio", method = RequestMethod.GET)
     public String twilio() {
-        Twilio.createTwilio(SistemaNotificacoes.getInstance(), "some_sid", "some_auth_token");
+        Twilio.createTwilio("some_sid", "some_auth_token");
 
         String t = SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
 
         return "emails dos canais: " + t;
     }
 
-    @RequestMapping(value = "/twiliofile", method = RequestMethod.GET)
+    @RequestMapping(value = "/twiliowhatsappfile", method = RequestMethod.GET)
     public String twiliofile() {
 
-        //opens file /channelscredentials/twilio.properties:
-        Twilio.createTwilioFromPropertiesFile(SistemaNotificacoes.getInstance(), "twilio");
+        //opens file /channelscredentials/twiliowhatsapp1.properties:
+        TwilioWhatsapp.createTwilioWhatsappFromPropertiesFile("twiliowhatsapp1");
 
         String t = SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
 
@@ -118,9 +118,9 @@ public class AplicacaoResource extends BennuRestResource {
     public ResponseEntity<String> twilioWhatsappSMS(@RequestParam(value="message",
             defaultValue = "mensagem teste do notifcenter 1 =D") String message) {
 
-        Twilio twilio = Twilio.createTwilioFromPropertiesFile(SistemaNotificacoes.getInstance(), "twilio");
+        TwilioWhatsapp twilioWhatsapp = TwilioWhatsapp.createTwilioWhatsappFromPropertiesFile("twiliowhatsapp1");
 
-        ResponseEntity<String> responseEntity = twilio.sendWhatsAppSMS("whatsapp:+351961077271", "whatsapp:+14155238886", message);
+        ResponseEntity<String> responseEntity = twilioWhatsapp.sendMessage("whatsapp:+351961077271", message);
 
         if (responseEntity == null) {
             return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.NOT_FOUND);

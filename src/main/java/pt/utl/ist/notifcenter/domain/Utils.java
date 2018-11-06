@@ -5,7 +5,11 @@ import org.springframework.util.CollectionUtils;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 public class Utils {
@@ -33,6 +37,64 @@ public class Utils {
                 if (o.equals(element)) {
                     i.remove();
                     break;
+                }
+            }
+        }
+    }
+
+
+    public static boolean IsMapFilled(Map<String, String> propertiesMap) {
+
+        for(Map.Entry<String, String> entry : propertiesMap.entrySet()) {
+
+            if(entry.getValue().equals("null")) {
+                return false;
+            }
+
+            //System.out.println("key = " + entry.getKey() + ", value = " + entry.getValue() + ";");
+        }
+
+        return true;
+    }
+
+
+    public static <T> void LoadPropertiesFromPropertiesFile(Class<T> clazz,final String filename, Map<String, String> propertiesMap) {
+        Properties prop = new Properties();
+        InputStream input = null;
+
+        try {
+            //clazz.getResourceAsStream() - procura o resource no mesmo diretorio do ficheiro .class
+            //clazz.getClassLoader().getResourceAsStream() - procura no CLASSPATH
+            input = clazz.getClassLoader().getResourceAsStream(filename);
+
+            //System.out.println("clazz.getClassLoader().getResource(filename): " + clazz.getClassLoader().getResource(filename));
+
+            if (input == null) {
+                System.out.println("Error: Unable to find file " + filename + "!");
+                return;
+            }
+
+            // load a properties file
+            prop.load(input);
+
+            // get the property values
+            for(Map.Entry<String, String> entry : propertiesMap.entrySet()) {
+                if (!entry.getKey().isEmpty()) {
+                    //System.out.println("key: " + entry.getKey());
+                    propertiesMap.put(entry.getKey(), prop.getProperty(entry.getKey()));
+                }
+            }
+        }
+        catch (NullPointerException | IOException ex) {
+            ex.printStackTrace();
+        }
+        finally {
+            if (input != null) {
+                try {
+                    input.close();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
