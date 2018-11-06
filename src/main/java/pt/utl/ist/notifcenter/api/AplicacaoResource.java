@@ -10,7 +10,6 @@ package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
 //import org.fenixedu.bennu.core.security.SkipCSRF;
@@ -105,7 +104,6 @@ public class AplicacaoResource extends BennuRestResource {
 
     @RequestMapping(value = "/twiliowhatsappfile", method = RequestMethod.GET)
     public String twiliofile() {
-
         //opens file /channelscredentials/twiliowhatsapp1.properties:
         TwilioWhatsapp.createTwilioWhatsappFromPropertiesFile("twiliowhatsapp1");
 

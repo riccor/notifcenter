@@ -10,7 +10,6 @@ import pt.utl.ist.notifcenter.api.HTTPClient;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCanal{
     
