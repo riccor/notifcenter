@@ -58,22 +58,14 @@ public class Utils {
         return true;
     }
 
-
-    public static <T> Map<String, String> loadPropertiesFromFile(Class<T> clazz, final String filename, final String... params) {
+    public static <T> Map<String, String>  LoadPropertiesFromPropertiesFile(Class<T> clazz, final String filename, final String... params) {
+        Properties prop = new Properties();
+        InputStream input = null;
         Map<String, String> propertiesMap = new ConcurrentHashMap<>();
 
         for (String s : params) {
             propertiesMap.put(s, "null");
         }
-
-        LoadPropertiesFromPropertiesFile(clazz, filename, propertiesMap);
-
-        return propertiesMap;
-    }
-
-    public static <T> void LoadPropertiesFromPropertiesFile(Class<T> clazz, final String filename, Map<String, String> propertiesMap) {
-        Properties prop = new Properties();
-        InputStream input = null;
 
         try {
             //clazz.getResourceAsStream() - procura o resource no mesmo diretorio do ficheiro .class
@@ -84,7 +76,7 @@ public class Utils {
 
             if (input == null) {
                 System.out.println("Error: Unable to find file " + filename + "!");
-                return;
+                return null;
             }
 
             // load a properties file
@@ -111,6 +103,8 @@ public class Utils {
                 }
             }
         }
+
+        return propertiesMap;
     }
 
 }

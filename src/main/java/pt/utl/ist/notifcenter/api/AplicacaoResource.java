@@ -111,6 +111,8 @@ public class AplicacaoResource extends BennuRestResource {
 
         String t = SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
 
+        System.out.println("size=" + SistemaNotificacoes.getInstance().getCanaisSet().size());
+
         return "emails dos canais: " + t;
     }
 
