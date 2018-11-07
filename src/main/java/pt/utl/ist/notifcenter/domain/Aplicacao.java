@@ -36,7 +36,7 @@ public class Aplicacao extends Aplicacao_Base {
     }
 
     @Atomic
-    public static Aplicacao createAplicacao(final String name, final String redirectUrl, final String description, final String authorName, final String siteUrl) {
+    public static Aplicacao CreateAplicacao(final String name, final String redirectUrl, final String description, final String authorName, final String siteUrl) {
 
         if (findByAplicacaoName(name) != null) {
             throw BennuCoreDomainException.cannotCreateEntity();
@@ -56,22 +56,23 @@ public class Aplicacao extends Aplicacao_Base {
     }
 
     @Atomic
-    public Aplicacao updateAplicacaoName(final String nome) {
+    public Aplicacao UpdateAplicacaoName(final String nome) {
         this.setName(nome);
         return this;
     }
 
     @Atomic
-    public Aplicacao updateAplicacaoScopes(List<ExternalApplicationScope> newScopes) {
+    public Aplicacao UpdateAppPermissions(AppPermissions appPermissions) {
+        this.setPermissoesAplicacao(appPermissions);
+        return this;
+    }
+
+    @Atomic
+    public Aplicacao UpdateAplicacaoScopes(List<ExternalApplicationScope> newScopes) {
         this.setScopeList(newScopes);
         return this;
     }
 
-    /*
-    public void updatePermissions(AppPermissions permissions){
-        this.setPermissoesAplicacao(permissions);
-    }
-    */
 
     // para otimizacao da pesquisa de determinada Aplicacao por nome (retirado de ../bennu/core/domain/User):
     public static Aplicacao findByAplicacaoName(final String aplicacaoName) {

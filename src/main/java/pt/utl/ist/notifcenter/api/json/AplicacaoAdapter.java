@@ -19,7 +19,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         String description = getRequiredValue(jObj, "description");
         String authorName = getRequiredValue(jObj, "author");
         String siteUrl = getRequiredValue(jObj, "site_url");
-        return Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
+        return Aplicacao.CreateAplicacao(name, redirectUrl, description, authorName, siteUrl);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String nome = getRequiredValue(jObj, "name");
         ///outros parametros (será que ctx pode ajudar?)
-        return app.updateAplicacaoName(nome);
+        return app.UpdateAplicacaoName(nome);
     }
 
     @Override

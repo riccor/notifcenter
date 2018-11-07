@@ -76,7 +76,7 @@ public class AplicacaoResource extends BennuRestResource {
            return ErrorsAndWarnings.INVALID_APPNAME_ERROR.toJson().toString();
         }
 
-        Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
+        Aplicacao app = Aplicacao.CreateAplicacao(name, redirectUrl, description, authorName, siteUrl);
         return view(app, AplicacaoAdapter.class).toString();
     }
 
@@ -90,6 +90,38 @@ public class AplicacaoResource extends BennuRestResource {
 
         return view(app, AplicacaoAdapter.class).toString();
     }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/updatepermissions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String UpdateAppPermissions(@PathVariable("app") Aplicacao app, @RequestParam("permissions") AppPermissions appPermissions) {
+
+        if (app == null || !FenixFramework.isDomainObjectValid(app)) {
+            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
+        }
+
+        System.out.println("New app permissions: " + appPermissions.name());
+
+        //app.UpdateAppPermissions(AppPermissions.ALLOW_ALL);
+
+        return view(app, AplicacaoAdapter.class).toString();
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/updatepermissions2", method = RequestMethod.POST)
+    public String UpdateAppPermissions2(@PathVariable("app") Aplicacao app, @RequestParam("permissions") AppPermissions appPermissions) {
+
+        if (app == null || !FenixFramework.isDomainObjectValid(app)) {
+            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
+        }
+
+        System.out.println("New app permissions: " + appPermissions.name());
+
+        app.UpdateAppPermissions(AppPermissions.ALLOW_ALL);
+
+        return view(app, AplicacaoAdapter.class).toString();
+    }
+
+
 
     //TWILIO
 
