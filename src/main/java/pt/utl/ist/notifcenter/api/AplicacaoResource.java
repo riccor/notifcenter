@@ -25,6 +25,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
 
+import pt.utl.ist.notifcenter.api.json.CanalNotificacaoAdapter;
 import pt.utl.ist.notifcenter.api.json.ExemploIdentidadeAdapter;
 import pt.utl.ist.notifcenter.api.json.RemetenteAdapter;
 import pt.utl.ist.notifcenter.domain.*;
@@ -91,8 +92,9 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class).toString();
     }
 
+    /*
     @SkipCSRF
-    @RequestMapping(value = "/{app}/updatepermissions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{app}/updatepermissions", method = RequestMethod.POST)
     public String UpdateAppPermissions(@PathVariable("app") Aplicacao app, @RequestParam("permissions") AppPermissions appPermissions) {
 
         if (app == null || !FenixFramework.isDomainObjectValid(app)) {
@@ -101,26 +103,30 @@ public class AplicacaoResource extends BennuRestResource {
 
         System.out.println("New app permissions: " + appPermissions.name());
 
-        //app.UpdateAppPermissions(AppPermissions.ALLOW_ALL);
+        app.UpdateAppPermissions(appPermissions);
 
         return view(app, AplicacaoAdapter.class).toString();
-    }
+    }*/
 
     @SkipCSRF
-    @RequestMapping(value = "/{app}/updatepermissions2", method = RequestMethod.POST)
-    public String UpdateAppPermissions2(@PathVariable("app") Aplicacao app, @RequestParam("permissions") AppPermissions appPermissions) {
+    @RequestMapping(value = "/{app}/addcanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addCanalNotificacao(@PathVariable("app") Aplicacao app,
+                                           @PathVariable("canal") Canal canal,
+                                           @PathVariable("remetente") Remetente remetente) {
 
-        if (app == null || !FenixFramework.isDomainObjectValid(app)) {
-            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
+        if (app == null) {
+            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
         }
 
-        System.out.println("New app permissions: " + appPermissions.name());
+        //nome do canal (verificar se existe)
+        //nome do remetente dessa aplicacao (verificar se remetente faz parte dessa app)
 
-        app.UpdateAppPermissions(AppPermissions.ALLOW_ALL);
+        //NAO FAZER ISTO! MAS SIM: criar entidade PedidosCanalNotificacao para criar uma queue de pedidos
+        ///apenas para debug:
+        CanalNotificacao canalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente);
 
-        return view(app, AplicacaoAdapter.class).toString();
+        return view(canalNotificacao, CanalNotificacaoAdapter.class);
     }
-
 
 
     //TWILIO
