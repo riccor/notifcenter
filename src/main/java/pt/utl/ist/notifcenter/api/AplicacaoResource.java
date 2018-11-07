@@ -23,11 +23,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.FenixFramework;
-import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
+import pt.utl.ist.notifcenter.api.json.*;
 
-import pt.utl.ist.notifcenter.api.json.CanalNotificacaoAdapter;
-import pt.utl.ist.notifcenter.api.json.ExemploIdentidadeAdapter;
-import pt.utl.ist.notifcenter.api.json.RemetenteAdapter;
 import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
@@ -114,8 +111,16 @@ public class AplicacaoResource extends BennuRestResource {
                                            @PathVariable("canal") Canal canal,
                                            @PathVariable("remetente") Remetente remetente) {
 
-        if (app == null) {
+        if (FenixFramework.isDomainObjectValid(app)) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
+        }
+
+        if (FenixFramework.isDomainObjectValid(canal)) {
+            return ErrorsAndWarnings.INVALID_CHANNEL_ERROR.toJson();
+        }
+
+        if (FenixFramework.isDomainObjectValid(remetente)) {
+            return ErrorsAndWarnings.INVALID_REMETENTE_ERROR.toJson();
         }
 
         //nome do canal (verificar se existe)
@@ -126,6 +131,15 @@ public class AplicacaoResource extends BennuRestResource {
         CanalNotificacao canalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente);
 
         return view(canalNotificacao, CanalNotificacaoAdapter.class);
+    }
+
+    @RequestMapping(value = "/canal", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement canal(@RequestParam(value = "email") String email,
+                         @RequestParam(value = "password") String password) {
+
+        Canal canal = Canal.createCanal("email1", "pass1");
+
+        return view(canal, CanalAdapter.class);
     }
 
 

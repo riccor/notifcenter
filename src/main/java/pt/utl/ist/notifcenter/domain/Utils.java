@@ -1,16 +1,12 @@
 package pt.utl.ist.notifcenter.domain;
 
-import org.fenixedu.bennu.core.domain.User;
 import org.springframework.util.CollectionUtils;
-import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.FenixFramework;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Utils {
@@ -106,5 +102,6 @@ public class Utils {
 
         return propertiesMap;
     }
+
 
 }

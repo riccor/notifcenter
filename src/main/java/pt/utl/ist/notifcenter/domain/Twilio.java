@@ -6,7 +6,7 @@ public class Twilio extends Twilio_Base {
 
     public Twilio() {
         super();
-        this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
+        //this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
     }
 
     @Atomic
