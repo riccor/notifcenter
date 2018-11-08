@@ -6,6 +6,11 @@
 //GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/listremetentes?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //GET/POST http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addcanalnotificacao?canal=281818574094339&remetente=281724084813830
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/281582350893057/adddadoscontacto?canal=281840048930837&data=dados1contacto@ex.com
+
+//http://localhost:8080/notifcenter/apiaplicacoes/listcanais
+//http://localhost:8080/notifcenter/apiaplicacoes/listusers
+//http://localhost:8080/notifcenter/apiaplicacoes/listapps
 
 package pt.utl.ist.notifcenter.api;
 
@@ -199,6 +204,9 @@ public class AplicacaoResource extends BennuRestResource {
 
     //ADICIONAR DADOS CONTACTO
 
+    //admin id: 281582350893057
+    //app id: 281736969715746
+    //canal whatsapp id: 281840048930837
     @SkipCSRF
     @RequestMapping(value = "/{app}/{user}/adddadoscontacto", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addDadosContactoUtilizador(@PathVariable("app") Aplicacao app,
