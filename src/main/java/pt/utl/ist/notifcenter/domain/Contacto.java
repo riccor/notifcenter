@@ -24,11 +24,13 @@ public class Contacto extends Contacto_Base {
     }
 
     @Atomic
-    public static Contacto createContacto(final User utilizador, final Canal canal) {
+    public static Contacto createContacto(final User utilizador, final Canal canal, final String dadosContacto) {
         Contacto contacto = new Contacto();
         contacto.setUtilizador(utilizador);
         contacto.setCanal(canal);
+        contacto.setDadosContacto(dadosContacto);
         return contacto;
     }
+
 
 }
