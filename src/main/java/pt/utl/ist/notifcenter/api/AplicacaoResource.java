@@ -11,12 +11,16 @@
 //http://localhost:8080/notifcenter/apiaplicacoes/listcanais
 //http://localhost:8080/notifcenter/apiaplicacoes/listusers
 //http://localhost:8080/notifcenter/apiaplicacoes/listapps
+//http://localhost:8080/notifcenter/apiaplicacoes/listgroups
+//http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893058&group=281702609977347
+//http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893059&group=281779919388677
 
 package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
 //import org.fenixedu.bennu.core.security.SkipCSRF;
@@ -40,7 +44,6 @@ import org.fenixedu.bennu.core.domain.User;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
@@ -124,7 +127,7 @@ public class AplicacaoResource extends BennuRestResource {
         return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
     }
 
-    // LIST CANAIS / APPS / USERS
+    // LIST CANAIS / APPS / USERS / GROUPS
     @RequestMapping(value = "/listcanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listCanais() {
 
@@ -161,6 +164,28 @@ public class AplicacaoResource extends BennuRestResource {
         return jArray;
     }
 
+    @RequestMapping(value = "/listgroups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listGroups() {
+
+        JsonArray jArray = new JsonArray();
+
+        for (PersistentGroup g: FenixFramework.getDomainRoot().getBennu().getGroupSet()) {
+            jArray.add(view(g, PersistentGroupAdapter.class));
+        }
+
+        return jArray;
+    }
+
+    @RequestMapping(value = "/isusergroupmember", method = RequestMethod.GET)
+    public String isGroupMember(@RequestParam("user") User user,
+                                @RequestParam("group") PersistentGroup group) {
+
+        if (group.isMember(user)) {
+            return "yes!";
+        }
+
+        return "no";
+    }
 
     // CANAL (TEST)
 
