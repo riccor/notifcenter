@@ -66,17 +66,17 @@ public class AplicacaoResource extends BennuRestResource {
     //@SkipAccessTokenValidation //diz ao método preHandler em "NotifcenterInterceptor.java" para aceitar pedidos sem access_token
     @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
     @RequestMapping(value = "/oauth/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String addAplicacao(@RequestParam(value="description") String description,
-                               @RequestParam(value="name") String name, 
-                               @RequestParam(value="redirect_uri") String redirectUrl, 
-                               @RequestParam(value="author", defaultValue = "none") String authorName, 
-                               @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
+    public String addAplicacao(@RequestParam(value = "description") String description,
+                               @RequestParam(value = "name") String name,
+                               @RequestParam(value = "redirect_uri") String redirectUrl,
+                               @RequestParam(value = "author", defaultValue = "none") String authorName,
+                               @RequestParam(value = "site_url", defaultValue = "none") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
            return ErrorsAndWarnings.INVALID_APPNAME_ERROR.toJson().toString();
         }
 
-        Aplicacao app = Aplicacao.CreateAplicacao(name, redirectUrl, description, authorName, siteUrl);
+        Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
         return view(app, AplicacaoAdapter.class).toString();
     }
 
@@ -119,6 +119,7 @@ public class AplicacaoResource extends BennuRestResource {
         return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
     }
 
+    // LIST CANAIS / APPS / USERS
     @RequestMapping(value = "/listcanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listCanais() {
 
@@ -138,6 +139,18 @@ public class AplicacaoResource extends BennuRestResource {
 
         for (Aplicacao a: SistemaNotificacoes.getInstance().getAplicacoesSet()) {
             jArray.add(view(a, AplicacaoAdapter.class));
+        }
+
+        return jArray;
+    }
+
+    @RequestMapping(value = "/listusers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listUsers() {
+
+        JsonArray jArray = new JsonArray();
+
+        for (User a: FenixFramework.getDomainRoot().getBennu().getUserSet()) {
+            jArray.add(view(a, UserAdapter.class));
         }
 
         return jArray;
@@ -170,7 +183,7 @@ public class AplicacaoResource extends BennuRestResource {
     //TWILIO
 
     @RequestMapping(value = "/twiliowhatsappsms", method = RequestMethod.GET)
-    public ResponseEntity<String> twilioWhatsappSMS(@RequestParam(value="message",
+    public ResponseEntity<String> twilioWhatsappSMS(@RequestParam(value = "message",
             defaultValue = "mensagem teste do notifcenter 1 =D") String message) {
 
         TwilioWhatsapp twilioWhatsapp = TwilioWhatsapp.createTwilioWhatsappFromPropertiesFile("twiliowhatsapp1");
@@ -184,13 +197,35 @@ public class AplicacaoResource extends BennuRestResource {
         return responseEntity;
     }
 
+    //ADICIONAR DADOS CONTACTO
+
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/{user}/adddadoscontacto", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addDadosContactoUtilizador(@PathVariable("app") Aplicacao app,
+                                                  @PathVariable("user") User utilizador,
+                                                  @RequestParam(value = "data") String dadosContacto,
+                                                  @RequestParam(value = "canal") Canal canal) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
+        }
+
+        if (!FenixFramework.isDomainObjectValid(utilizador)) {
+            return ErrorsAndWarnings.INVALID_USER_ERROR.toJson();
+        }
+
+        Contacto contacto = Contacto.createContacto(utilizador, canal, dadosContacto);
+
+        return view(contacto, ContactoAdapter.class);
+    }
+
 
     // ADICIONAR REMETENTE
 
     //exemplo pedido POST: http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addremetente?name=pessoa2&access_token=
     @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
     @RequestMapping(value = "/{app}/addremetente", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addRemetente(@PathVariable("app") Aplicacao app, @RequestParam(value="name") String nomeRemetente) {
+    public JsonElement addRemetente(@PathVariable("app") Aplicacao app, @RequestParam(value = "name") String nomeRemetente) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
@@ -375,7 +410,7 @@ public class AplicacaoResource extends BennuRestResource {
 
 
     @RequestMapping("/greeting")
-    public Greeting greeting(@RequestParam(value="name", defaultValue="oi!") String name) {
+    public Greeting greeting(@RequestParam(value = "name", defaultValue="oi!") String name) {
         ///return new Greeting(1234, name);
         return new Greeting();
     }
@@ -388,12 +423,12 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @RequestMapping(value = "test7", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement test7(@RequestParam(value="name", defaultValue="exemplo de param1") String name) {
+    public JsonElement test7(@RequestParam(value = "name", defaultValue="exemplo de param1") String name) {
         return view(ExemploIdentidade.createExemploIdentidade(name), ExemploIdentidadeAdapter.class);
     }
 
     @RequestMapping(value = "test8", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ExemploIdentidade test8(@RequestParam(value="name", defaultValue="exemplo de param1") String name) {
+    public ExemploIdentidade test8(@RequestParam(value = "name", defaultValue="exemplo de param1") String name) {
         return ExemploIdentidade.createExemploIdentidade(name);
     }
 

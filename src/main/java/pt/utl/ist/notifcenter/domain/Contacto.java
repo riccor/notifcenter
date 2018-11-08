@@ -9,6 +9,7 @@ public class Contacto extends Contacto_Base {
         super();
     }
 
+    //3.1.8
     @Atomic
     public static Contacto createContacto(final User utilizador, final String dadosContacto) {
         Contacto contacto = new Contacto();
@@ -17,12 +18,14 @@ public class Contacto extends Contacto_Base {
         return contacto;
     }
 
+    //3.1.8
     @Atomic
-    public Contacto SetCanal(final Canal canal) {
+    public Contacto setCanalDoContacto(final Canal canal) {
         this.setCanal(canal);
         return this;
     }
 
+    //3.1.7
     @Atomic
     public static Contacto createContacto(final User utilizador, final Canal canal, final String dadosContacto) {
         Contacto contacto = new Contacto();

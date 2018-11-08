@@ -40,7 +40,7 @@ public class Utils {
     }
 
 
-    public static boolean IsMapFilled(Map<String, String> propertiesMap) {
+    public static boolean isMapFilled(Map<String, String> propertiesMap) {
 
         for(Map.Entry<String, String> entry : propertiesMap.entrySet()) {
 
@@ -54,7 +54,7 @@ public class Utils {
         return true;
     }
 
-    public static <T> Map<String, String>  LoadPropertiesFromPropertiesFile(Class<T> clazz, final String filename, final String... params) {
+    public static <T> Map<String, String>  loadPropertiesFromPropertiesFile(Class<T> clazz, final String filename, final String... params) {
         Properties prop = new Properties();
         InputStream input = null;
         Map<String, String> propertiesMap = new ConcurrentHashMap<>();

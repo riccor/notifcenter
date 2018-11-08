@@ -36,7 +36,7 @@ public class Aplicacao extends Aplicacao_Base {
     }
 
     @Atomic
-    public static Aplicacao CreateAplicacao(final String name, final String redirectUrl, final String description, final String authorName, final String siteUrl) {
+    public static Aplicacao createAplicacao(final String name, final String redirectUrl, final String description, final String authorName, final String siteUrl) {
 
         if (findByAplicacaoName(name) != null) {
             throw BennuCoreDomainException.cannotCreateEntity();
@@ -56,19 +56,19 @@ public class Aplicacao extends Aplicacao_Base {
     }
 
     @Atomic
-    public Aplicacao SetName(final String nome) {
+    public Aplicacao setAppName(final String nome) {
         this.setName(nome);
         return this;
     }
 
     @Atomic
-    public Aplicacao SetAppPermissions(AppPermissions appPermissions) {
+    public Aplicacao setAppPermissions(final AppPermissions appPermissions) {
         this.setPermissoesAplicacao(appPermissions);
         return this;
     }
 
     @Atomic
-    public Aplicacao UpdateAplicacaoScopes(List<ExternalApplicationScope> newScopes) {
+    public Aplicacao setAppScopes(final List<ExternalApplicationScope> newScopes) {
         this.setScopeList(newScopes);
         return this;
     }
@@ -90,7 +90,7 @@ public class Aplicacao extends Aplicacao_Base {
         return match;
     }
 
-    private static Aplicacao manualFind(String aplicacaoName) {
+    private static Aplicacao manualFind(final String aplicacaoName) {
         for (final Aplicacao app: SistemaNotificacoes.getInstance().getAplicacoesSet()) {
             cacheAplicacao(app);
             if (app.getName().equals(aplicacaoName)) {
