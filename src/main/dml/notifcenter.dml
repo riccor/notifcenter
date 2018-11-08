@@ -169,6 +169,13 @@ relation SistemaNotificacoesTemCanais {
     Canal playsRole canais { multiplicity 0..*; }
 }
 
+
+relation SistemaNotificacoesTemPedidosCriacaoCanalNotificacao {
+    SistemaNotificacoes playsRole sistemaNotificacoes { multiplicity 1..1; }
+    CanalNotificacao playsRole pedidosCriacaoCanalNotificacao { multiplicity 0..*; }
+}
+
+
 /* Sendo o CanalNotificacao uma relação trenária, então ele associa-se a um
 *  remetente e a um canal
 */

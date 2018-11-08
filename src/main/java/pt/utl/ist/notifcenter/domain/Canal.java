@@ -14,8 +14,8 @@ public class Canal extends Canal_Base {
         Canal canal = new Canal();
         canal.setEmail(email);
         canal.setPassword(password);
-
         return canal;
     }
+
 
 }

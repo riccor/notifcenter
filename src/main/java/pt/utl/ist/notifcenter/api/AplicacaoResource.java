@@ -4,10 +4,12 @@
 //POST http://localhost:8080/notifcenter/oauth/refresh_token?client_id=281736969715746&client_secret=HaEPQ/D6JhIUltRl4MiEvhKIQR52cJuOhQHlCey0ZC/uX8le/LftpRkN9M/4SjslzO6RqRyrYS03QifOLFY%2BsA==&refresh_token=NTYzMTYwNDA2ODE4ODIwOjY3OGI2MTRhOGViYWI2ZDQyYzljZDEwYWJlYTdmNzM4OWMyZTZkN2U5MTgyNjlkODFmMzk1N2QxNWIzMjhlMDM4MWNmZWZlNDBjY2U0M2I1ZWE5ZDNlNmI1Yjc4YWY3NmU5OWQ3MjU0YjIwYjRkNDE3YTVmZDFiNzQ4ODM3YWNk&grant_type=refresh_token
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/listremetentes?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
-//http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback
+//GET/POST http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addcanalnotificacao?canal=281818574094339&remetente=281724084813830
 
 package pt.utl.ist.notifcenter.api;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
@@ -33,6 +35,7 @@ import org.fenixedu.bennu.core.domain.User;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
@@ -57,10 +60,9 @@ public class AplicacaoResource extends BennuRestResource {
     */
 
 
-    //Adicionar aplicacao
+    //ADICIONAR APLICACAO
 
-    //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security //CSRFToken token = new CSRFToken("awd");
-    //exemplo de pedido: http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_2&redirect_uri=http://app2_site.com/codedescription=descricao_app2
+    //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security
     //@SkipAccessTokenValidation //diz ao método preHandler em "NotifcenterInterceptor.java" para aceitar pedidos sem access_token
     @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
     @RequestMapping(value = "/oauth/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -78,93 +80,94 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class).toString();
     }
 
-    //exemplo GET: http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715746?access_token=
     @RequestMapping(value = "/oauth/viewaplicacao/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String viewAplicacao(@PathVariable("app") Aplicacao app) {
 
-        if (app == null || !FenixFramework.isDomainObjectValid(app)) {
+        if (!FenixFramework.isDomainObjectValid(app)) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
         }
 
         return view(app, AplicacaoAdapter.class).toString();
     }
 
-    /*
-    @SkipCSRF
-    @RequestMapping(value = "/{app}/updatepermissions", method = RequestMethod.POST)
-    public String UpdateAppPermissions(@PathVariable("app") Aplicacao app, @RequestParam("permissions") AppPermissions appPermissions) {
+    // CANAL NOTIFICACAO
 
-        if (app == null || !FenixFramework.isDomainObjectValid(app)) {
-            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
-        }
-
-        System.out.println("New app permissions: " + appPermissions.name());
-
-        app.UpdateAppPermissions(appPermissions);
-
-        return view(app, AplicacaoAdapter.class).toString();
-    }*/
+    //app id: 281736969715746/addcanalnotificacao
+    //canal id:  281818574094339
+    //remetente id: 281724084813830
 
     @SkipCSRF
-    @RequestMapping(value = "/{app}/addcanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{app}/pedidocanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addCanalNotificacao(@PathVariable("app") Aplicacao app,
-                                           @PathVariable("canal") Canal canal,
-                                           @PathVariable("remetente") Remetente remetente) {
+                                           @RequestParam("canal") Canal canal,
+                                           @RequestParam("remetente") Remetente remetente) {
 
-        if (FenixFramework.isDomainObjectValid(app)) {
+        if (!FenixFramework.isDomainObjectValid(app)) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
         }
 
-        if (FenixFramework.isDomainObjectValid(canal)) {
+        if (!FenixFramework.isDomainObjectValid(canal)) {
             return ErrorsAndWarnings.INVALID_CHANNEL_ERROR.toJson();
         }
 
-        if (FenixFramework.isDomainObjectValid(remetente)) {
+        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
             return ErrorsAndWarnings.INVALID_REMETENTE_ERROR.toJson();
         }
 
-        //nome do canal (verificar se existe)
-        //nome do remetente dessa aplicacao (verificar se remetente faz parte dessa app)
+        CanalNotificacao pedidoCriacaoCanalNotificacao = CanalNotificacao.createPedidoCriacaoCanalNotificacao(canal, remetente);
 
-        //NAO FAZER ISTO! MAS SIM: criar entidade PedidosCanalNotificacao para criar uma queue de pedidos
-        ///apenas para debug:
-        CanalNotificacao canalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente);
-
-        return view(canalNotificacao, CanalNotificacaoAdapter.class);
+        return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
     }
 
-    @RequestMapping(value = "/canal", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement canal(@RequestParam(value = "email") String email,
-                         @RequestParam(value = "password") String password) {
+    @RequestMapping(value = "/listcanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listCanais() {
 
-        Canal canal = Canal.createCanal("email1", "pass1");
+        JsonArray jArray = new JsonArray();
+
+        for (Canal c: SistemaNotificacoes.getInstance().getCanaisSet()) {
+            jArray.add(view(c, CanalAdapter.class));
+        }
+
+        return jArray;
+    }
+
+    @RequestMapping(value = "/listapps", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listApps() {
+
+        JsonArray jArray = new JsonArray();
+
+        for (Aplicacao a: SistemaNotificacoes.getInstance().getAplicacoesSet()) {
+            jArray.add(view(a, AplicacaoAdapter.class));
+        }
+
+        return jArray;
+    }
+
+
+    // CANAL (TEST)
+
+    //GET http://localhost:8080/notifcenter/apiaplicacoes/canal?email=email2&password=password2
+    @RequestMapping(value = "/canal", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement canal(@RequestParam(value = "email") String email, @RequestParam(value = "password") String password) {
+
+        Canal canal = Canal.createCanal(email, password);
+
+        return view(canal, CanalAdapter.class);
+    }
+
+    //http://localhost:8080/notifcenter/apiaplicacoes/viewcanal/281818574094339
+    @RequestMapping(value = "/viewcanal/{canal}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement viewCanal(@PathVariable(value = "canal") Canal canal) {
+
+        if (!FenixFramework.isDomainObjectValid(canal)) {
+            return ErrorsAndWarnings.INVALID_CHANNEL_ERROR.toJson();
+        }
 
         return view(canal, CanalAdapter.class);
     }
 
 
     //TWILIO
-
-    @RequestMapping(value = "/twilio", method = RequestMethod.GET)
-    public String twilio() {
-        Twilio.createTwilio("some_sid", "some_auth_token");
-
-        String t = SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
-
-        return "emails dos canais: " + t;
-    }
-
-    @RequestMapping(value = "/twiliowhatsappfile", method = RequestMethod.GET)
-    public String twiliofile() {
-        //opens file /channelscredentials/twiliowhatsapp1.properties:
-        TwilioWhatsapp.createTwilioWhatsappFromPropertiesFile("twiliowhatsapp1");
-
-        String t = SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
-
-        System.out.println("size=" + SistemaNotificacoes.getInstance().getCanaisSet().size());
-
-        return "emails dos canais: " + t;
-    }
 
     @RequestMapping(value = "/twiliowhatsappsms", method = RequestMethod.GET)
     public ResponseEntity<String> twilioWhatsappSMS(@RequestParam(value="message",
@@ -182,15 +185,14 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
-
-    // Adicionar remetente
+    // ADICIONAR REMETENTE
 
     //exemplo pedido POST: http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addremetente?name=pessoa2&access_token=
     @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
     @RequestMapping(value = "/{app}/addremetente", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addRemetente(@PathVariable("app") Aplicacao app, @RequestParam(value="name") String nomeRemetente) {
 
-        if (app == null) {
+        if (!FenixFramework.isDomainObjectValid(app)) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
         }
 
@@ -198,22 +200,25 @@ public class AplicacaoResource extends BennuRestResource {
         return view(remetente, RemetenteAdapter.class);
     }
     
-    //exemplo pedido GET: http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/listremetentes?access_token=
     @RequestMapping(value = "/{app}/listremetentes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listRemetentes(@PathVariable("app") Aplicacao app) {
 
-        if (app == null) {
+        if (!FenixFramework.isDomainObjectValid(app)) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
         }
 
-        JsonObject jObj = new JsonObject();
-        jObj.addProperty("aplicacao", app.getName());
-        jObj.addProperty("remetentes", app.getRemetentesSet().stream().map(Remetente::getNome).collect(Collectors.joining(",")));
-        return jObj;
+        JsonArray jArray = new JsonArray();
+
+        for (Remetente r: app.getRemetentesSet()) {
+            jArray.add(view(r, RemetenteAdapter.class));
+        }
+
+        return jArray;
     }
 
     //Notifcenter callback
 
+    @SkipCSRF
     @RequestMapping(value = "notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement notifcenterCallback(HttpServletRequest request) {
         List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
@@ -230,6 +235,55 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    //IGNORAR PARA BAIXO
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    /* IGNORAR - UpdateAppPermissions
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/updatepermissions", method = RequestMethod.POST)
+    public String UpdateAppPermissions(@PathVariable("app") Aplicacao app, @RequestParam("permissions") AppPermissions appPermissions) {
+
+        if (app == null || !FenixFramework.isDomainObjectValid(app)) {
+            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
+        }
+
+        System.out.println("New app permissions: " + appPermissions.name());
+
+        app.SetAppPermissions(appPermissions);
+
+        return view(app, AplicacaoAdapter.class).toString();
+    }*/
+
+
+    // IGNORAR TWILIO
+
+    @RequestMapping(value = "/twilio", method = RequestMethod.GET)
+    public String twilio() {
+        Twilio.createTwilio("some_sid", "some_auth_token");
+
+        String t = SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
+
+        return "emails dos canais: " + t;
+    }
+
+
+    @RequestMapping(value = "/twiliowhatsappfile", method = RequestMethod.GET)
+    public String twiliofile() {
+        //opens file /channelscredentials/twiliowhatsapp1.properties:
+        TwilioWhatsapp twilioWhatsapp = TwilioWhatsapp.createTwilioWhatsappFromPropertiesFile("twiliowhatsapp1");
+
+        System.out.println(view(twilioWhatsapp, CanalAdapter.class).toString());
+
+        String t = SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
+
+        return "emails dos canais: " + t;
+    }
+
+
     // IGNORAR (HTTP client sync and async tests):
 
     @RequestMapping(value = "/oauth/viewaplicacaodelayed/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -240,7 +294,7 @@ public class AplicacaoResource extends BennuRestResource {
         }
         catch (InterruptedException e) { }
 
-        if (app == null || !FenixFramework.isDomainObjectValid(app)) {
+        if (!FenixFramework.isDomainObjectValid(app)) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
         }
 
@@ -414,3 +468,11 @@ System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).colle
 */
 
 //URLEncoder.encode(string, "UTF-8")
+
+
+///JsonObject jObj = new JsonObject();
+///jObj.addProperty("aplicacao", app.getName());
+///jObj.addProperty("remetentes", app.getRemetentesSet().stream().map(Remetente::getNome).collect(Collectors.joining(",")));
+
+////List<String> resultSet = app.getRemetentesSet().stream().flatMap(e -> Stream.of(e.getNome(), e.getExternalId())).collect(Collectors.toList());
+///System.out.println(resultSet.toString());

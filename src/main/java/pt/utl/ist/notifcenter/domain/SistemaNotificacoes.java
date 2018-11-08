@@ -17,4 +17,8 @@ public class SistemaNotificacoes extends SistemaNotificacoes_Base {
         return sistema == null ? new SistemaNotificacoes() : sistema;
     }
 
+
+    //como fazer print
+
+
 }

@@ -34,6 +34,7 @@ public class RemetenteAdapter implements JsonAdapter<Remetente> {
     public JsonElement view(Remetente obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("name", obj.getNome());
+        jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("appId", obj.getAplicacao().getExternalId());
         return jObj;
     }

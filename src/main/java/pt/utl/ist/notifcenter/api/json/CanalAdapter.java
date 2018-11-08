@@ -28,6 +28,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
     @Override
     public JsonElement view(Canal obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
+        jObj.addProperty("type", obj.getClass().getSimpleName());
         jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("email", obj.getEmail());
         jObj.addProperty("password", obj.getPassword());

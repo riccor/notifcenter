@@ -28,8 +28,8 @@ public class ExemploIdentidadeAdapter implements JsonAdapter<ExemploIdentidade> 
     @Override
     public JsonElement view(ExemploIdentidade obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("param1", obj.getParam1());
+        jObj.addProperty("id", obj.getExternalId());
         return jObj;
     }
 

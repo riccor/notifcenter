@@ -56,13 +56,13 @@ public class Aplicacao extends Aplicacao_Base {
     }
 
     @Atomic
-    public Aplicacao UpdateAplicacaoName(final String nome) {
+    public Aplicacao SetName(final String nome) {
         this.setName(nome);
         return this;
     }
 
     @Atomic
-    public Aplicacao UpdateAppPermissions(AppPermissions appPermissions) {
+    public Aplicacao SetAppPermissions(AppPermissions appPermissions) {
         this.setPermissoesAplicacao(appPermissions);
         return this;
     }
@@ -110,5 +110,19 @@ public class Aplicacao extends Aplicacao_Base {
             cacheAplicacao(app);
         }
     }
+
+    /*
+    public Remetente doesHaveRemetente(final String remetente) {
+
+        for (final Remetente r: this.getRemetentesSet()) {
+            if(r.getNome().equals(remetente)) {
+                return r;
+            }
+        }
+
+        return null;
+    }
+    */
+
 
 }
