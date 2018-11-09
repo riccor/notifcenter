@@ -74,14 +74,14 @@ class Mensagem{
     String assunto;
     String textoCurto;
     String textoLongo;
-    // bytearray anexos; 
+    // bytearray anexos;
     DateTime dataEntrega; /* opcional; apenas para o caso em que o remetente queira que a 
                               mensagem seja entregue no futuro */    
     String callbackUrlEstadoEntrega; /*para o caso da aplicacao querer receber os varios estados de entrega
                                           da mensagem através de uma callback*/
 }
 
-class ExtendGenericFile extends .org.fenixedu.bennu.io.domain.GenericFile{
+class Attachment extends .org.fenixedu.bennu.io.domain.GenericFile{
 }
 
 /*
@@ -220,5 +220,13 @@ relation MensagemEnviadaParaGrupos {
 /* Relação para evitar byteArrays na base de dados */
 relation MensagemAttachments {
     Mensagem playsRole mensagem { multiplicity 0..*; }
-    .org.fenixedu.bennu.io.domain.GenericFile playsRole attachments { multiplicity *; }
+    Attachment playsRole attachments { multiplicity *; }
 }
+
+
+/* Se quiser impedir o acesso indevido a attachments:
+relation AttachmentGroup {
+    Attachment playsRole attachment { multiplicity *; }
+    .org.fenixedu.bennu.core.domain.groups.PersistentGroup playsRole group { multiplicity 1..*; }
+}
+*/
