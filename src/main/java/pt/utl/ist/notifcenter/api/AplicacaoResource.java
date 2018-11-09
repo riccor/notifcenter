@@ -21,12 +21,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
+import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
 //import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.io.domain.FileStorage;
 import org.fenixedu.bennu.io.domain.GenericFile;
+import org.fenixedu.bennu.io.domain.GroupBasedFile;
 import org.fenixedu.bennu.io.servlet.FileDownloadServlet;
 import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -173,6 +175,8 @@ public class AplicacaoResource extends BennuRestResource {
             }
         };
 
+        //FALTA RESTO (Primeiro perceber o genericfile
+
         ///String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(gf, anexo);
         ///System.out.println("to access file refer to: " + st);
 
@@ -190,133 +194,51 @@ public class AplicacaoResource extends BennuRestResource {
         return convFile;
     }
 
-    //curl -F 'file=@/home/cr/imgg.png' http://localhost:8080/notifcenter/apiaplicacoes/upload
+    //curl -X POST http://localhost:8080/notifcenter/apiaplicacoes/upload
     @SkipCSRF
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public String uploadFile(@RequestParam(value = "file", required = false) MultipartFile file) {
+    public String uploadFile() {
 
-        //store file in system
+        byte[] myvar = "somestring".getBytes();
+        ExtendGenericFile e = ExtendGenericFile.createExtendGenericFile("display1", "filename1", myvar);
 
-
-        System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
-        System.out.println(" ");
-
-
-/*
-
-
-        GenericFile gf = new GenericFile() {
-            @Override
-            public boolean isAccessible(User user) {
-                return true;
-            }
-        };
-
-
-
-        System.out.println("files in fenix (1):");
-        for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
-            for (GenericFile f : fs.getFileSet()) {
-                System.out.println(f.getDisplayName());
-            }
-        }
-        System.out.println(" ");
-        System.out.println("files in fenix: (2):");
-        System.out.println("files in fenix: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
-        System.out.println(" ");
-
-        try{
-            String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(gf, convert(file));
-            System.out.println("String store(GenericFile, File) returns: " + st);
-            System.out.println(" ");
-        }
-        catch (IOException e){
-            System.out.println(" io error exception :(");
-        }
-
-        String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(gf));
-        System.out.println("byte[] read(GenericFile) returns: " + i);
-        System.out.println(" ");
-
-        System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(gf));
-        System.out.println(" ");
-
-        */
-
-        return "ok";
+        return "ok!";
     }
 
+
+
+
+
+    //curl -F 'file=@/home/cr/imgg.png' http://localhost:8080/notifcenter/apiaplicacoes/upload
+    //example group id: 281702609977347
     @SkipCSRF
     @RequestMapping(value = "/upload2", method = RequestMethod.POST)
-    public String uploadFile2(@RequestParam(value = "file", required = false) MultipartFile file) {
-
-        //store file in system
+    public String uploadFile2(@RequestParam(value = "file", required = false) MultipartFile file
+            /*@RequestParam("group") PersistentGroup group*/) {
 
 
         System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
         System.out.println(" ");
 
-        /*GenericFile gf = new GenericFile() {
+
+       /* GenericFile gf = new GenericFile() {
             @Override
             public boolean isAccessible(User user) {
                 return true;
             }
-        };*/
 
-        ExtendGenericFile e = ExtendGenericFile.createExtendGenericFile();
-
-
-        /*
-
-        System.out.println("files in fenix (1):");
-        for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
-            for (GenericFile f : fs.getFileSet()) {
-                System.out.println(f.getDisplayName());
-            }
-        }
-        System.out.println(" ");
-        System.out.println("files in fenix: (2):");
-        System.out.println("files in fenix: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
-        System.out.println(" ");
-
-        try{
-            String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(gf, convert(file));
-            System.out.println("String store(GenericFile, File) returns: " + st);
-            System.out.println(" ");
-        }
-        catch (IOException e){
-            System.out.println(" io error exception :(");
-        }
-
-        String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(gf));
-        System.out.println("byte[] read(GenericFile) returns: " + i);
-        System.out.println(" ");
-
-        System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(gf));
-        System.out.println(" ");
-
+        };
         */
 
-        return "ok";
-    }
-
-    @SkipCSRF
-    @RequestMapping(value = "/upload3", method = RequestMethod.POST)
-    public String uploadFile3(@RequestParam(value = "file", required = false) MultipartFile file) {
-
-        //store file in system
+        byte[] myvar = "Any String you want".getBytes();
+        ExtendGenericFile e = ExtendGenericFile.createExtendGenericFile("display1", "filename1", myvar);
 
 
-        System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
-        System.out.println(" ");
+        ///GroupBasedFile gbf = new GroupBasedFile("display1", "filename1", myvar, group);
 
-        GenericFile gf = new GenericFile() {
-            @Override
-            public boolean isAccessible(User user) {
-                return true;
-            }
-        };
 
+
+        /*
 
         System.out.println("files in fenix (1):");
         for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
@@ -324,10 +246,6 @@ public class AplicacaoResource extends BennuRestResource {
                 System.out.println(f.getDisplayName());
             }
         }
-
-
-        /*
-
         System.out.println(" ");
         System.out.println("files in fenix: (2):");
         System.out.println("files in fenix: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
@@ -345,183 +263,6 @@ public class AplicacaoResource extends BennuRestResource {
         String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(gf));
         System.out.println("byte[] read(GenericFile) returns: " + i);
         System.out.println(" ");
-
-        System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(gf));
-        System.out.println(" ");
-
-        */
-
-        return "ok";
-    }
-
-    @SkipCSRF
-    @RequestMapping(value = "/upload4", method = RequestMethod.POST)
-    public String uploadFile4(@RequestParam(value = "file", required = false) MultipartFile file) {
-
-        //store file in system
-
-
-        System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
-        System.out.println(" ");
-
-        GenericFile gf = new GenericFile() {
-            @Override
-            public boolean isAccessible(User user) {
-                return true;
-            }
-        };
-
-
-        System.out.println("files in fenix (1):");
-        for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
-            for (GenericFile f : fs.getFileSet()) {
-                System.out.println(f.getDisplayName());
-            }
-        }
-
-
-
-        System.out.println(" ");
-        System.out.println("files in fenix: (2):");
-        System.out.println("files in fenix: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
-        System.out.println(" ");
-
-
-        /*
-
-        try{
-            String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(gf, convert(file));
-            System.out.println("String store(GenericFile, File) returns: " + st);
-            System.out.println(" ");
-        }
-        catch (IOException e){
-            System.out.println(" io error exception :(");
-        }
-
-        String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(gf));
-        System.out.println("byte[] read(GenericFile) returns: " + i);
-        System.out.println(" ");
-
-        System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(gf));
-        System.out.println(" ");
-
-        */
-
-        return "ok";
-    }
-
-
-    @SkipCSRF
-    @RequestMapping(value = "/upload5", method = RequestMethod.POST)
-    public String uploadFile5(@RequestParam(value = "file", required = false) MultipartFile file) {
-
-        //store file in system
-
-
-        System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
-        System.out.println(" ");
-
-        GenericFile gf = new GenericFile() {
-            @Override
-            public boolean isAccessible(User user) {
-                return true;
-            }
-        };
-
-
-        System.out.println("files in fenix (1):");
-        for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
-            for (GenericFile f : fs.getFileSet()) {
-                System.out.println(f.getDisplayName());
-            }
-        }
-
-
-
-        System.out.println(" ");
-        System.out.println("files in fenix: (2):");
-        System.out.println("files in fenix: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
-        System.out.println(" ");
-
-
-
-        try{
-            String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(gf, convert(file));
-            System.out.println("String store(GenericFile, File) returns: " + st);
-            System.out.println(" ");
-        }
-        catch (IOException e){
-            System.out.println(" io error exception :(");
-        }
-
-
-        /*
-
-        String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(gf));
-        System.out.println("byte[] read(GenericFile) returns: " + i);
-        System.out.println(" ");
-
-        System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(gf));
-        System.out.println(" ");
-
-        */
-
-        return "ok";
-    }
-
-
-
-
-    @SkipCSRF
-    @RequestMapping(value = "/upload6", method = RequestMethod.POST)
-    public String uploadFile6(@RequestParam(value = "file", required = false) MultipartFile file) {
-
-        //store file in system
-
-
-        System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
-        System.out.println(" ");
-
-        GenericFile gf = new GenericFile() {
-            @Override
-            public boolean isAccessible(User user) {
-                return true;
-            }
-        };
-
-
-        System.out.println("files in fenix (1):");
-        for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
-            for (GenericFile f : fs.getFileSet()) {
-                System.out.println(f.getDisplayName());
-            }
-        }
-
-
-
-        System.out.println(" ");
-        System.out.println("files in fenix: (2):");
-        System.out.println("files in fenix: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
-        System.out.println(" ");
-
-
-
-        try{
-            String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(gf, convert(file));
-            System.out.println("String store(GenericFile, File) returns: " + st);
-            System.out.println(" ");
-        }
-        catch (IOException e){
-            System.out.println(" io error exception :(");
-        }
-
-
-        String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(gf));
-        System.out.println("byte[] read(GenericFile) returns: " + i);
-        System.out.println(" ");
-
-
-        /*
 
         System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(gf));
         System.out.println(" ");
@@ -534,9 +275,6 @@ public class AplicacaoResource extends BennuRestResource {
     @SkipCSRF
     @RequestMapping(value = "/upload7", method = RequestMethod.POST)
     public String uploadFile7(@RequestParam(value = "file", required = false) MultipartFile file) {
-
-        //store file in system
-
 
         System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
         System.out.println(" ");
