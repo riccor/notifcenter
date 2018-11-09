@@ -6,6 +6,7 @@ import pt.ist.fenixframework.FenixFramework;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class Attachment extends Attachment_Base {
 
@@ -28,6 +29,13 @@ public class Attachment extends Attachment_Base {
 
     @Atomic
     public static Attachment createAttachment(String displayName, String filename, File file) throws IOException {
+        Attachment egf = new Attachment();
+        egf.init(displayName, filename, file);
+        return egf;
+    }
+
+    @Atomic
+    public static Attachment createAttachment(String displayName, String filename, InputStream file) throws IOException {
         Attachment egf = new Attachment();
         egf.init(displayName, filename, file);
         return egf;
