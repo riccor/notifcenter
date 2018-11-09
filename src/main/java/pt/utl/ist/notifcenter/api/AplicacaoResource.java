@@ -207,8 +207,6 @@ public class AplicacaoResource extends BennuRestResource {
 
 
 
-
-
     //curl -F 'file=@/home/cr/imgg.png' http://localhost:8080/notifcenter/apiaplicacoes/upload
     //example group id: 281702609977347
     @SkipCSRF
