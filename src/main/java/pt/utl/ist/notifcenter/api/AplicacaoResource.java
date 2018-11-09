@@ -201,66 +201,41 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     //curl -F 'file=@/home/cr/imgg.png' http://localhost:8080/notifcenter/apiaplicacoes/upload
-    //example group id: 281702609977345
     @SkipCSRF
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public String uploadFile(@RequestParam(value = "file") MultipartFile file) {
 
         ///System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
 
-        /* ALTERNATIVA
-        System.out.println("files in fenix (1):");
-        for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
-            for (GenericFile f : fs.getFileSet()) {
-                System.out.println(f.getDisplayName());
-            }
-        }
-        */
-
         System.out.println(" ");
         System.out.println("files in fenix (2): " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
         System.out.println(" ");
 
         Attachment at;
-        ////File file;
+        String toreturn = "ok\n";
 
         try{
+            at = Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
 
-            ////Resource filee = new FileSystemResource("/home/cr/file.txt");
-            ////file = filee.getFile();
-
-            ///System.out.println("getOriginalFilename: " + file.getOriginalFilename());
             System.out.println("getOriginalFileName: " + file.getOriginalFilename());
-            System.out.println(" ");
 
-            at = Attachment.createAttachment("prettyname4", "lowlevelname4", file.getInputStream());
-
-            //nao deve ser necessario:
-            /*String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(at, file);
-            System.out.println("String store(GenericFile, File) returns: " + st);
-            System.out.println(" ");*/
+            toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
 
             System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(at));
-            System.out.println(" ");
-
-            String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(at));
-            System.out.println("byte[] read(GenericFile) returns: " + i);
-            System.out.println(" ");
 
         }
         catch (IOException e){
             e.printStackTrace();
         }
 
-
-        return "ok";
+        return toreturn;
     }
 
 
     //SAVE FILE FROM OWN COMPUTER(TEST)
     @SkipCSRF
     @RequestMapping(value = "/uploadcomfiletxt", method = RequestMethod.POST)
-    public String uploadFileTXT() {
+    public String uploadFileTXT(@RequestParam(value = "filename", defaultValue = "/home/cr/file.txt") String filename) {
 
         System.out.println(" ");
         System.out.println("files in fenix (2): " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
@@ -270,21 +245,16 @@ public class AplicacaoResource extends BennuRestResource {
         File file;
 
         try{
-            Resource filee = new FileSystemResource("/home/cr/file.txt");
+            Resource filee = new FileSystemResource(filename);
             file = filee.getFile();
 
-            ///System.out.println("getOriginalFilename: " + file.getOriginalFilename());
-            System.out.println("getName: " + file.getName());
             System.out.println("getAbsolutePath: " + file.getAbsolutePath());
-            System.out.println(" ");
 
             at = Attachment.createAttachment("prettyname2", "lowlevelname2", file);
-
         }
         catch (IOException e){
             e.printStackTrace();
         }
-
 
         return "ok";
     }
@@ -717,3 +687,11 @@ System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).colle
 ///System.out.println(resultSet.toString());
 
 
+    /*nao é necessario (usado para criar novos file storages:
+    String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(at, file.getInputStream());
+    System.out.println("String store(GenericFile, File) returns: " + st);
+    System.out.println(" ");
+
+    String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(at));
+    System.out.println("byte[] read(GenericFile) returns: " + i);
+    System.out.println(" ");*/

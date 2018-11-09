@@ -12,7 +12,7 @@ public class Attachment extends Attachment_Base {
 
     public Attachment() {
         super();
-        //this.setStorage(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage());
+        this.setStorage(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage());
     }
 
     @Override
