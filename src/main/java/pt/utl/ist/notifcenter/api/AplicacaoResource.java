@@ -256,12 +256,14 @@ public class AplicacaoResource extends BennuRestResource {
         System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
         System.out.println(" ");
 
-        GenericFile gf = new GenericFile() {
+        /*GenericFile gf = new GenericFile() {
             @Override
             public boolean isAccessible(User user) {
                 return true;
             }
-        };
+        };*/
+
+        ExtendGenericFile e = ExtendGenericFile.createExtendGenericFile();
 
 
         /*
@@ -539,13 +541,14 @@ public class AplicacaoResource extends BennuRestResource {
         System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
         System.out.println(" ");
 
+        /*
         GenericFile gf = new GenericFile() {
             @Override
             public boolean isAccessible(User user) {
                 return true;
             }
         };
-
+*/
 
         System.out.println("files in fenix (1):");
         for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
@@ -563,6 +566,7 @@ public class AplicacaoResource extends BennuRestResource {
 
 
 
+        /*
         try{
             String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(gf, convert(file));
             System.out.println("String store(GenericFile, File) returns: " + st);
@@ -580,6 +584,7 @@ public class AplicacaoResource extends BennuRestResource {
 
         System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(gf));
         System.out.println(" ");
+*/
 
         return "ok";
     }
@@ -734,7 +739,7 @@ public class AplicacaoResource extends BennuRestResource {
         Remetente remetente = Remetente.createRemetente(app, nomeRemetente);
         return view(remetente, RemetenteAdapter.class);
     }
-    
+
     @RequestMapping(value = "/{app}/listremetentes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listRemetentes(@PathVariable("app") Aplicacao app) {
 
