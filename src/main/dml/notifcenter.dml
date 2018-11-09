@@ -81,6 +81,9 @@ class Mensagem{
                                           da mensagem através de uma callback*/
 }
 
+class ExtendGenericFile extends .org.fenixedu.bennu.io.domain.GenericFile{
+}
+
 /*
 *  Não compreendi o propósito dos atributos email e password nesta entidde.
 */
