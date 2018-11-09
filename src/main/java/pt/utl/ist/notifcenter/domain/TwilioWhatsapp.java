@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCanal{
-    
+
     private TwilioWhatsapp() {
         super();
         //this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
