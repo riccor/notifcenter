@@ -1,12 +1,11 @@
 package pt.utl.ist.notifcenter.domain;
 
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.io.domain.GenericFile;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 
-public class ExtendGenericFile extends GenericFile {
-
+public class ExtendGenericFile extends ExtendGenericFile_Base {
+    
     public ExtendGenericFile() {
         super();
         this.setStorage(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage());
@@ -23,5 +22,4 @@ public class ExtendGenericFile extends GenericFile {
         egf.init(displayName, filename, content);
         return egf;
     }
-
 }
