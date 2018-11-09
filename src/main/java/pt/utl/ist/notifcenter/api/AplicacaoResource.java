@@ -204,7 +204,7 @@ public class AplicacaoResource extends BennuRestResource {
     //example group id: 281702609977345
     @SkipCSRF
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public String uploadFile(@RequestParam(value = "file", required = false) MultipartFile file) {
+    public String uploadFile(@RequestParam(value = "file", defaultValue = "/home/cr/file.txt") MultipartFile file) {
 
         System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
         System.out.println(" ");
