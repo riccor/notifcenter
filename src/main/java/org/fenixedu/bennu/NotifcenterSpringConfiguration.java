@@ -34,6 +34,9 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport
         @ConfigurationProperty(key = "notifcenter.channels.credentials", defaultValue = "channelscredentials/%s.properties")
         public String notifcenterChannelsCredentials();
 
+        @ConfigurationProperty(key = "notifcenter.mensagem.textocurto.maxsize", defaultValue = "90")
+        public String notifcenterMensagemTextoCurtoMaxSize();
+
         //@ConfigurationProperty(key = "access.token.required", defaultValue = "true")
         //public String accessTokenRequired();
 

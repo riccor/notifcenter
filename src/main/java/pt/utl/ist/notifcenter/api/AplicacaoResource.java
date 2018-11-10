@@ -37,6 +37,7 @@ package pt.utl.ist.notifcenter.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
@@ -52,9 +53,11 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.joda.time.DateTime;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,6 +73,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -153,57 +157,64 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/{app}/{remetente}/sendmessage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{app}/sendmessage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement sendMessage(@PathVariable("app") Aplicacao app,
-                                   @PathVariable("remetente") Remetente remetente,
-                                   @RequestParam("gdest[]") PersistentGroup[] gruposDestinatarios,
                                    @RequestParam("canalnotificacao") CanalNotificacao canalNotificacao,
+                                   @RequestParam("gdest[]") PersistentGroup[] gruposDestinatarios,
                                    @RequestParam("assunto") String assunto,
                                    @RequestParam("textocurto") String textoCurto,
                                    @RequestParam("textolongo") String textoLongo,
-                                   @RequestParam(value = "dataentrega", required = false) DateTime dataEntrega,
+                                   @RequestParam(value = "dataentrega", required = false) @DateTimeFormat(pattern="dd.MM.yyyy HH:mm:ss.SSSZ") DateTime dataEntrega,
                                    @RequestParam(value = "callbackurl", required = false) String callbackUrlEstadoEntrega,
-                                   //@RequestParam(value = "file[]", required = false) GenericFile[] anexos) {
-                                   @RequestParam(value = "file", required = false) MultipartFile anexo) {
-
-        //GenericFile ou MultipartFile?? ^^ multipart muito provavelmente
+                                   @RequestParam(value = "anexos[]", required = false) MultipartFile[] anexos) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
         }
 
-        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
+        //mensagem não tem remetente, tem canalnotificacao
+        /*if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
             return ErrorsAndWarnings.INVALID_REMETENTE_ERROR.toJson();
+        }*/
+
+        for (PersistentGroup group : gruposDestinatarios) {
+            if (!FenixFramework.isDomainObjectValid(group)) {
+                return ErrorsAndWarnings.INVALID_GROUP_ERROR.toJsonWithDetails(group.toString());
+            }
         }
 
-
-        //store file in system
-
-        ///GenericFile gf =...
-
-        //FALTA RESTO (Primeiro perceber o genericfile
-
-        ///String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(gf, anexo);
-        ///System.out.println("to access file refer to: " + st);
-
-        ///System.out.println("getDownloadUrl(): "+ FileDownloadServlet.getDownloadUrl(gf));
-
-        return view(remetente, RemetenteAdapter.class);
-    }
-
-    public static File convert(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
-        convFile.createNewFile();
-        try(InputStream is = file.getInputStream()) {
-            Files.copy(is, convFile.toPath());
+        if (textoCurto.length() > Integer.parseInt(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize())) {
+            return ErrorsAndWarnings.INVALID_MESSAGE_ERROR.toJsonWithDetails("TextoCurto must be at most " +
+                    NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize() + " characters long.");
         }
-        return convFile;
+
+        //TODO FALTAM MAIS VERIFICACOES AQUI
+
+
+        ArrayList<Attachment> attachments = null;
+
+        if (anexos != null) {
+            attachments = new ArrayList<>();
+
+            for (MultipartFile file: anexos) {
+                try {
+                    attachments.add(Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + canalNotificacao.getExternalId() + " " + file.getOriginalFilename(), file.getInputStream()));
+                    //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
+                } catch (IOException e) {
+                    //e.printStackTrace();
+                    return ErrorsAndWarnings.INVALID_MESSAGE_ERROR.toJsonWithDetails("Attachment \"" + file.getOriginalFilename() + "\" could not be loaded.");
+                }
+            }
+        }
+
+        return view(Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments), MensagemAdapter.class);
     }
+
 
     //curl -F 'file=@/home/cr/imgg.png' http://localhost:8080/notifcenter/apiaplicacoes/upload
     @SkipCSRF
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public String uploadFile(@RequestParam(value = "file") MultipartFile file) {
+    public String uploadFile(@RequestParam(value = "file", required = false) MultipartFile file) {
 
         ///System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
 
@@ -212,20 +223,21 @@ public class AplicacaoResource extends BennuRestResource {
         System.out.println(" ");
 
         Attachment at;
-        String toreturn = "ok\n";
+        String toreturn = "no file to save\n";
 
-        try{
-            at = Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
+        if(file != null) {
+            try {
+                at = Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
 
-            System.out.println("getOriginalFileName: " + file.getOriginalFilename());
+                System.out.println("getOriginalFileName: " + file.getOriginalFilename());
 
-            toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
+                toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
 
-            System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(at));
+                System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(at));
 
-        }
-        catch (IOException e){
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return toreturn;
