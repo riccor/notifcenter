@@ -48,6 +48,7 @@ package pt.utl.ist.notifcenter.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.Group;
@@ -219,7 +220,21 @@ public class AplicacaoResource extends BennuRestResource {
             }
         }
 
-        return view(Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments), MensagemAdapter.class);
+        Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments);
+        /*return*/ System.out.println(view(msg, MensagemAdapter.class).toString());
+
+        //TwilioWhatsapp tw = FenixFramework.getDomainObject("281835753963522");
+        TwilioWhatsapp tw = (TwilioWhatsapp) msg.getCanalNotificacao().getCanal();
+
+        ResponseEntity<String> responseEntity = tw.sendMessage("whatsapp:+351961077271", msg.getTextoCurto());
+
+        if (responseEntity == null) {
+            return ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE.toJsonWithDetails("Channel '" + msg.getCanalNotificacao().getCanal().getClass().getName() + "' is unavailable right now. Try again later.");
+            //return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+
+        //return responseEntity.getBody().toString();
+        return new JsonParser().parse(responseEntity.getBody());
     }
 
 
