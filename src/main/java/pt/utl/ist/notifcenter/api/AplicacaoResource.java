@@ -32,7 +32,18 @@
 //"no" http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893059&group=281702609977345
 //"yes" http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893057&group=281702609977345
 
+//CURL
+//curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"id":100}' http://localhost/api/postJsonReader.do
+//curl -H "Content-type: application/json" -X POST -d '{"id":101, "content":"ola1"}' http://localhost:8080/notifcenter/apiaplicacoes/greet
+//curl -H "Content-type: application/json" -X POST -d '{"email":"someemail@awd.com", "password":"pass1"}' http://localhost:8080/notifcenter/apiaplicacoes/canal1
+
+//curl -F 'file=@/home/cr/imgg.png' http://localhost:8080/notifcenter/apiaplicacoes/upload
+
+//curl -H "Content-type: application/x-www-form-urlencoded; charset=utf-8" -x POST -d "param1=value1&param2=value2" http://localhost:8080/notifcenter/apiaplicacoes/xyz
+
+
 package pt.utl.ist.notifcenter.api;
+
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -172,14 +183,18 @@ public class AplicacaoResource extends BennuRestResource {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
         }
 
-        //mensagem não tem remetente, tem canalnotificacao
-        /*if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
-            return ErrorsAndWarnings.INVALID_REMETENTE_ERROR.toJson();
-        }*/
+        if (!FenixFramework.isDomainObjectValid(canalNotificacao)) {
+            return ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR.toJsonWithDetails("canalNotificacao + '" + canalNotificacao.toString() + "' doesnt exist.");
+        }
+        else {
+            if (!app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
+                return ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR.toJson();
+            }
+        }
 
         for (PersistentGroup group : gruposDestinatarios) {
             if (!FenixFramework.isDomainObjectValid(group)) {
-                return ErrorsAndWarnings.INVALID_GROUP_ERROR.toJsonWithDetails(group.toString());
+                return ErrorsAndWarnings.INVALID_GROUP_ERROR.toJsonWithDetails("Group + '" + group.toString() + "' doesnt exist.");
             }
         }
 
@@ -187,9 +202,6 @@ public class AplicacaoResource extends BennuRestResource {
             return ErrorsAndWarnings.INVALID_MESSAGE_ERROR.toJsonWithDetails("TextoCurto must be at most " +
                     NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize() + " characters long.");
         }
-
-        //TODO FALTAM MAIS VERIFICACOES AQUI
-
 
         ArrayList<Attachment> attachments = null;
 
@@ -595,11 +607,54 @@ public class AplicacaoResource extends BennuRestResource {
 
 
 
-    @RequestMapping("/greeting")
+    @RequestMapping("greeting")
     public Greeting greeting(@RequestParam(value = "name", defaultValue="oi!") String name) {
         ///return new Greeting(1234, name);
         return new Greeting();
     }
+
+
+    ////////////////////////////////////////////////
+
+    //FUNCIONA (Greeting não é um domain object)
+    @SkipCSRF
+    @RequestMapping(value = "greet", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Greeting greet(@RequestBody Greeting g) {
+        System.out.println(g.toString());
+        return g;
+    }
+
+    //NAO FUNCIONA (dá o erro: RuntimeException: Failed to invoke ... with no args)
+    @SkipCSRF
+    @RequestMapping(value = "canal1", method = RequestMethod.POST, /*consumes = MediaType.APPLICATION_JSON_VALUE,*/ produces = MediaType.APPLICATION_JSON_VALUE)
+    public Canal canal1(@RequestBody Canal c) {
+        return c;
+    }
+
+    //FUNCIONA
+    @SkipCSRF
+    @RequestMapping(value = "canal2", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement canal2(@RequestBody JsonElement c) {
+        return c;
+    }
+
+    //NAO FUNCIONA (não dá para retornar Canal (dá erro: "Bad object"))
+    @SkipCSRF
+    @RequestMapping(value = "canal3", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Canal canal3(@RequestBody JsonElement c) {
+        return create(c, Canal.class);
+    }
+
+    //FUNCIONA (POSSO USAR ESTE MODO EM ALTERNATIVA AOS @RequestParam's!!
+    //e.g. curl -H "Content-type: application/json" -X POST -d '{"email":"someemail@awd.com", "password":"pass1"}' http://localhost:8080/notifcenter/apiaplicacoes/canal4
+    @SkipCSRF
+    @RequestMapping(value = "canal4", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement canal4(@RequestBody JsonElement c) {
+        return view(create(c, Canal.class), CanalAdapter.class);
+    }
+
+    ////////////////////////////////////////////////
+
 
     @RequestMapping(value = "test1", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement test1() {
@@ -707,3 +762,23 @@ System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).colle
     String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(at));
     System.out.println("byte[] read(GenericFile) returns: " + i);
     System.out.println(" ");*/
+
+
+    /*        try {
+            WrittenEvaluation eval = getDomainObject(oid, WrittenEvaluation.class);
+            if (!StringUtils.isBlank(enrol)) {
+                if (enrol.equalsIgnoreCase(ENROL)) {
+                    EnrolStudentInWrittenEvaluation.runEnrolStudentInWrittenEvaluation(getPerson().getUsername(),
+                            eval.getExternalId());
+                } else if (enrol.equalsIgnoreCase(UNENROL)) {
+                    UnEnrollStudentInWrittenEvaluation.runUnEnrollStudentInWrittenEvaluation(getPerson().getUsername(),
+                            eval.getExternalId());
+                }
+            }
+            return evaluations(response, request, context);
+
+        } catch (Exception e) {
+            throw newApplicationError(Status.PRECONDITION_FAILED, e.getMessage(), e.getMessage());
+        }
+    }
+    */

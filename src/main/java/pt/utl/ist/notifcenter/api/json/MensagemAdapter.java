@@ -34,9 +34,9 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
     public JsonElement view(Mensagem obj, JsonBuilder ctx) {
         JsonObject jFinal = new JsonObject();
 
-        //TODO JSON MESSAGE
+        //TODO JSON MESSAGE             //mostrar no MensagemAdapter o remetente da mensagem!
 
-        JsonArray jArray = new JsonArray();
+        /*JsonArray jArray = new JsonArray();
         jObj.addProperty("canalnotificacao", obj.getCanalNotificacao().getExternalId());
 
 
@@ -59,9 +59,9 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         }
 
         jObj.addProperty("anexos", obj.getAttachmentsSet().stream().map(Attachment::getDisplayName).collect(Collectors.joining(",")));
+            */
 
-
-        return jObj;
+        return jFinal;
     }
 
     private String getRequiredValue(JsonObject obj, String property) {

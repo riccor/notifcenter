@@ -39,7 +39,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         if (obj.has(property)) {
             return obj.get(property).getAsString();
         }
-        throw BennuCoreDomainException.cannotCreateEntity();
+        throw BennuCoreDomainException.cannotCreateEntity(); //"HTTP Status 412 - Não foi possível criar a entidade"
     }
 
 }

@@ -11,7 +11,10 @@ public enum ErrorsAndWarnings {
     INVALID_REMETENTE_ERROR ("invalidRemetente", "Invalid remetente ID."),
     INVALID_USER_ERROR ("invalidUser", "Invalid user ID."),
     INVALID_GROUP_ERROR ("invalidGroup", "Invalid group ID."),
-    INVALID_MESSAGE_ERROR ("invalidMessage", "Invalid message.");
+    INVALID_CANALNOTIFICACAO_ERROR ("invalidCanalNotificacao", "Invalid notification channel."),
+    INVALID_MESSAGE_ERROR ("invalidMessage", "Invalid message."),
+    NOTALLOWED_CANALNOTIFICACAO_ERROR ("notAllowedCanalNotificacao", "No permissions to use such notification channel.");
+
 
     //add new errors/warnings above this line
     //INVALID_ACCESS_TOKEN_ERROR ("invalidAccessToken", "Invalid access token.")

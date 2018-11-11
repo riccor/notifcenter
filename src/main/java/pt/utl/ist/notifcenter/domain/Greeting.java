@@ -30,4 +30,9 @@ public class Greeting {
         return content;
     }
 
+    @Override
+    public String toString() {
+        return "object id " + this.getId() + " with content '" + this.getContent() + "'";
+    }
+
 }
