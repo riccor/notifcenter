@@ -1,6 +1,13 @@
 // Pedidos disponíveis:
 
 //ROBOT
+//http://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html
+
+//1: https://medium.com/@mayfernandes/season-api-testing-ep-01-testes-de-api-com-o-robot-framework-332b72490096
+//keyword driven: https://robotizandotestes.blogspot.com/2017/09/season-tutoriais-ep-03-escrevendo-o.html
+//response: https://robotizandotestes.blogspot.com/2017/11/season-api-testing-ep-02-trabalhando.html
+//stackoverflow: https://stackoverflow.com/questions/45204684/robot-framework-differences-between-suite-setup-and-test-setup
+
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/pedidocanalnotificacao?canal=281835753963522&remetente=281724084813826
 //https://www.twilio.com/console/sms/whatsapp/learn
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
@@ -22,7 +29,8 @@
 
 //METODOS
 //POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
-//GET http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715714?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi/POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
+//GET http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715714?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/listremetentes?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //GET/POST http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281582350893057/adddadoscontacto?canal=281835753963522&data=dados1contacto@ex.com
@@ -463,13 +471,16 @@ public class AplicacaoResource extends BennuRestResource {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
         }
 
+        JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
         for (Remetente r: app.getRemetentesSet()) {
             jArray.add(view(r, RemetenteAdapter.class));
         }
 
-        return jArray;
+        jObj.add("remetentes", jArray);
+
+        return jObj;
     }
 
     //Notifcenter callback
