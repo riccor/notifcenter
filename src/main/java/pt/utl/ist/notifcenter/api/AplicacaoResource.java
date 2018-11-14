@@ -73,6 +73,7 @@ import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.io.domain.FileStorage;
 import org.fenixedu.bennu.io.domain.GenericFile;
 import org.fenixedu.bennu.io.servlet.FileDownloadServlet;
+import org.fenixedu.bennu.io.util.DownloadUtil;
 import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
@@ -273,6 +274,7 @@ public class AplicacaoResource extends BennuRestResource {
                 at = Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
 
                 System.out.println("getOriginalFileName: " + file.getOriginalFilename());
+                System.out.println("externalId: " + at.getExternalId());
 
                 toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
 
@@ -286,6 +288,52 @@ public class AplicacaoResource extends BennuRestResource {
         return toreturn;
     }
 
+    @RequestMapping(value = "/attachments/{fileName}", method = RequestMethod.GET)
+    public HttpEntity<byte[]> downloadFile(@PathVariable("fileName") GenericFile genericFile) {
+
+        /*if (!FenixFramework.isDomainObjectValid(genericFile)) {
+            return ErrorsAndWarnings.INVALID_ATTACHMENT_ERROR.toJson();
+        }*/
+
+        byte[] fileContent = genericFile.getContent();
+
+        HttpHeaders header = new HttpHeaders();
+        //header.setContentType(MediaType.APPLICATION_PDF);
+        header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + genericFile.getDisplayName().replace(" ", "_"));
+        header.setContentLength(fileContent.length);
+
+        return new HttpEntity<>(fileContent, header);
+    }
+
+    @RequestMapping(value = "/listfiles", method = RequestMethod.GET)
+    public JsonElement listFiles() {
+
+        System.out.println("files in fenix (2): " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
+
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        for (GenericFile atch : FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().getFileSet()) {
+            jArray.add(describeFile(atch));
+        }
+
+        jObj.add("files", jArray);
+
+        return jObj;
+    }
+
+    JsonObject describeFile(GenericFile file) {
+        JsonObject postFileJson = new JsonObject();
+        postFileJson.addProperty("name", file.getDisplayName());
+        postFileJson.addProperty("filename", file.getFilename());
+        postFileJson.addProperty("externalId", file.getExternalId());
+        postFileJson.addProperty("creationDate", file.getCreationDate().toString());
+        postFileJson.addProperty("contentType", file.getContentType());
+        postFileJson.addProperty("contentKey", file.getContentKey());
+        postFileJson.addProperty("size", file.getSize());
+        postFileJson.addProperty("downloadUrl", FileDownloadServlet.getDownloadUrl(file));
+        return postFileJson;
+    }
 
     //SAVE FILE FROM OWN COMPUTER(TEST)
     @SkipCSRF
