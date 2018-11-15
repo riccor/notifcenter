@@ -197,7 +197,7 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         if (!FenixFramework.isDomainObjectValid(canalNotificacao)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ATTACHMENT_ERROR, "canalNotificacao + '" + canalNotificacao.toString() + "' doesnt exist.");
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "canalNotificacao + '" + canalNotificacao.toString() + "' doesnt exist.");
         }
         else {
             if (!app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
