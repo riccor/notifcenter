@@ -7,7 +7,6 @@ import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
-import org.fenixedu.bennu.io.servlet.FileDownloadServlet;
 import pt.utl.ist.notifcenter.domain.Attachment;
 
 @DefaultJsonAdapter(Attachment.class)
