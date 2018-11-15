@@ -95,7 +95,6 @@ import pt.utl.ist.notifcenter.ui.NotifcenterController;
 import org.fenixedu.bennu.core.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -263,7 +262,7 @@ public class AplicacaoResource extends BennuRestResource {
         System.out.println(" ");
 
         Attachment at;
-        String toreturn = "no file to save\n";
+        String toReturn = "no file to save\n";
 
         if(file != null) {
             try {
@@ -272,7 +271,8 @@ public class AplicacaoResource extends BennuRestResource {
                 System.out.println("getOriginalFileName: " + file.getOriginalFilename());
                 System.out.println("externalId: " + at.getExternalId());
 
-                toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
+                //toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
+                toReturn = NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + at.getExternalId() + "\n";
 
                 System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(at));
                 System.out.println("file url: " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + at.getExternalId());
@@ -282,7 +282,7 @@ public class AplicacaoResource extends BennuRestResource {
             }
         }
 
-        return toreturn;
+        return toReturn;
     }
 
     @RequestMapping(value = "/attachments/{fileName}", method = RequestMethod.GET)
@@ -295,9 +295,11 @@ public class AplicacaoResource extends BennuRestResource {
         byte[] fileContent = genericFile.getContent();
 
         HttpHeaders header = new HttpHeaders();
-        //header.setContentType(MediaType...);
-        header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + genericFile.getDisplayName().replace(" ", "_"));
-        header.setContentLength(fileContent.length);
+        header.add("Content-Type", genericFile.getContentType());
+        header.add("Content-Disposition", "attachment; filename=" + genericFile.getDisplayName().replace(" ", "_"));
+        header.add("Content-Length", String.valueOf(fileContent.length));
+        //header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + genericFile.getDisplayName().replace(" ", "_"));
+        //header.setContentLength(fileContent.length);
 
         return new HttpEntity<>(fileContent, header);
     }
@@ -319,7 +321,7 @@ public class AplicacaoResource extends BennuRestResource {
         for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
             if (fs.getName().equals(NotifcenterSpringConfiguration.getConfiguration().notifcenterFileStorageName())) {
                 for (GenericFile atch : fs.getFileSet()) {
-                    jArray.add(describeFile(atch));
+                    jArray.add(view(atch, AttachmentAdapter.class));
                 }
                 break;
             }
@@ -329,20 +331,6 @@ public class AplicacaoResource extends BennuRestResource {
 
         return jObj;
     }
-
-    JsonObject describeFile(GenericFile file) {
-        JsonObject postFileJson = new JsonObject();
-        postFileJson.addProperty("name", file.getDisplayName());
-        postFileJson.addProperty("filename", file.getFilename());
-        postFileJson.addProperty("externalId", file.getExternalId());
-        postFileJson.addProperty("creationDate", file.getCreationDate().toString());
-        postFileJson.addProperty("contentType", file.getContentType());
-        postFileJson.addProperty("contentKey", file.getContentKey());
-        postFileJson.addProperty("size", file.getSize());
-        postFileJson.addProperty("downloadUrl", FileDownloadServlet.getDownloadUrl(file));
-        return postFileJson;
-    }
-
 
     //SAVE FILE FROM OWN COMPUTER(TEST)
     @SkipCSRF
