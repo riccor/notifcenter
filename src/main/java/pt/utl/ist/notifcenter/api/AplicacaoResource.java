@@ -298,8 +298,8 @@ public class AplicacaoResource extends BennuRestResource {
         header.add("Content-Type", genericFile.getContentType());
         header.add("Content-Disposition", "attachment; filename=" + genericFile.getDisplayName().replace(" ", "_"));
         header.add("Content-Length", String.valueOf(fileContent.length));
-        //header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + genericFile.getDisplayName().replace(" ", "_"));
-        //header.setContentLength(fileContent.length);
+        ///header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + genericFile.getDisplayName().replace(" ", "_"));
+        ///header.setContentLength(fileContent.length);
 
         return new HttpEntity<>(fileContent, header);
     }

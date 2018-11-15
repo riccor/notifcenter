@@ -6,17 +6,17 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorsAndWarnings {
 
-    INVALID_APP_ERROR ("invalidApp", "Invalid application ID.", HttpStatus.OK),
-    INVALID_APPNAME_ERROR ("applicationNameAlreadyRegistered", "Such application name is already registered.", HttpStatus.OK),
-    INVALID_CHANNEL_ERROR ("invalidCanal", "Invalid channel ID.", HttpStatus.OK),
-    INVALID_REMETENTE_ERROR ("invalidRemetente", "Invalid remetente ID.", HttpStatus.OK),
-    INVALID_USER_ERROR ("invalidUser", "Invalid user ID.", HttpStatus.OK),
-    INVALID_GROUP_ERROR ("invalidGroup", "Invalid group ID.", HttpStatus.OK),
-    INVALID_CANALNOTIFICACAO_ERROR ("invalidCanalNotificacao", "Invalid notification channel.", HttpStatus.OK),
-    INVALID_MESSAGE_ERROR ("invalidMessage", "Invalid message.", HttpStatus.OK),
-    NOTALLOWED_CANALNOTIFICACAO_ERROR ("notAllowedCanalNotificacao", "No permissions to use such notification channel.", HttpStatus.OK),
-    COULD_NOT_DELIVER_MESSAGE ("couldNotDeliverMessage", "Could not deliver message.", HttpStatus.OK),
-    INVALID_ATTACHMENT_ERROR ("attachmentNotFound", "No such attachment was found.", HttpStatus.OK);
+    INVALID_APP_ERROR ("invalidApp", "Invalid application ID.", HttpStatus.NOT_FOUND),
+    INVALID_APPNAME_ERROR ("applicationNameAlreadyRegistered", "Such application name is already registered.", HttpStatus.NOT_FOUND),
+    INVALID_CHANNEL_ERROR ("invalidCanal", "Invalid channel ID.", HttpStatus.NOT_FOUND),
+    INVALID_REMETENTE_ERROR ("invalidRemetente", "Invalid remetente ID.", HttpStatus.NOT_FOUND),
+    INVALID_USER_ERROR ("invalidUser", "Invalid user ID.", HttpStatus.NOT_FOUND),
+    INVALID_GROUP_ERROR ("invalidGroup", "Invalid group ID.", HttpStatus.NOT_FOUND),
+    INVALID_CANALNOTIFICACAO_ERROR ("invalidCanalNotificacao", "Invalid notification channel.", HttpStatus.NOT_FOUND),
+    INVALID_MESSAGE_ERROR ("invalidMessage", "Invalid message.", HttpStatus.NOT_FOUND),
+    NOTALLOWED_CANALNOTIFICACAO_ERROR ("notAllowedCanalNotificacao", "No permissions to use such notification channel.", HttpStatus.FORBIDDEN),
+    COULD_NOT_DELIVER_MESSAGE ("couldNotDeliverMessage", "Could not deliver message.", HttpStatus.REQUEST_TIMEOUT),
+    INVALID_ATTACHMENT_ERROR ("attachmentNotFound", "No such attachment was found.", HttpStatus.NOT_FOUND);
 
     //add new errors/warnings above this line
     //INVALID_ACCESS_TOKEN_ERROR ("invalidAccessToken", "Invalid access token.")
