@@ -346,6 +346,9 @@ public class AplicacaoResource extends BennuRestResource {
         return new HttpEntity<>(fileContent, header);
     }
 
+
+    //Called when NotifcenterException is thrown due to some error
+
     @ExceptionHandler({NotifcenterException.class})
     public ResponseEntity<JsonElement> errorHandler(NotifcenterException ex) {
 
