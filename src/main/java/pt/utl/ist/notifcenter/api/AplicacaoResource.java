@@ -43,6 +43,8 @@
 //http://localhost:8080/notifcenter/apiaplicacoes/listusers
 //http://localhost:8080/notifcenter/apiaplicacoes/listapps
 //http://localhost:8080/notifcenter/apiaplicacoes/listgroups
+//http://localhost:8080/notifcenter/apiaplicacoes/listattachments
+
 //"no" http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893059&group=281702609977345
 //"yes" http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893057&group=281702609977345
 
@@ -65,15 +67,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
-import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
-//import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.io.domain.FileStorage;
 import org.fenixedu.bennu.io.domain.GenericFile;
 import org.fenixedu.bennu.io.servlet.FileDownloadServlet;
-import org.fenixedu.bennu.io.util.DownloadUtil;
 import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
@@ -84,7 +83,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -97,11 +95,9 @@ import pt.utl.ist.notifcenter.ui.NotifcenterController;
 import org.fenixedu.bennu.core.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -134,28 +130,28 @@ public class AplicacaoResource extends BennuRestResource {
     //@SkipAccessTokenValidation //diz ao método preHandler em "NotifcenterInterceptor.java" para aceitar pedidos sem access_token
     @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
     @RequestMapping(value = "/oauth/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String addAplicacao(@RequestParam(value = "description") String description,
+    public JsonElement addAplicacao(@RequestParam(value = "description") String description,
                                @RequestParam(value = "name") String name,
                                @RequestParam(value = "redirect_uri") String redirectUrl,
                                @RequestParam(value = "author", defaultValue = "none") String authorName,
                                @RequestParam(value = "site_url", defaultValue = "none") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
-           return ErrorsAndWarnings.INVALID_APPNAME_ERROR.toJson().toString();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
         }
 
         Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
-        return view(app, AplicacaoAdapter.class).toString();
+        return view(app, AplicacaoAdapter.class);
     }
 
     @RequestMapping(value = "/oauth/viewaplicacao/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String viewAplicacao(@PathVariable("app") Aplicacao app) {
+    public JsonElement viewAplicacao(@PathVariable("app") Aplicacao app) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
-            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
-        return view(app, AplicacaoAdapter.class).toString();
+        return view(app, AplicacaoAdapter.class);
     }
 
     // CANAL NOTIFICACAO
@@ -167,15 +163,15 @@ public class AplicacaoResource extends BennuRestResource {
                                            @RequestParam("remetente") Remetente remetente) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
-            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
         if (!FenixFramework.isDomainObjectValid(canal)) {
-            return ErrorsAndWarnings.INVALID_CHANNEL_ERROR.toJson();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
         }
 
         if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
-            return ErrorsAndWarnings.INVALID_REMETENTE_ERROR.toJson();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
         ///TODO associar canais de notificacao todos ao sistemadenotifiacoes? (sim ou nao? por ccausa do pedidocriacaocanalnotificacao)
@@ -192,31 +188,31 @@ public class AplicacaoResource extends BennuRestResource {
                                    @RequestParam("assunto") String assunto,
                                    @RequestParam("textocurto") String textoCurto,
                                    @RequestParam("textolongo") String textoLongo,
-                                   @RequestParam(value = "dataentrega", required = false) @DateTimeFormat(pattern="dd.MM.yyyy HH:mm:ss.SSSZ") DateTime dataEntrega,
+                                   @RequestParam(value = "dataentrega", required = false) @DateTimeFormat(pattern="dd.MM.yyyy HH:mm:ss.SSS") DateTime dataEntrega,
                                    @RequestParam(value = "callbackurl", required = false) String callbackUrlEstadoEntrega,
                                    @RequestParam(value = "anexos", required = false) MultipartFile[] anexos) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
-            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
         if (!FenixFramework.isDomainObjectValid(canalNotificacao)) {
-            return ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR.toJsonWithDetails("canalNotificacao + '" + canalNotificacao.toString() + "' doesnt exist.");
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ATTACHMENT_ERROR, "canalNotificacao + '" + canalNotificacao.toString() + "' doesnt exist.");
         }
         else {
             if (!app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
-                return ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR.toJson();
+                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR);
             }
         }
 
         for (PersistentGroup group : gruposDestinatarios) {
             if (!FenixFramework.isDomainObjectValid(group)) {
-                return ErrorsAndWarnings.INVALID_GROUP_ERROR.toJsonWithDetails("Group + '" + group.toString() + "' doesnt exist.");
+                throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group + '" + group.toString() + "' doesnt exist.");
             }
         }
 
         if (textoCurto.length() > Integer.parseInt(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize())) {
-            return ErrorsAndWarnings.INVALID_MESSAGE_ERROR.toJsonWithDetails("TextoCurto must be at most " +
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "TextoCurto must be at most " +
                     NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize() + " characters long.");
         }
 
@@ -231,7 +227,7 @@ public class AplicacaoResource extends BennuRestResource {
                     //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
                 } catch (IOException e) {
                     //e.printStackTrace();
-                    return ErrorsAndWarnings.INVALID_MESSAGE_ERROR.toJsonWithDetails("Attachment \"" + file.getOriginalFilename() + "\" could not be loaded.");
+                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment \"" + file.getOriginalFilename() + "\" could not be loaded.");
                 }
             }
         }
@@ -246,7 +242,7 @@ public class AplicacaoResource extends BennuRestResource {
         ResponseEntity<String> responseEntity = tw.sendMessage("whatsapp:+351961077271", msg.getTextoCurto());
 
         if (responseEntity == null) {
-            return ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE.toJsonWithDetails("Channel '" + msg.getCanalNotificacao().getCanal().getClass().getName() + "' is unavailable right now. Try again later.");
+            throw new NotifcenterException(ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE, "Channel '" + msg.getCanalNotificacao().getCanal().getClass().getName() + "' is unavailable right now. Try again later.");
             //return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.NOT_FOUND);
         }
 
@@ -279,6 +275,7 @@ public class AplicacaoResource extends BennuRestResource {
                 toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
 
                 System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(at));
+                System.out.println("file url: " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + at.getExternalId());
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -289,35 +286,46 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @RequestMapping(value = "/attachments/{fileName}", method = RequestMethod.GET)
-    public HttpEntity<byte[]> downloadFile(@PathVariable("fileName") GenericFile genericFile) {
+    public HttpEntity<byte[]> downloadAttachment(@PathVariable("fileName") GenericFile genericFile) {
 
-        /*if (!FenixFramework.isDomainObjectValid(genericFile)) {
-            return ErrorsAndWarnings.INVALID_ATTACHMENT_ERROR.toJson();
-        }*/
+        if (!FenixFramework.isDomainObjectValid(genericFile)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ATTACHMENT_ERROR);
+        }
 
         byte[] fileContent = genericFile.getContent();
 
         HttpHeaders header = new HttpHeaders();
-        //header.setContentType(MediaType.APPLICATION_PDF);
+        //header.setContentType(MediaType...);
         header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + genericFile.getDisplayName().replace(" ", "_"));
         header.setContentLength(fileContent.length);
 
         return new HttpEntity<>(fileContent, header);
     }
 
-    @RequestMapping(value = "/listfiles", method = RequestMethod.GET)
-    public JsonElement listFiles() {
+    @ExceptionHandler({NotifcenterException.class})
+    public ResponseEntity<JsonElement> errorHandler(NotifcenterException ex) {
 
-        System.out.println("files in fenix (2): " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
+        HttpHeaders header = new HttpHeaders();
+
+        return new ResponseEntity<>(ex.getErrorsAndWarnings().toJson(), header, ex.getErrorsAndWarnings().getHttpStatus());
+    }
+
+    @RequestMapping(value = "/listattachments", method = RequestMethod.GET)
+    public JsonElement listAttachments() {
 
         JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
-        for (GenericFile atch : FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().getFileSet()) {
-            jArray.add(describeFile(atch));
+        for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
+            if (fs.getName().equals(NotifcenterSpringConfiguration.getConfiguration().notifcenterFileStorageName())) {
+                for (GenericFile atch : fs.getFileSet()) {
+                    jArray.add(describeFile(atch));
+                }
+                break;
+            }
         }
 
-        jObj.add("files", jArray);
+        jObj.add("attachments", jArray);
 
         return jObj;
     }
@@ -334,6 +342,7 @@ public class AplicacaoResource extends BennuRestResource {
         postFileJson.addProperty("downloadUrl", FileDownloadServlet.getDownloadUrl(file));
         return postFileJson;
     }
+
 
     //SAVE FILE FROM OWN COMPUTER(TEST)
     @SkipCSRF
@@ -449,7 +458,7 @@ public class AplicacaoResource extends BennuRestResource {
     public JsonElement viewCanal(@PathVariable(value = "canal") Canal canal) {
 
         if (!FenixFramework.isDomainObjectValid(canal)) {
-            return ErrorsAndWarnings.INVALID_CHANNEL_ERROR.toJson();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
         }
 
         return view(canal, CanalAdapter.class);
@@ -485,11 +494,11 @@ public class AplicacaoResource extends BennuRestResource {
                                                   @RequestParam(value = "canal") Canal canal) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
-            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
         if (!FenixFramework.isDomainObjectValid(utilizador)) {
-            return ErrorsAndWarnings.INVALID_USER_ERROR.toJson();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
         }
 
         Contacto contacto = Contacto.createContacto(utilizador, canal, dadosContacto);
@@ -505,7 +514,7 @@ public class AplicacaoResource extends BennuRestResource {
     public JsonElement addRemetente(@PathVariable("app") Aplicacao app, @RequestParam(value = "name") String nomeRemetente) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
-            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
         Remetente remetente = Remetente.createRemetente(app, nomeRemetente);
@@ -516,7 +525,7 @@ public class AplicacaoResource extends BennuRestResource {
     public JsonElement listRemetentes(@PathVariable("app") Aplicacao app) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
-            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
         JsonObject jObj = new JsonObject();
@@ -563,7 +572,7 @@ public class AplicacaoResource extends BennuRestResource {
     public String UpdateAppPermissions(@PathVariable("app") Aplicacao app, @RequestParam("permissions") AppPermissions appPermissions) {
 
         if (app == null || !FenixFramework.isDomainObjectValid(app)) {
-            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
         System.out.println("New app permissions: " + appPermissions.name());
@@ -610,7 +619,7 @@ public class AplicacaoResource extends BennuRestResource {
         catch (InterruptedException e) { }
 
         if (!FenixFramework.isDomainObjectValid(app)) {
-            return ErrorsAndWarnings.INVALID_APP_ERROR.toJson().toString();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
         return view(app, AplicacaoAdapter.class).toString();

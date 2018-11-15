@@ -37,6 +37,9 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport
         @ConfigurationProperty(key = "notifcenter.mensagem.textocurto.maxsize", defaultValue = "90")
         public String notifcenterMensagemTextoCurtoMaxSize();
 
+        @ConfigurationProperty(key = "notifcenter.filestorage.name", defaultValue = "notistore-0")
+        public String notifcenterFileStorageName();
+
         //@ConfigurationProperty(key = "access.token.required", defaultValue = "true")
         //public String accessTokenRequired();
 

@@ -2,29 +2,45 @@ package pt.utl.ist.notifcenter.domain;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.springframework.http.HttpStatus;
 
 public enum ErrorsAndWarnings {
 
-    INVALID_APP_ERROR ("invalidApp", "Invalid application ID."),
-    INVALID_APPNAME_ERROR ("applicationNameAlreadyRegistered", "Such application name is already registered."),
-    INVALID_CHANNEL_ERROR ("invalidCanal", "Invalid channel ID."),
-    INVALID_REMETENTE_ERROR ("invalidRemetente", "Invalid remetente ID."),
-    INVALID_USER_ERROR ("invalidUser", "Invalid user ID."),
-    INVALID_GROUP_ERROR ("invalidGroup", "Invalid group ID."),
-    INVALID_CANALNOTIFICACAO_ERROR ("invalidCanalNotificacao", "Invalid notification channel."),
-    INVALID_MESSAGE_ERROR ("invalidMessage", "Invalid message."),
-    NOTALLOWED_CANALNOTIFICACAO_ERROR ("notAllowedCanalNotificacao", "No permissions to use such notification channel."),
-    COULD_NOT_DELIVER_MESSAGE ("couldNotDeliverMessage", "Could not deliver message.");
+    INVALID_APP_ERROR ("invalidApp", "Invalid application ID.", HttpStatus.OK),
+    INVALID_APPNAME_ERROR ("applicationNameAlreadyRegistered", "Such application name is already registered.", HttpStatus.OK),
+    INVALID_CHANNEL_ERROR ("invalidCanal", "Invalid channel ID.", HttpStatus.OK),
+    INVALID_REMETENTE_ERROR ("invalidRemetente", "Invalid remetente ID.", HttpStatus.OK),
+    INVALID_USER_ERROR ("invalidUser", "Invalid user ID.", HttpStatus.OK),
+    INVALID_GROUP_ERROR ("invalidGroup", "Invalid group ID.", HttpStatus.OK),
+    INVALID_CANALNOTIFICACAO_ERROR ("invalidCanalNotificacao", "Invalid notification channel.", HttpStatus.OK),
+    INVALID_MESSAGE_ERROR ("invalidMessage", "Invalid message.", HttpStatus.OK),
+    NOTALLOWED_CANALNOTIFICACAO_ERROR ("notAllowedCanalNotificacao", "No permissions to use such notification channel.", HttpStatus.OK),
+    COULD_NOT_DELIVER_MESSAGE ("couldNotDeliverMessage", "Could not deliver message.", HttpStatus.OK),
+    INVALID_ATTACHMENT_ERROR ("attachmentNotFound", "No such attachment was found.", HttpStatus.OK);
 
     //add new errors/warnings above this line
     //INVALID_ACCESS_TOKEN_ERROR ("invalidAccessToken", "Invalid access token.")
 
     private final String codeId;
     private final String errorDescription;
+    private final HttpStatus httpStatus;
 
-    ErrorsAndWarnings(String codeId, String errorDescription) {
+    ErrorsAndWarnings(String codeId, String errorDescription, HttpStatus httpStatus) {
         this.codeId = codeId;
         this.errorDescription = errorDescription;
+        this.httpStatus = httpStatus;
+    }
+
+    public String getCodeId() {
+        return codeId;
+    }
+
+    public String getErrorDescription() {
+        return errorDescription;
+    }
+
+    public HttpStatus getHttpStatus() {
+        return this.httpStatus;
     }
 
     public JsonElement toJson() {
@@ -34,6 +50,7 @@ public enum ErrorsAndWarnings {
         return jObj;
     }
 
+    /*
     public JsonElement toJsonWithDetails(String details) {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("error", this.codeId);
@@ -41,5 +58,6 @@ public enum ErrorsAndWarnings {
         jObj.addProperty("details", details);
         return jObj;
     }
+    */
 
 }
