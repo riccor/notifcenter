@@ -43,7 +43,8 @@
 //http://localhost:8080/notifcenter/apiaplicacoes/listusers
 //http://localhost:8080/notifcenter/apiaplicacoes/listapps
 //http://localhost:8080/notifcenter/apiaplicacoes/listgroups
-//http://localhost:8080/notifcenter/apiaplicacoes/listattachments
+//http://localhost:8080/notifcenter/apiaplicacoes/attachments/list
+//http://localhost:8080/notifcenter/apiaplicacoes/attachments/{fileName}
 
 //"no" http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893059&group=281702609977345
 //"yes" http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893057&group=281702609977345
@@ -404,7 +405,7 @@ public class AplicacaoResource extends BennuRestResource {
         return jArray;
     }
 
-    @RequestMapping(value = "/listattachments", method = RequestMethod.GET)
+    @RequestMapping(value = "/attachments/list", method = RequestMethod.GET)
     public JsonElement listAttachments() {
 
         JsonObject jObj = new JsonObject();
