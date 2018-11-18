@@ -3,10 +3,11 @@ package pt.utl.ist.notifcenter.api.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
-import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import pt.utl.ist.notifcenter.domain.Aplicacao;
+import pt.utl.ist.notifcenter.utils.NotifcenterException;
+import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 
 @DefaultJsonAdapter(Aplicacao.class)
 public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
@@ -48,7 +49,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         if (obj.has(property)) {
             return obj.get(property).getAsString();
         }
-        throw BennuCoreDomainException.cannotCreateEntity();
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR);
     }
 
 }
@@ -69,7 +70,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
                 return AppPermissions.NONE;
             }
         }
-        throw BennuCoreDomainException.cannotCreateEntity();
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR);
     }
 
 }*/

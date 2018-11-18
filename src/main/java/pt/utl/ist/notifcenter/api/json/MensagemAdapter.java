@@ -1,19 +1,13 @@
 package pt.utl.ist.notifcenter.api.json;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
-import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
-import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
-import org.springframework.cglib.transform.AbstractTransformTask;
-import pt.utl.ist.notifcenter.domain.Attachment;
-import pt.utl.ist.notifcenter.domain.CanalNotificacao;
 import pt.utl.ist.notifcenter.domain.Mensagem;
-
-import java.util.stream.Collectors;
+import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
+import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 @DefaultJsonAdapter(Mensagem.class)
 public class MensagemAdapter implements JsonAdapter<Mensagem> {
@@ -68,7 +62,7 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         if (obj.has(property)) {
             return obj.get(property).getAsString();
         }
-        throw BennuCoreDomainException.cannotCreateEntity();
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR);
     }
 
 }

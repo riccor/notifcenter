@@ -1,9 +1,10 @@
 package pt.utl.ist.notifcenter.domain;
 
-import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
 import org.fenixedu.bennu.oauth.domain.*;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
+import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
+import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class Aplicacao extends Aplicacao_Base {
     public static Aplicacao createAplicacao(final String name, final String redirectUrl, final String description, final String authorName, final String siteUrl) {
 
         if (findByAplicacaoName(name) != null) {
-            throw BennuCoreDomainException.cannotCreateEntity();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR);
         }
 
         Aplicacao app = new Aplicacao();

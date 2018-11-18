@@ -3,10 +3,11 @@ package pt.utl.ist.notifcenter.api.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
-import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import pt.utl.ist.notifcenter.domain.Canal;
+import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
+import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 @DefaultJsonAdapter(Canal.class)
 public class CanalAdapter implements JsonAdapter<Canal> {
@@ -39,7 +40,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         if (obj.has(property)) {
             return obj.get(property).getAsString();
         }
-        throw BennuCoreDomainException.cannotCreateEntity(); //"HTTP Status 412 - Não foi possível criar a entidade"
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR); //"HTTP Status 412 - Não foi possível criar a entidade"
     }
 
 }

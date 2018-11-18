@@ -1,4 +1,4 @@
-package pt.utl.ist.notifcenter.domain;
+package pt.utl.ist.notifcenter.utils;
 
 import org.springframework.util.CollectionUtils;
 

@@ -7,6 +7,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import pt.ist.fenixframework.Atomic;
 import pt.utl.ist.notifcenter.api.HTTPClient;
+import pt.utl.ist.notifcenter.utils.Utils;
 
 import java.util.Arrays;
 import java.util.Map;
