@@ -1,8 +1,9 @@
 package pt.utl.ist.notifcenter.domain;
 
+import org.springframework.http.ResponseEntity;
 import pt.ist.fenixframework.Atomic;
 
-public class Canal extends Canal_Base {
+public class Canal extends Canal_Base implements InterfaceDeCanal{
 
     public Canal() {
         super();
@@ -17,5 +18,11 @@ public class Canal extends Canal_Base {
         return canal;
     }
 
+    public ResponseEntity<String> sendMessage(final String to, final String message) {
+        return null;
+    }
 
+    public ResponseEntity<String> sendMessage(Mensagem msg) {
+        return null;
+    }
 }

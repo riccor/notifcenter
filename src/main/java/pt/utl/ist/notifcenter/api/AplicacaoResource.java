@@ -175,6 +175,11 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
         }
 
+        //opcional (?)
+        if (!FenixFramework.isDomainObjectValid(canal)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
+        }
+
         Contacto contacto = Contacto.createContacto(utilizador, canal, dadosContacto);
 
         return view(contacto, ContactoAdapter.class);
@@ -278,10 +283,8 @@ public class AplicacaoResource extends BennuRestResource {
         if (!FenixFramework.isDomainObjectValid(canalNotificacao)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "canalNotificacao + '" + canalNotificacao.toString() + "' doesnt exist.");
         }
-        else {
-            if (!app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
-                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR);
-            }
+        if (!app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR);
         }
 
         for (PersistentGroup group : gruposDestinatarios) {
@@ -316,18 +319,45 @@ public class AplicacaoResource extends BennuRestResource {
         //System.out.println(view(msg, MensagemAdapter.class).toString());
 
         //TwilioWhatsapp tw = FenixFramework.getDomainObject("281835753963522");
-        TwilioWhatsapp tw = (TwilioWhatsapp) msg.getCanalNotificacao().getCanal();
+        //TwilioWhatsapp tw = (TwilioWhatsapp) msg.getCanalNotificacao().getCanal();
+        Canal tw = msg.getCanalNotificacao().getCanal();
 
-        ResponseEntity<String> responseEntity = tw.sendMessage("whatsapp:+351961077271", msg.getTextoCurto());
+        List<ResponseEntity<String>> responseEntities = new ArrayList<>();
 
-        if (responseEntity == null) {
-            throw new NotifcenterException(ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE, "Channel '" + msg.getCanalNotificacao().getCanal().getClass().getName() + "' is unavailable right now. Try again later.");
-            //return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.NOT_FOUND);
+        for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
+            group.getMembers().forEach(user -> {
+
+                System.out.println("user: " + user.getDisplayName() + " with email: " + user.getEmail());
+
+                for (Contacto contacto : user.getContactosSet()) {
+
+                    if (contacto.getCanal().getExternalId().equals(tw.getExternalId())) {
+                        //responseEntities.add(tw.sendMessage("whatsapp:+351961077271", msg.getTextoCurto()));
+                        responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));
+                    }
+                }
+            });
         }
 
+        //ResponseEntity<String> responseEntity = tw.sendMessage("whatsapp:+351961077271", msg.getTextoCurto());
+
+        responseEntities.stream().forEach(responseEntity -> {
+            if (responseEntity == null) {
+                throw new NotifcenterException(ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE, "Channel '" + msg.getCanalNotificacao().getCanal().getClass().getName() + "' is unavailable right now. Try again later.");
+                //ODO dizer que falhou envio para pessoa X ///
+            }
+        });
+
+        /*if (responseEntity == null) {
+            throw new NotifcenterException(ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE, "Channel '" + msg.getCanalNotificacao().getCanal().getClass().getName() + "' is unavailable right now. Try again later.");
+            //return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }*/
+
         //return responseEntity.getBody().toString();
-        return new JsonParser().parse(responseEntity.getBody());
+        ///return new JsonParser().parse(responseEntity.getBody());
+        return new JsonParser().parse(responseEntities.stream().map(HttpEntity::getBody).collect(Collectors.joining(",")));
     }
+
 
     @RequestMapping(value = "/attachments/{fileName}", method = RequestMethod.GET)
     public HttpEntity<byte[]> downloadAttachment(@PathVariable("fileName") GenericFile genericFile) {
