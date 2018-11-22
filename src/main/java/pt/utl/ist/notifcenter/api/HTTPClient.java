@@ -1,6 +1,7 @@
 package pt.utl.ist.notifcenter.api;
 
 import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
@@ -9,7 +10,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 
 public class HTTPClient {
 
@@ -113,7 +116,9 @@ public class HTTPClient {
 
             @Override
             public void onFailure(Throwable ex) {
-                deferredResult.setErrorResult(ex);
+                ///deferredResult.setErrorResult(ex);
+                ResponseEntity<String> re = new ResponseEntity<>("error", new HttpHeaders() {{ this.set("error", "service is unavailable this moment"); }}, HttpStatus.SERVICE_UNAVAILABLE);
+                deferredResult.setResult(re);
             }
         });
     }

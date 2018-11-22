@@ -264,6 +264,27 @@ public class AplicacaoResource extends BennuRestResource {
         return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
     }
 
+    @RequestMapping(value = "/{app}/{msg}/status", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement getMessageStatus(@PathVariable("app") Aplicacao app, @PathVariable("msg") Mensagem msg) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(msg) || !msg.getCanalNotificacao().getRemetente().getAplicacao().getExternalId().equals(app.getExternalId())) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR);
+        }
+
+        JsonObject jObj = new JsonObject();
+
+        ///TODO
+        ///jObj.addProperty("status", );
+
+        jObj.add("message", view(msg, MensagemAdapter.class));
+
+        return jObj;
+    }
+
     @SkipCSRF
     @RequestMapping(value = "/{app}/sendmessage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement sendMessage(@PathVariable("app") Aplicacao app,
@@ -320,6 +341,9 @@ public class AplicacaoResource extends BennuRestResource {
 
         //TwilioWhatsapp tw = FenixFramework.getDomainObject("281835753963522");
         //TwilioWhatsapp tw = (TwilioWhatsapp) msg.getCanalNotificacao().getCanal();
+
+        ///
+        /*
         Canal tw = msg.getCanalNotificacao().getCanal();
 
         List<ResponseEntity<String>> responseEntities = new ArrayList<>();
@@ -347,6 +371,8 @@ public class AplicacaoResource extends BennuRestResource {
                 //ODO dizer que falhou envio para pessoa X ///
             }
         });
+        */
+        ///
 
         /*if (responseEntity == null) {
             throw new NotifcenterException(ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE, "Channel '" + msg.getCanalNotificacao().getCanal().getClass().getName() + "' is unavailable right now. Try again later.");
@@ -355,7 +381,12 @@ public class AplicacaoResource extends BennuRestResource {
 
         //return responseEntity.getBody().toString();
         ///return new JsonParser().parse(responseEntity.getBody());
-        return new JsonParser().parse(responseEntities.stream().map(HttpEntity::getBody).collect(Collectors.joining(",")));
+        ///return new JsonParser().parse(responseEntities.stream().map(HttpEntity::getBody).collect(Collectors.joining(",")));
+
+        InterfaceDeCanal ic = msg.getCanalNotificacao().getCanal();
+        ic.sendMessage(msg);
+
+        return view(msg, MensagemAdapter.class);
     }
 
 

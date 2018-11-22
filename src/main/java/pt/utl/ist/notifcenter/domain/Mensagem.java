@@ -3,12 +3,13 @@ package pt.utl.ist.notifcenter.domain;
 import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.joda.time.DateTime;
+import org.springframework.http.ResponseEntity;
 import pt.ist.fenixframework.Atomic;
 
 import java.util.ArrayList;
 
 public class Mensagem extends Mensagem_Base {
-    
+
     public Mensagem() {
         super();
     }
@@ -43,5 +44,20 @@ public class Mensagem extends Mensagem_Base {
 
         return mensagem;
     }
+
+
+    /*
+    public String send() {
+
+
+        //TOD usar AsyncHTTP aqui.
+
+        InterfaceDeCanal tw = this.getCanalNotificacao().getCanal();
+
+        tw.sendMessage()
+
+        return "ok";
+    }
+    */
 
 }
