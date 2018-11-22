@@ -383,8 +383,12 @@ public class AplicacaoResource extends BennuRestResource {
         ///return new JsonParser().parse(responseEntity.getBody());
         ///return new JsonParser().parse(responseEntities.stream().map(HttpEntity::getBody).collect(Collectors.joining(",")));
 
-        InterfaceDeCanal ic = msg.getCanalNotificacao().getCanal();
-        ic.sendMessage(msg);
+        new Thread(() -> {
+
+            InterfaceDeCanal ic = msg.getCanalNotificacao().getCanal();
+            ic.sendMessage(msg);
+
+        }).start();
 
         return view(msg, MensagemAdapter.class);
     }
