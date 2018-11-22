@@ -1,20 +1,13 @@
 package pt.utl.ist.notifcenter.servlet;
 
-import org.fenixedu.bennu.oauth.domain.ExternalApplicationScope;
-import org.fenixedu.commons.i18n.LocalizedString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.domain.Aplicacao;
 import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-
-import java.util.Locale;
-import java.util.Set;
 
 @WebListener
 public class NotifcenterInitializer implements ServletContextListener {
@@ -51,8 +44,8 @@ public class NotifcenterInitializer implements ServletContextListener {
         //carregar cache de Aplicacoes (usada para pesquisa rápida de Aplicacoes por nome):
         Aplicacao.loadCacheAplicacoes();
 
-        //carregar scopes:
-        //bootUpMyScopes();
+        ///carregar scopes:
+        ///bootUpMyScopes();
     }
 
     @Override
