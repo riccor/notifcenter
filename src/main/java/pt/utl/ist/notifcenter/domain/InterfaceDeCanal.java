@@ -6,6 +6,6 @@ public interface InterfaceDeCanal {
 
     ResponseEntity<String> sendMessage(final String to, final String message);
 
-    ResponseEntity<String> sendMessage(final Mensagem msg);
+    void sendMessage(final Mensagem msg);
 
 }

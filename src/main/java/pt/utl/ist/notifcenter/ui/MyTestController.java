@@ -29,7 +29,6 @@ public class MyTestController {
         return "mytest/pagina";
     }
 
-    //TODO pagina para visualizar mensagens
     @RequestMapping(value = "/{msg}/view")
     public String messages(@PathVariable("msg") Mensagem msg, Model model) {
 

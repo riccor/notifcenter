@@ -383,12 +383,11 @@ public class AplicacaoResource extends BennuRestResource {
         ///return new JsonParser().parse(responseEntity.getBody());
         ///return new JsonParser().parse(responseEntities.stream().map(HttpEntity::getBody).collect(Collectors.joining(",")));
 
-        new Thread(() -> {
-
-            InterfaceDeCanal ic = msg.getCanalNotificacao().getCanal();
-            ic.sendMessage(msg);
-
-        }).start();
+        //hmm https://howtodoinjava.com/spring-boot2/enableasync-async-controller/
+        ///new Thread(() -> {
+        InterfaceDeCanal ic = msg.getCanalNotificacao().getCanal();
+        ic.sendMessage(msg);
+        ///}).start();
 
         return view(msg, MensagemAdapter.class);
     }

@@ -22,7 +22,7 @@ public class Canal extends Canal_Base implements InterfaceDeCanal{
         return null;
     }
 
-    public ResponseEntity<String> sendMessage(Mensagem msg) {
-        return null;
+    public void sendMessage(Mensagem msg) {
+
     }
 }
