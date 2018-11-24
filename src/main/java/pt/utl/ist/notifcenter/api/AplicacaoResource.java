@@ -221,6 +221,7 @@ public class AplicacaoResource extends BennuRestResource {
 
     //Notifcenter callback
 
+    //TODO  RECEBER AQUI NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS
     @SkipCSRF
     @RequestMapping(value = "notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement notifcenterCallback(HttpServletRequest request) {
@@ -232,6 +233,7 @@ public class AplicacaoResource extends BennuRestResource {
             jObj.addProperty(name, request.getParameter(name));
         }
 
+        System.out.println("####### got new notifcentercallback message!!");
         System.out.println(jObj.toString());
 
         return jObj;
