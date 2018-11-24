@@ -228,7 +228,7 @@ public class AplicacaoResource extends BennuRestResource {
         List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
         JsonObject jObj = new JsonObject();
         jObj.addProperty("response", "elements are these:");
-        jObj.addProperty("status code", request.getHeader("Status"));
+        jObj.addProperty("header names", request.getHeaderNames().toString());
 
 
         for (String name : parameterNames) {
