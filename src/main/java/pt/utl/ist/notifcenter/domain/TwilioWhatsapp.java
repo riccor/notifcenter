@@ -85,7 +85,8 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCa
                         DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                         deferredResult.setResultHandler((Object responseEntity) -> {
 
-                            if (((ResponseEntity<String>) responseEntity).getStatusCode() != HttpStatus.OK) {
+                            if (((ResponseEntity<String>) responseEntity).getStatusCode() != HttpStatus.OK
+                            || ((ResponseEntity<String>) responseEntity).getStatusCode() != HttpStatus.OK) {
                                 ///TODO REGISTAR INSUCESSO DA ENTREGA PARA PESSOA X
                                 msg.addUtilizadoresQueNaoReceberamMensagem(user);
                             }
