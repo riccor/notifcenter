@@ -221,6 +221,13 @@ public class AplicacaoResource extends BennuRestResource {
 
     //Notifcenter callback
 
+    private String getRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            return obj.get(property).getAsString();
+        }
+        return null;
+    }
+
     //TODO  RECEBER AQUI NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS
     @SkipCSRF
     @RequestMapping(value = "notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -230,6 +237,8 @@ public class AplicacaoResource extends BennuRestResource {
         jObj.addProperty("response", "elements are these:");
         jObj.addProperty("header names", request.getHeaderNames().toString());
 
+        String sid = null;
+        String status = null;
 
         for (String name : parameterNames) {
             jObj.addProperty(name, request.getParameter(name));
@@ -237,6 +246,13 @@ public class AplicacaoResource extends BennuRestResource {
 
         System.out.println("####### got new notifcentercallback message!!");
         System.out.println(jObj.toString());
+
+        if((sid = getRequiredValue(jObj, "sid")) != null && (status = getRequiredValue(jObj, "MessageStatus")) != null) {
+            System.out.println("sid: " + sid + ", messsagestatus: " + status + ", MessageSid: " + getRequiredValue(jObj, "MessageSid") + ", AccountSid: " + getRequiredValue(jObj, "AccountSid"));
+        }
+        else {
+            System.out.println("no sid and status");
+        }
 
         return jObj;
     }

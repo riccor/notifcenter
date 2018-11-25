@@ -1,5 +1,8 @@
 package pt.utl.ist.notifcenter.domain;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.springframework.http.HttpMethod;
@@ -19,6 +22,14 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCa
     private TwilioWhatsapp() {
         super();
         //this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
+    }
+
+
+    private String getRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            return obj.get(property).getAsString();
+        }
+        return null;
     }
 
     @Atomic
@@ -92,8 +103,13 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCa
                             }
                             else {
                                 HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity);
-                                ///JsonElement jObj = new JsonParser().parse(((ResponseEntity<String>) responseEntity).getBody());
 
+                                JsonElement jObj = new JsonParser().parse(((ResponseEntity<String>) responseEntity).getBody());
+
+                                String sid = getRequiredValue(jObj.getAsJsonObject(), "sid");
+                                String status = getRequiredValue(jObj.getAsJsonObject(), "status");
+
+                                System.out.println("sid: " + sid + ", status: " + status);
                             }
                         });
                         HTTPClient.restASyncClient(HttpMethod.POST, this.getUri(), header, body, deferredResult);
