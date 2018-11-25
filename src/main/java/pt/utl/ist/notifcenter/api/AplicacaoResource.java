@@ -219,13 +219,16 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
-    //Notifcenter callback
+    @SkipCSRF
+    @RequestMapping(value = "/{canal}/messagedeliverystatus", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, @RequestBody JsonElement body) {
 
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            return obj.get(property).getAsString();
+        if (!FenixFramework.isDomainObjectValid(canal)) {
+            return ErrorsAndWarnings.INVALID_CHANNEL_ERROR.toJson();
         }
-        return null;
+
+
+        return ErrorsAndWarnings.SUCCESS_THANKS.toJson();
     }
 
     //TODO  RECEBER AQUI NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS
@@ -255,6 +258,15 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         return jObj;
+    }
+
+    //Notifcenter callback
+
+    private String getRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            return obj.get(property).getAsString();
+        }
+        return null;
     }
 
 
@@ -962,3 +974,34 @@ System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).colle
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
     */
+
+
+        /*
+            @SkipCSRF
+    @RequestMapping(value = "notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement notifcenterCallback(HttpServletRequest request) {
+        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("response", "elements are these:");
+        jObj.addProperty("header names", request.getHeaderNames().toString());
+
+        String sid = null;
+        String status = null;
+
+        for (String name : parameterNames) {
+            jObj.addProperty(name, request.getParameter(name));
+        }
+
+        System.out.println("####### got new notifcentercallback message!!");
+        System.out.println(jObj.toString());
+
+        if((sid = getRequiredValue(jObj, "sid")) != null && (status = getRequiredValue(jObj, "MessageStatus")) != null) {
+            System.out.println("sid: " + sid + ", messsagestatus: " + status + ", MessageSid: " + getRequiredValue(jObj, "MessageSid") + ", AccountSid: " + getRequiredValue(jObj, "AccountSid"));
+        }
+        else {
+            System.out.println("no sid and status");
+        }
+
+        return jObj;
+    }
+         */

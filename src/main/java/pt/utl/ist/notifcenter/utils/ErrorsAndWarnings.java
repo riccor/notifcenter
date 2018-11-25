@@ -18,8 +18,8 @@ public enum ErrorsAndWarnings {
     COULD_NOT_DELIVER_MESSAGE ("couldNotDeliverMessage", "Could not deliver message.", HttpStatus.REQUEST_TIMEOUT),
     INVALID_ATTACHMENT_ERROR ("attachmentNotFound", "No such attachment was found.", HttpStatus.NOT_FOUND),
     INVALID_ENTITY_ERROR ("cannotCreateEntity", "Invalid entity parameters.", HttpStatus.PRECONDITION_FAILED),
-    NOTALLOWED_VIEWMESSAGE_ERROR ("notAllowedToViewMessage", "No permissions to view such message.", HttpStatus.FORBIDDEN);
-
+    NOTALLOWED_VIEWMESSAGE_ERROR ("notAllowedToViewMessage", "No permissions to view such message.", HttpStatus.FORBIDDEN),
+    SUCCESS_THANKS ("success", "Thank you.", HttpStatus.OK);
 
     //add new errors/warnings above this line
     //INVALID_ACCESS_TOKEN_ERROR ("invalidAccessToken", "Invalid access token.")
