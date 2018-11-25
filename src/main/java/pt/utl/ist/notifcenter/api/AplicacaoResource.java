@@ -227,6 +227,33 @@ public class AplicacaoResource extends BennuRestResource {
             return ErrorsAndWarnings.INVALID_CHANNEL_ERROR.toJson();
         }
 
+        ///TwilioWhatsapp
+        //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
+        if (!body.getAsJsonObject().has("sid")) {
+            return ErrorsAndWarnings.ERROR_MISSING_PARAMETER.toJsonWithDetails("No \"sid\" parameter.");
+        }
+
+        if (!body.getAsJsonObject().has("status")) {
+            return ErrorsAndWarnings.ERROR_MISSING_PARAMETER.toJsonWithDetails("No \"status\" parameter.");
+        }
+        ///}
+
+        String sid = body.getAsJsonObject().get("sid").getAsString();
+        String status = body.getAsJsonObject().get("status").getAsString();
+
+        //Verificar se existe mensagem com o id especificado Nao vejo outra forma de aumentar
+        for (CanalNotificacao canalNotificacao : canal.getCanalNotificacaoSet()) {
+            for (Mensagem mensagem : canalNotificacao.getMensagemSet()) {
+                if (mensagem.getSid().equals(sid)) {
+
+                    //TODO
+                    //HMM MENSAGEM TEM VARIOS SID's, um por cada contacto para o qual foi enviado...
+
+                }
+            }
+
+        }
+
 
         return ErrorsAndWarnings.SUCCESS_THANKS.toJson();
     }

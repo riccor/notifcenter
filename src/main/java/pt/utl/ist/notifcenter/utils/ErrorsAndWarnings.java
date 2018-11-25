@@ -19,7 +19,8 @@ public enum ErrorsAndWarnings {
     INVALID_ATTACHMENT_ERROR ("attachmentNotFound", "No such attachment was found.", HttpStatus.NOT_FOUND),
     INVALID_ENTITY_ERROR ("cannotCreateEntity", "Invalid entity parameters.", HttpStatus.PRECONDITION_FAILED),
     NOTALLOWED_VIEWMESSAGE_ERROR ("notAllowedToViewMessage", "No permissions to view such message.", HttpStatus.FORBIDDEN),
-    SUCCESS_THANKS ("success", "Thank you.", HttpStatus.OK);
+    SUCCESS_THANKS ("success", "Thank you.", HttpStatus.OK),
+    ERROR_MISSING_PARAMETER ("missingParameter", "Missing parameter.", HttpStatus.FORBIDDEN);
 
     //add new errors/warnings above this line
     //INVALID_ACCESS_TOKEN_ERROR ("invalidAccessToken", "Invalid access token.")
@@ -53,7 +54,6 @@ public enum ErrorsAndWarnings {
         return jObj;
     }
 
-    /*
     public JsonElement toJsonWithDetails(String details) {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("error", this.codeId);
@@ -61,6 +61,5 @@ public enum ErrorsAndWarnings {
         jObj.addProperty("details", details);
         return jObj;
     }
-    */
 
 }

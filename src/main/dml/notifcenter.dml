@@ -71,6 +71,7 @@ class Remetente {
 * dados.
 */
 class Mensagem{
+    String sid;
     String assunto;
     String textoCurto;
     String textoLongo;
