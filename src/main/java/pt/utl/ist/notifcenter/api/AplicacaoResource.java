@@ -248,7 +248,18 @@ public class AplicacaoResource extends BennuRestResource {
 
                     //TODO
                     //HMM MENSAGEM TEM VARIOS SID's, um por cada contacto para o qual foi enviado...
+/*                    canal.getContactoSet().contains()
 
+canal.add
+
+        este recurso de canal recebe um sid de uma mensagem enviada para um contacto do canal
+
+                           desse sid tenho de deduzir a mensagem e o contacto
+
+canal.
+                            canal ttt
+
+*/
                 }
             }
 

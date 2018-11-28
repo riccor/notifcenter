@@ -96,12 +96,17 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCa
                         DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                         deferredResult.setResultHandler((Object responseEntity) -> {
 
+
+                            //TODO METER TUDO ISTO ABAIXO NUMA ATOMIC FUNCTION!
+
                             if (((ResponseEntity<String>) responseEntity).getStatusCode() != HttpStatus.OK
                             || ((ResponseEntity<String>) responseEntity).getStatusCode() != HttpStatus.CREATED) {
                                 ///TODO REGISTAR INSUCESSO DA ENTREGA PARA PESSOA X
-                                msg.addUtilizadoresQueNaoReceberamMensagem(user);
+                                msg.addUtilizadoresQueNaoReceberamMensagem(user); //HHHMMMMMM --- tem de ser atomic...
                             }
                             else {
+
+                                //atomic tbm...
                                 HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity);
 
                                 JsonElement jObj = new JsonParser().parse(((ResponseEntity<String>) responseEntity).getBody());
@@ -113,6 +118,8 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCa
                             }
                         });
                         HTTPClient.restASyncClient(HttpMethod.POST, this.getUri(), header, body, deferredResult);
+
+                        break; //no need to search more contacts for this user.
                     }
                 }
             });

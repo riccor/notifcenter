@@ -137,7 +137,7 @@ class Canal {
         }
 
 
-class CanalNotificacao { /*o mesmo que "Configuracao Canal Remetente"*/    
+class CanalNotificacao { /*o mesmo que "Configuracao Canal Remetente"*/
 }
 
 class Contacto {
@@ -149,6 +149,13 @@ class ExemploIdentidade {
     String param2;
 	Integer int1;
 }
+
+
+class EstadoDeEntregaDeMensagemEnviadaAContacto {
+    String idExterno;
+    String estado;
+}
+
 
 
 /** Relations **/
@@ -236,3 +243,27 @@ relation MensagemNaoEntregueAUtilizador {
     Mensagem playsRole mensagem { multiplicity 1..1; }
     .org.fenixedu.bennu.core.domain.User playsRole utilizadoresQueNaoReceberamMensagem { multiplicity 0..*; }
 }
+
+
+
+relation CanalTemEstadosDeEntregaDeMensagensEnviadasAContactos {
+    Canal playsRole canal { multiplicity 1..1; }
+    EstadoDeEntregaDeMensagemEnviadaAContacto playsRole estadoDeEntregaDeMensagemEnviadaAContacto { multiplicity 0..*; }
+}
+
+relation EstadoDeEntregaTemMensagem {
+    Mensagem playsRole mensagem { multiplicity 1..1; }
+    EstadoDeEntregaDeMensagemEnviadaAContacto playsRole estadoDeEntregaDeMensagemEnviadaAContacto { multiplicity 0..*; }
+}
+
+relation EstadoDeEntregaTemContacto {
+    Contacto playsRole contacto { multiplicity 1..1; }
+    EstadoDeEntregaDeMensagemEnviadaAContacto playsRole estadoDeEntregaDeMensagemEnviadaAContacto { multiplicity 0..*; }
+}
+
+
+
+
+
+
+
