@@ -42,11 +42,6 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
             jArrayAttachments.add(attachment.getExternalId());
         }
 
-        JsonArray jArrayUtilizadoresNaoReceberamMensagem = new JsonArray();
-        for (User user : obj.getUtilizadoresQueNaoReceberamMensagemSet()) {
-            jArrayUtilizadoresNaoReceberamMensagem.add(user.getExternalId() + " " + user.getDisplayName());
-        }
-
         JsonObject jObj = new JsonObject();
         jObj.addProperty("canalnotificacao", obj.getCanalNotificacao().getExternalId());
         jObj.addProperty("remetente", obj.getCanalNotificacao().getRemetente().getExternalId());
@@ -58,8 +53,6 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         jObj.addProperty("callbackUrlEstadoEntrega", obj.getCallbackUrlEstadoEntrega());
         jObj.add("attachments", jArrayAttachments);
         jObj.addProperty("link",NotifcenterSpringConfiguration.getConfiguration().notifcenterMyTestUrl() + "/mytest/" + obj.getExternalId() + "/view");
-
-        jObj.add("users who do not received the message", jArrayUtilizadoresNaoReceberamMensagem);
 
         return jObj;
     }

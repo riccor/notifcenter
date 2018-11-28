@@ -12,9 +12,10 @@ public class EstadoDeEntregaDeMensagemEnviadaAContacto extends EstadoDeEntregaDe
     }
 
     @Atomic
-    public static EstadoDeEntregaDeMensagemEnviadaAContacto createEstadoDeEntregaDeMensagemEnviadaAContacto(String idExterno, Canal canal, Mensagem msg, Contacto contacto) {
+    public static EstadoDeEntregaDeMensagemEnviadaAContacto createEstadoDeEntregaDeMensagemEnviadaAContacto(Canal canal, Mensagem msg, Contacto contacto, String idExterno, String estadoEntrega) {
         EstadoDeEntregaDeMensagemEnviadaAContacto estadoDeEntregaDeMensagemEnviadaAContacto = new EstadoDeEntregaDeMensagemEnviadaAContacto(canal, msg, contacto);
         estadoDeEntregaDeMensagemEnviadaAContacto.setIdExterno(idExterno);
+        estadoDeEntregaDeMensagemEnviadaAContacto.setEstadoEntrega(estadoEntrega);
         return estadoDeEntregaDeMensagemEnviadaAContacto;
     }
 

@@ -24,14 +24,6 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCa
         //this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
     }
 
-
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            return obj.get(property).getAsString();
-        }
-        return null;
-    }
-
     @Atomic
     public static TwilioWhatsapp createTwilioWhatsApp(final String accountSID, final String authToken, final String fromPhoneNumber, final String uri) {
         TwilioWhatsapp twilioWhatsapp = new TwilioWhatsapp();
@@ -76,56 +68,73 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCa
         body.put("From", Arrays.asList(this.getFromPhoneNumber()));
         body.put("Body", Arrays.asList(msg.getTextoCurto()));
 
-
-        ///List<ResponseEntity<String>> responseEntities = new ArrayList<>();
-
         for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
             group.getMembers().forEach(user -> {
 
-                System.out.println("user: " + user.getDisplayName() + " with email: " + user.getEmail());
+                //Debug
+                System.out.println("user: " + user.getUsername() + " with email: " + user.getEmail());
+
+                ///boolean userHasNoContactForThisChannel = true;
 
                 for (Contacto contacto : user.getContactosSet()) {
 
                     if (contacto.getCanal().getExternalId().equals(this.getExternalId())) {
                         //responseEntities.add(tw.sendMessage("whatsapp:+351961077271", msg.getTextoCurto()));
                         ///responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));
+
+                        //Debug
+                        System.out.println("has dadosContacto " + contacto.getDadosContacto());
+
                         body.remove("To");
                         body.put("To", Collections.singletonList(contacto.getDadosContacto()));
 
-                        ///HTTPClient.restSyncClient(HttpMethod.POST, this.getUri(), header, body);
                         DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                         deferredResult.setResultHandler((Object responseEntity) -> {
 
+                            handleDeliveryStatus((ResponseEntity<String>) responseEntity, this, msg, contacto);
 
-                            //TODO METER TUDO ISTO ABAIXO NUMA ATOMIC FUNCTION!
-
-                            if (((ResponseEntity<String>) responseEntity).getStatusCode() != HttpStatus.OK
-                            || ((ResponseEntity<String>) responseEntity).getStatusCode() != HttpStatus.CREATED) {
-                                ///TODO REGISTAR INSUCESSO DA ENTREGA PARA PESSOA X
-                                msg.addUtilizadoresQueNaoReceberamMensagem(user); //HHHMMMMMM --- tem de ser atomic...
-                            }
-                            else {
-
-                                //atomic tbm...
-                                HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity);
-
-                                JsonElement jObj = new JsonParser().parse(((ResponseEntity<String>) responseEntity).getBody());
-
-                                String sid = getRequiredValue(jObj.getAsJsonObject(), "sid");
-                                String status = getRequiredValue(jObj.getAsJsonObject(), "status");
-
-                                System.out.println("sid: " + sid + ", status: " + status);
-                            }
                         });
+
+                        //HTTPClient.restSyncClient(HttpMethod.POST, this.getUri(), header, body);
                         HTTPClient.restASyncClient(HttpMethod.POST, this.getUri(), header, body, deferredResult);
 
-                        break; //no need to search more contacts for this user.
+                        ///userHasNoContactForThisChannel = false;
+
+                        break; //no need to search more contacts for this user on this channel.
                     }
                 }
+
+                ///if (userHasNoContactForThisChannel) { }
+
             });
         }
     }
 
+    static void handleDeliveryStatus(ResponseEntity<String> responseEntity, Canal canal, Mensagem msg, Contacto contacto) {
+
+        //Debug
+        HTTPClient.printResponseEntity(responseEntity);
+
+        JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
+        String idExterno = getRequiredValue(jObj.getAsJsonObject(), "sid");
+        String estadoEntrega = getRequiredValue(jObj.getAsJsonObject(), "status");
+
+        EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(canal, msg, contacto, idExterno, estadoEntrega);
+
+        if (responseEntity.getStatusCode() != HttpStatus.OK || responseEntity.getStatusCode() != HttpStatus.CREATED || idExterno == null || estadoEntrega == null) {
+            System.out.println("Failed to send message to " + contacto.getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+        }
+        else {
+            System.out.println("Success on sending message to " + contacto.getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+        }
+    }
+
+    private static String getRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            return obj.get(property).getAsString();
+        }
+        return null;
+    }
 
     //OLD
     public ResponseEntity<String> sendMessage(final String to, final String message){

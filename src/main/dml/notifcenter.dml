@@ -153,7 +153,7 @@ class ExemploIdentidade {
 
 class EstadoDeEntregaDeMensagemEnviadaAContacto {
     String idExterno;
-    String estado;
+    String estadoEntrega;
 }
 
 
@@ -239,10 +239,11 @@ relation AttachmentGroup {
 }
 */
 
-relation MensagemNaoEntregueAUtilizador {
+/*relation MensagemNaoEntregueAUtilizador {
     Mensagem playsRole mensagem { multiplicity 1..1; }
     .org.fenixedu.bennu.core.domain.User playsRole utilizadoresQueNaoReceberamMensagem { multiplicity 0..*; }
 }
+*/
 
 
 

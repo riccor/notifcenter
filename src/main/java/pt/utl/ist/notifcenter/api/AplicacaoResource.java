@@ -219,6 +219,9 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
+
+    //RECEBER NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS:
+
     @SkipCSRF
     @RequestMapping(value = "/{canal}/messagedeliverystatus", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, @RequestBody JsonElement body) {
@@ -227,6 +230,7 @@ public class AplicacaoResource extends BennuRestResource {
             return ErrorsAndWarnings.INVALID_CHANNEL_ERROR.toJson();
         }
 
+        ///TODO -> NOTA: NAO É PRECISO FAZER ESTA DISTINCAO, POIS ESTE RECURSO ESTARÀ DENTRO DE TWILIOWHATSAPPRESOURCE.java!
         ///TwilioWhatsapp
         //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
         if (!body.getAsJsonObject().has("sid")) {
@@ -238,38 +242,38 @@ public class AplicacaoResource extends BennuRestResource {
         }
         ///}
 
-        String sid = body.getAsJsonObject().get("sid").getAsString();
-        String status = body.getAsJsonObject().get("status").getAsString();
+        String idExterno = body.getAsJsonObject().get("sid").getAsString();
+        String estadoEntrega = body.getAsJsonObject().get("status").getAsString();
+        boolean knownIdExterno = false;
 
-        //Verificar se existe mensagem com o id especificado Nao vejo outra forma de aumentar
-        for (CanalNotificacao canalNotificacao : canal.getCanalNotificacaoSet()) {
-            for (Mensagem mensagem : canalNotificacao.getMensagemSet()) {
-                if (mensagem.getSid().equals(sid)) {
+        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+            if (e.getIdExterno().equals(idExterno)) {
 
-                    //TODO
-                    //HMM MENSAGEM TEM VARIOS SID's, um por cada contacto para o qual foi enviado...
-/*                    canal.getContactoSet().contains()
+                e.setEstadoEntrega(estadoEntrega);
+                knownIdExterno = true;
 
-canal.add
-
-        este recurso de canal recebe um sid de uma mensagem enviada para um contacto do canal
-
-                           desse sid tenho de deduzir a mensagem e o contacto
-
-canal.
-                            canal ttt
-
-*/
-                }
+                break;
             }
-
         }
 
-
-        return ErrorsAndWarnings.SUCCESS_THANKS.toJson();
+        if (!knownIdExterno) {
+            return ErrorsAndWarnings.UNKNOWN_MESSAGE_SID.toJson();
+        }
+        else {
+            return ErrorsAndWarnings.SUCCESS_THANKS.toJson();
+        }
     }
 
-    //TODO  RECEBER AQUI NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS
+    private String getRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            return obj.get(property).getAsString();
+        }
+        return null;
+    }
+
+
+    //Notifcenter callback
+
     @SkipCSRF
     @RequestMapping(value = "notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement notifcenterCallback(HttpServletRequest request) {
@@ -288,23 +292,16 @@ canal.
         System.out.println("####### got new notifcentercallback message!!");
         System.out.println(jObj.toString());
 
+        /*
         if((sid = getRequiredValue(jObj, "sid")) != null && (status = getRequiredValue(jObj, "MessageStatus")) != null) {
             System.out.println("sid: " + sid + ", messsagestatus: " + status + ", MessageSid: " + getRequiredValue(jObj, "MessageSid") + ", AccountSid: " + getRequiredValue(jObj, "AccountSid"));
         }
         else {
             System.out.println("no sid and status");
         }
+        */
 
         return jObj;
-    }
-
-    //Notifcenter callback
-
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            return obj.get(property).getAsString();
-        }
-        return null;
     }
 
 
@@ -334,7 +331,7 @@ canal.
         return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
     }
 
-    @RequestMapping(value = "/{app}/{msg}/status", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{app}/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement getMessageStatus(@PathVariable("app") Aplicacao app, @PathVariable("msg") Mensagem msg) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
@@ -346,12 +343,16 @@ canal.
         }
 
         JsonObject jObj = new JsonObject();
-
-        ///TODO
-        ///jObj.addProperty("status", );
-
         jObj.add("message", view(msg, MensagemAdapter.class));
 
+        JsonArray jArray = new JsonArray();
+
+        //TODO -> done.
+        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : msg.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+            jArray.add(view(e, EstadoDeEntregaDeMensagemEnviadaAContactoAdapter.class));
+        }
+
+        jObj.add("status", jArray);
         return jObj;
     }
 

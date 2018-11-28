@@ -27,7 +27,7 @@ public class ContactoAdapter implements JsonAdapter<Contacto> {
     @Override
     public JsonElement view(Contacto obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("utilizador", obj.getUtilizador().getName());
+        jObj.addProperty("utilizador", obj.getUtilizador().getUsername());
         jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("dados", obj.getDadosContacto());
         return jObj;
