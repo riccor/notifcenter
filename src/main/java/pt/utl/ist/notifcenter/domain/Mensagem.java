@@ -7,6 +7,7 @@ import org.joda.time.LocalDateTime;
 import org.springframework.http.ResponseEntity;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.DomainObject;
+import pt.ist.fenixframework.FenixFramework;
 
 import java.util.ArrayList;
 
@@ -56,11 +57,10 @@ public class Mensagem extends Mensagem_Base {
 
     @Atomic
     public void deleteMessage() {
-        this.setCanalNotificacao(null);
-        //TODO AGORA!
-        //this.
+        ///this.setCanalNotificacao(null);
+        //NOTA - pode nao ser assim que se apaga um domain object correctamente
+        this.deleteDomainObject();
     }
-
 
     /*
     public String send() {
