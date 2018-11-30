@@ -1,5 +1,13 @@
 // Pedidos disponíveis:
 
+//PARA TESTAR:
+//curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"sid":"algumsid", "status":"algumstatus"}' http://localhost:8080/notifcenter/apiaplicacoes/281835753963522/messagedeliverystatus
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/pedidocanalnotificacao?canal=281835753963522&remetente=281724084813826
+//GET http://localhost:8080/notifcenter/apiaplicacoes/{msg}/deliverystatus
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto2&textocurto=aparecenowhatsppcurto2&textolongo=algumtextolongo2
+//GET http://localhost:8080/notifcenter/apiaplicacoes/listmensagens
+
+
 //ROBOT
 //http://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html
 
@@ -19,7 +27,7 @@
 //user "admin": 281582350893057
 //grupo "managers": 281702609977345
 //canal TwilioWhatsApp: 281835753963522
-//pedido de canal de notificacao: 281775624421380
+//pedido de canal de notificacao: 281775624421380 <--- criar novo!
 
 //REGISTAR APP:
 //POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
@@ -66,7 +74,6 @@ package pt.utl.ist.notifcenter.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
@@ -230,7 +237,7 @@ public class AplicacaoResource extends BennuRestResource {
             return ErrorsAndWarnings.INVALID_CHANNEL_ERROR.toJson();
         }
 
-        ///TODO -> NOTA: NAO É PRECISO FAZER ESTA DISTINCAO, POIS ESTE RECURSO ESTARÀ DENTRO DE TWILIOWHATSAPPRESOURCE.java!
+        //TODO - NAO É PRECISO FAZER ESTA DISTINCAO, POIS ESTE RECURSO ESTARÀ DENTRO DE TWILIOWHATSAPPRESOURCE.java!
         ///TwilioWhatsapp
         //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
         if (!body.getAsJsonObject().has("sid")) {
@@ -282,9 +289,6 @@ public class AplicacaoResource extends BennuRestResource {
         jObj.addProperty("response", "elements are these:");
         jObj.addProperty("header names", request.getHeaderNames().toString());
 
-        String sid = null;
-        String status = null;
-
         for (String name : parameterNames) {
             jObj.addProperty(name, request.getParameter(name));
         }
@@ -293,6 +297,9 @@ public class AplicacaoResource extends BennuRestResource {
         System.out.println(jObj.toString());
 
         /*
+        String sid = null;
+        String status = null;
+
         if((sid = getRequiredValue(jObj, "sid")) != null && (status = getRequiredValue(jObj, "MessageStatus")) != null) {
             System.out.println("sid: " + sid + ", messsagestatus: " + status + ", MessageSid: " + getRequiredValue(jObj, "MessageSid") + ", AccountSid: " + getRequiredValue(jObj, "AccountSid"));
         }
@@ -326,24 +333,23 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         ///TODO associar canais de notificacao todos ao sistemadenotifiacoes? (sim ou nao? por ccausa do pedidocriacaocanalnotificacao)
-        CanalNotificacao pedidoCriacaoCanalNotificacao = CanalNotificacao.createPedidoCriacaoCanalNotificacao(canal, remetente);
+        CanalNotificacao pedidoCriacaoCanalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente, true);
 
         return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
     }
 
-    @RequestMapping(value = "/{app}/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement getMessageStatus(@PathVariable("app") Aplicacao app, @PathVariable("msg") Mensagem msg) {
+    @RequestMapping(value = "/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement getMessageStatus(/*@PathVariable("app") Aplicacao app,*/ @PathVariable("msg") Mensagem msg) {
 
-        if (!FenixFramework.isDomainObjectValid(app)) {
+        /*if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
-        }
+        }*/
 
-        if (!FenixFramework.isDomainObjectValid(msg) || !msg.getCanalNotificacao().getRemetente().getAplicacao().getExternalId().equals(app.getExternalId())) {
+        if (!FenixFramework.isDomainObjectValid(msg)) { // || !msg.getCanalNotificacao().getRemetente().getAplicacao().getExternalId().equals(app.getExternalId())) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR);
         }
 
-        JsonObject jObj = new JsonObject();
-        jObj.add("message", view(msg, MensagemAdapter.class));
+        JsonObject jObj = view(msg, MensagemAdapter.class).getAsJsonObject();
 
         JsonArray jArray = new JsonArray();
 
@@ -353,6 +359,7 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         jObj.add("status", jArray);
+
         return jObj;
     }
 
@@ -495,7 +502,7 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
-    // LIST CANAIS / APPS / USERS / GROUPS / ATTACHMENTS
+    // LIST CANAIS / APPS / USERS / GROUPS / ATTACHMENTS / MENSAGENS
 
     @RequestMapping(value = "/listcanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listCanais() {
@@ -565,8 +572,21 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
+    @RequestMapping(value = "/listmensagens", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listMensagens() {
 
+        JsonArray jArray = new JsonArray();
 
+        for (Canal c: SistemaNotificacoes.getInstance().getCanaisSet()) {
+            for (CanalNotificacao cn : c.getCanalNotificacaoSet()) {
+                for (Mensagem msg : cn.getMensagemSet()) {
+                    jArray.add(view(msg, MensagemAdapter.class));
+                }
+            }
+        }
+
+        return jArray;
+    }
 
 
 
@@ -674,26 +694,6 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
-    //TWILIO
-
-    @RequestMapping(value = "/twiliowhatsappsms", method = RequestMethod.POST)
-    public ResponseEntity<String> twilioWhatsappSMS(@RequestParam(value = "message",
-            defaultValue = "mensagem teste do notifcenter 1 =D") String message) {
-
-        ///comentar depois de usar:
-        ///TwilioWhatsapp twilioWhatsapp = TwilioWhatsapp.createTwilioWhatsappFromPropertiesFile("twiliowhatsapp1");
-        TwilioWhatsapp twilioWhatsapp = FenixFramework.getDomainObject("281835753963522");
-
-        ResponseEntity<String> responseEntity = twilioWhatsapp.sendMessage("whatsapp:+351961077271", message);
-
-        if (responseEntity == null) {
-            return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.NOT_FOUND);
-        }
-
-        return responseEntity;
-    }
-
-
     /* IGNORAR - UpdateAppPermissions
     @SkipCSRF
     @RequestMapping(value = "/{app}/updatepermissions", method = RequestMethod.POST)
@@ -711,8 +711,28 @@ public class AplicacaoResource extends BennuRestResource {
     }*/
 
 
-    // IGNORAR TWILIO
+    //IGNORAR TWILIO
 
+    /* ///
+    @RequestMapping(value = "/twiliowhatsappsms", method = RequestMethod.POST)
+    public ResponseEntity<String> twilioWhatsappSMS(@RequestParam(value = "message",
+            defaultValue = "mensagem teste do notifcenter 1 =D") String message) {
+
+        ///comentar depois de usar:
+        ///TwilioWhatsapp twilioWhatsapp = TwilioWhatsapp.createTwilioWhatsappFromPropertiesFile("twiliowhatsapp1");
+        TwilioWhatsapp twilioWhatsapp = FenixFramework.getDomainObject("281835753963522");
+
+        ResponseEntity<String> responseEntity = twilioWhatsapp.sendMessage("whatsapp:+351961077271", message);
+
+        if (responseEntity == null) {
+            return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+
+        return responseEntity;
+    }
+    */
+
+    /*
     @RequestMapping(value = "/twilio", method = RequestMethod.GET)
     public String twilio() {
         Twilio.createTwilio("some_sid", "some_auth_token");
@@ -721,7 +741,7 @@ public class AplicacaoResource extends BennuRestResource {
 
         return "emails dos canais: " + t;
     }
-
+    */
 
     @RequestMapping(value = "/twiliowhatsappfile", method = RequestMethod.GET)
     public String twiliofile() {

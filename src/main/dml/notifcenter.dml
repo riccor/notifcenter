@@ -138,6 +138,7 @@ class Canal {
 
 
 class CanalNotificacao { /*o mesmo que "Configuracao Canal Remetente"*/
+    boolean aguardandoAprovacao;
 }
 
 class Contacto {
@@ -181,10 +182,12 @@ relation SistemaNotificacoesTemCanais {
 }
 
 
+/*
 relation SistemaNotificacoesTemPedidosCriacaoCanalNotificacao {
     SistemaNotificacoes playsRole sistemaNotificacoes { multiplicity 1..1; }
     CanalNotificacao playsRole pedidosCriacaoCanalNotificacao { multiplicity 0..*; }
 }
+*/
 
 
 /* Sendo o CanalNotificacao uma relação trenária, então ele associa-se a um

@@ -28,6 +28,7 @@ public class CanalNotificacaoAdapter implements JsonAdapter<CanalNotificacao> {
         jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("remetente", obj.getRemetente().getExternalId());
         jObj.addProperty("canal", obj.getCanal().getExternalId());
+        jObj.addProperty("aguardandoAprovacao", obj.getAguardandoAprovacao());
         return jObj;
     }
 

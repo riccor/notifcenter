@@ -74,7 +74,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCa
                 //Debug
                 System.out.println("user: " + user.getUsername() + " with email: " + user.getEmail());
 
-                ///boolean userHasNoContactForThisChannel = true;
+                boolean userHasNoContactForThisChannel = true;
 
                 for (Contacto contacto : user.getContactosSet()) {
 
@@ -98,13 +98,15 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCa
                         //HTTPClient.restSyncClient(HttpMethod.POST, this.getUri(), header, body);
                         HTTPClient.restASyncClient(HttpMethod.POST, this.getUri(), header, body, deferredResult);
 
-                        ///userHasNoContactForThisChannel = false;
+                        userHasNoContactForThisChannel = false;
 
                         break; //no need to search more contacts for this user on this channel.
                     }
                 }
 
-                ///if (userHasNoContactForThisChannel) { }
+                if (userHasNoContactForThisChannel) {
+                    System.out.println("user " + user.getUsername() + " has no contact for twiliowhatsapp");
+                }
 
             });
         }
@@ -136,7 +138,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCa
         return null;
     }
 
-    //OLD
+    /*OLD
     public ResponseEntity<String> sendMessage(final String to, final String message){
 
         MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
@@ -153,5 +155,6 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCa
 
         return HTTPClient.restSyncClient(HttpMethod.POST, this.getUri(), header, body);
     }
+    */
 
 }
