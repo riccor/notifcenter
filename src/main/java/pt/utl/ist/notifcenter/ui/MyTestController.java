@@ -23,7 +23,7 @@ public class MyTestController {
         return Authenticate.getUser();
     }
 
-    @RequestMapping("/")
+    @RequestMapping
     public String home(Model model) {
         //model.addAttribute("world", "World");
         return "mytest/pagina";

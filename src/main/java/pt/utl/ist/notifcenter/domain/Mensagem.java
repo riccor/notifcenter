@@ -3,6 +3,7 @@ package pt.utl.ist.notifcenter.domain;
 import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.springframework.http.ResponseEntity;
 import pt.ist.fenixframework.Atomic;
 
@@ -28,8 +29,12 @@ public class Mensagem extends Mensagem_Base {
         mensagem.setTextoCurto(textoCurto);
         mensagem.setTextoLongo(textoLongo);
 
-        if (callbackUrlEstadoEntrega != null)
+        if (callbackUrlEstadoEntrega != null) {
             mensagem.setCallbackUrlEstadoEntrega(callbackUrlEstadoEntrega);
+        }
+        else {
+            mensagem.setCallbackUrlEstadoEntrega("none");
+        }
 
         if (attachments != null) {
             for (Attachment at : attachments) {
@@ -39,7 +44,10 @@ public class Mensagem extends Mensagem_Base {
 
         if (dataEntrega != null) {
             mensagem.setDataEntrega(dataEntrega);
-            //fazer algo
+            //TODO fazer algo para enviar mensagem no futuro
+        }
+        else {
+            mensagem.setDataEntrega(DateTime.now());
         }
 
         return mensagem;

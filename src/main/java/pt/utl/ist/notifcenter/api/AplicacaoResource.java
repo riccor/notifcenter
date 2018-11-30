@@ -5,7 +5,7 @@
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/pedidocanalnotificacao?canal=281835753963522&remetente=281724084813826
 //GET http://localhost:8080/notifcenter/apiaplicacoes/{msg}/deliverystatus
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto2&textocurto=aparecenowhatsppcurto2&textolongo=algumtextolongo2
-//GET http://localhost:8080/notifcenter/apiaplicacoes/listmensagens
+//GET http://localhost:8080/notifcenter/apiaplicacoes/listmessages
 
 
 //ROBOT
@@ -572,8 +572,8 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
-    @RequestMapping(value = "/listmensagens", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement listMensagens() {
+    @RequestMapping(value = "/listmessages", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listMessages() {
 
         JsonArray jArray = new JsonArray();
 
