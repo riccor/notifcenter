@@ -588,6 +588,31 @@ public class AplicacaoResource extends BennuRestResource {
         return jArray;
     }
 
+    @RequestMapping(value = "/deletemessages/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement deleteMessages(@RequestParam(value = "msg", required = false) Mensagem msg) {
+
+        JsonArray jArray = new JsonArray();
+
+        for (Canal c: SistemaNotificacoes.getInstance().getCanaisSet()) {
+            for (CanalNotificacao cn : c.getCanalNotificacaoSet()) {
+                for (Mensagem msg2 : cn.getMensagemSet()) {
+                    jArray.add(msg2.getExternalId());
+                    if (FenixFramework.isDomainObjectValid(msg)) {
+                        if (msg.equals(msg2)) {
+                            msg2.deleteMessage();
+                            return jArray;
+                        }
+                    }
+                    else {
+                        msg.deleteMessage();
+                    }
+                }
+            }
+        }
+
+        return jArray;
+    }
+
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////

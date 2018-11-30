@@ -6,6 +6,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.springframework.http.ResponseEntity;
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.DomainObject;
 
 import java.util.ArrayList;
 
@@ -51,6 +52,13 @@ public class Mensagem extends Mensagem_Base {
         }
 
         return mensagem;
+    }
+
+    @Atomic
+    public void deleteMessage() {
+        this.setCanalNotificacao(null);
+        //TODO AGORA!
+        //this.
     }
 
 
