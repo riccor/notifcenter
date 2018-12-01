@@ -3,7 +3,7 @@ package pt.utl.ist.notifcenter.domain;
 //import org.springframework.http.ResponseEntity;
 import pt.ist.fenixframework.Atomic;
 
-public abstract class Canal extends Canal_Base implements InterfaceDeCanal{
+public abstract class Canal extends Canal_Base {
 
     public Canal() {
         super();
@@ -27,9 +27,7 @@ public abstract class Canal extends Canal_Base implements InterfaceDeCanal{
     }
     */
 
-    public void sendMessage(Mensagem msg) {
-        System.out.print("NAO DEVERIA IMPRIMIR ISTO (SENDMESSAGE em Canal.java");
-    }
+    public abstract void sendMessage(Mensagem msg);
 
     @Atomic
     public void delete() {

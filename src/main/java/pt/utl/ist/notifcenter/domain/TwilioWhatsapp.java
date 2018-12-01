@@ -17,7 +17,7 @@ import pt.utl.ist.notifcenter.utils.Utils;
 
 import java.util.*;
 
-public class TwilioWhatsapp extends TwilioWhatsapp_Base implements InterfaceDeCanal{
+public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
     private TwilioWhatsapp() {
         super();
