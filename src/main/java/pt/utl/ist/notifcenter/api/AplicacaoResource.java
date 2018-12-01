@@ -588,7 +588,7 @@ public class AplicacaoResource extends BennuRestResource {
         return jArray;
     }
 
-    @RequestMapping(value = "/deletemessages/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/deletemessages", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement deleteMessages(@RequestParam(value = "msg", required = false) Mensagem msg) {
 
         JsonArray jArray = new JsonArray();
@@ -599,12 +599,12 @@ public class AplicacaoResource extends BennuRestResource {
                     jArray.add(msg2.getExternalId());
                     if (FenixFramework.isDomainObjectValid(msg)) {
                         if (msg.equals(msg2)) {
-                            msg2.deleteMessage();
+                            msg2.delete();
                             return jArray;
                         }
                     }
                     else {
-                        msg.deleteMessage();
+                        msg.delete();
                     }
                 }
             }
@@ -700,13 +700,13 @@ public class AplicacaoResource extends BennuRestResource {
     // CANAL (TEST)
 
     //POST http://localhost:8080/notifcenter/apiaplicacoes/canal?email=email2&password=password2
-    @RequestMapping(value = "/canal", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    /*@RequestMapping(value = "/canal", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement canal(@RequestParam(value = "email") String email, @RequestParam(value = "password") String password) {
 
         Canal canal = Canal.createCanal(email, password);
 
         return view(canal, CanalAdapter.class);
-    }
+    }*/
 
     @RequestMapping(value = "/viewcanal/{canal}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement viewCanal(@PathVariable(value = "canal") Canal canal) {

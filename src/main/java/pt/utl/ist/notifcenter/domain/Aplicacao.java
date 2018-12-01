@@ -125,5 +125,17 @@ public class Aplicacao extends Aplicacao_Base {
     }
     */
 
+    public void delete() {
+        map.remove(this.getName(), this);
+
+        for (Remetente r : this.getRemetentesSet()) {
+            r.delete();
+        }
+
+        this.getSistemaNotificacoes().removeAplicacoes(this);
+        this.setSistemaNotificacoes(null);
+
+        this.deleteDomainObject();
+    }
 
 }

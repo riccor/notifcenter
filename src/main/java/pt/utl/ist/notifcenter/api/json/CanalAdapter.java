@@ -14,10 +14,15 @@ public class CanalAdapter implements JsonAdapter<Canal> {
 
     @Override
     public Canal create(JsonElement jsonElement, JsonBuilder ctx) {
+
+        /*
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String email = getRequiredValue(jObj, "email");
         String password = getRequiredValue(jObj, "password");
         return Canal.createCanal(email, password);
+        */
+
+        return null; //Classe Canal é abstrato
     }
 
     @Override

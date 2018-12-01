@@ -35,5 +35,19 @@ public class Contacto extends Contacto_Base {
         return contacto;
     }
 
+    @Atomic
+    public void delete() {
+        this.getUtilizador().removeContactos(this);
+        this.setUtilizador(null); ///
+
+        this.getCanal().removeContacto(this);
+        this.setCanal(null); ///
+
+        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : this.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+            e.delete();
+        }
+
+        this.deleteDomainObject();
+    }
 
 }

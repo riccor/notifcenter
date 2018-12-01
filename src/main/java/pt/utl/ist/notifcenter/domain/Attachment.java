@@ -12,6 +12,8 @@ public class Attachment extends Attachment_Base {
 
     public Attachment() {
         super();
+        this.setMensagem(null); //criado antes de mensagem existir.
+        ///this.setMensagem(msg); //TODO poderá ser necessário criar mensagem antes.
     }
 
     @Override
@@ -40,5 +42,10 @@ public class Attachment extends Attachment_Base {
         return egf;
     }
 
+    @Atomic
+    public void delete() {
+        this.setMensagem(null);
+        this.deleteDomainObject();
+    }
 
 }

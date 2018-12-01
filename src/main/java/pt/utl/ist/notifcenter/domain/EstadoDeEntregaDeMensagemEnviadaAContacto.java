@@ -19,4 +19,18 @@ public class EstadoDeEntregaDeMensagemEnviadaAContacto extends EstadoDeEntregaDe
         return estadoDeEntregaDeMensagemEnviadaAContacto;
     }
 
+    @Atomic
+    public void delete() {
+        this.getCanal().removeEstadoDeEntregaDeMensagemEnviadaAContacto(this);
+        this.setCanal(null); ///
+
+        this.getMensagem().removeEstadoDeEntregaDeMensagemEnviadaAContacto(this);
+        this.setMensagem(null); ///
+
+        this.getContacto().removeEstadoDeEntregaDeMensagemEnviadaAContacto(this);
+        this.setContacto(null); ///
+
+        this.deleteDomainObject();
+    }
+
 }

@@ -1,5 +1,6 @@
 package pt.utl.ist.notifcenter.domain;
 
+import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import pt.ist.fenixframework.Atomic;
 
 public class Remetente extends Remetente_Base {
@@ -20,6 +21,30 @@ public class Remetente extends Remetente_Base {
     public Remetente updateRemetenteName(final String nome) {
         this.setNome(nome);
         return this;
+    }
+
+    public void addGroupToSendMesssages(PersistentGroup group) {
+        this.addGrupos(group);
+    }
+
+    public void removeGroupToSendMesssages(PersistentGroup group) {
+        this.removeGrupos(group);
+    }
+
+    public void delete() {
+        for (PersistentGroup pg : this.getGruposSet()) {
+            pg.removeRemetente(this);
+            this.removeGrupos(pg); ///
+        }
+
+        for (CanalNotificacao cn : this.getCanaisNotificacaoSet()) {
+            cn.delete();
+        }
+
+        this.getAplicacao().removeRemetentes(this);
+        this.setAplicacao(null); ///
+
+        this.deleteDomainObject();
     }
 
 }

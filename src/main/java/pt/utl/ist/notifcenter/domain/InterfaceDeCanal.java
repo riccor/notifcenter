@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface InterfaceDeCanal {
 
-    ResponseEntity<String> sendMessage(final String to, final String message);
+    //ResponseEntity<String> sendMessage(final String to, final String message);
 
     void sendMessage(final Mensagem msg);
 

@@ -230,7 +230,7 @@ relation MensagemEnviadaParaGrupos {
 
 /* Relação para evitar byteArrays na base de dados */
 relation MensagemAttachments {
-    Mensagem playsRole mensagem { multiplicity 0..*; }
+    Mensagem playsRole mensagem { multiplicity 1..1; }
     Attachment playsRole attachments { multiplicity *; }
 }
 

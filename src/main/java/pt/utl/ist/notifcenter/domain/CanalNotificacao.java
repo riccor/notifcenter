@@ -30,6 +30,21 @@ public class CanalNotificacao extends CanalNotificacao_Base {
     }
     */
 
+    @Atomic
+    public void delete() {
+        this.getRemetente().removeCanaisNotificacao(this);
+        this.setRemetente(null); ///
+
+        this.getCanal().removeCanalNotificacao(this);
+        this.setCanal(null); ///
+
+        //NOTA: ao eliminar canal de notificacao todas as mensagens associadas a ele sao também eliminadas
+        for (Mensagem m : this.getMensagemSet()) {
+            m.delete();
+        }
+
+        this.deleteDomainObject();
+    }
+
 
 }
-

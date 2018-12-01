@@ -56,9 +56,24 @@ public class Mensagem extends Mensagem_Base {
     }
 
     @Atomic
-    public void deleteMessage() {
-        ///this.setCanalNotificacao(null);
-        //NOTA - pode nao ser assim que se apaga um domain object correctamente
+    public void delete() {
+        this.getCanalNotificacao().removeMensagem(this);
+        this.setCanalNotificacao(null); ///
+
+        for (PersistentGroup g : this.getGruposDestinatariosSet()) {
+            g.removeMensagem(this);
+            this.removeGruposDestinatarios(g); ///
+        }
+
+        for (Attachment a : this.getAttachmentsSet()) {
+            a.delete();
+            //this.removeAttachments(a);
+        }
+
+        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : this.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+            e.delete();
+        }
+
         this.deleteDomainObject();
     }
 
