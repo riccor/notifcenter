@@ -15,6 +15,7 @@ public enum ErrorsAndWarnings {
     INVALID_CANALNOTIFICACAO_ERROR ("invalidCanalNotificacao", "Invalid notification channel.", HttpStatus.NOT_FOUND),
     INVALID_MESSAGE_ERROR ("invalidMessage", "Invalid message.", HttpStatus.NOT_FOUND),
     NOTALLOWED_CANALNOTIFICACAO_ERROR ("notAllowedCanalNotificacao", "No permissions to use such notification channel.", HttpStatus.FORBIDDEN),
+    NOTALLOWED_GROUP_ERROR ("notAllowedGroup", "No permissions to send messages to group.", HttpStatus.FORBIDDEN),
     COULD_NOT_DELIVER_MESSAGE ("couldNotDeliverMessage", "Could not deliver message.", HttpStatus.REQUEST_TIMEOUT),
     INVALID_ATTACHMENT_ERROR ("attachmentNotFound", "No such attachment was found.", HttpStatus.NOT_FOUND),
     INVALID_ENTITY_ERROR ("cannotCreateEntity", "Invalid entity parameters.", HttpStatus.PRECONDITION_FAILED),

@@ -120,17 +120,45 @@ public class AplicacaoResource extends BennuRestResource {
     Numa API REST, neste caso o resource é aplicação, e queremos adicionar
     remetentes a essa aplicação. Para mim faria mais sentido ter algo do género:
 
+        //API Aplicacao (/apiaplicacoes):
+
        /adicionarAplicacao
        /listarAplicacoes
        /{app}
        /{app}/update
-       /{app}/listarRemetentes
+       /{app}/remover
        /{app}/adicionarRemetente
+       /{app}/listarRemetentes
        /{app}/{remetente}
        /{app}/{remetente}/update
        /{app}/{remetente}/remover
+       /{app}/{remetente}/adicionarGrupoDestinatario
+       /{app}/{remetente}/listarGruposDestinatarios
 
-    O que fazer: orientar a API ao recurso.
+
+       /{app}/pedidoCanalNotificacao
+       /{app}/sendmessage
+
+
+       //API canal (/apicanais):
+
+       /adicionarCanal
+       /listarCanais
+       /{canal}
+       /{canal}/update
+       // /{canal}/listarCanaisNotificacao
+       // /{canal}/listarContactos
+
+
+       //API utilizador (/apiutilizadores):
+
+       /listarUtilizadores
+       /{utilizador}
+       /{utilizador}/adicionarContacto
+       /{utilizador}/listarContactos
+
+
+        O que fazer: orientar a API ao recurso.
     */
 
 
@@ -389,6 +417,10 @@ public class AplicacaoResource extends BennuRestResource {
         for (PersistentGroup group : gruposDestinatarios) {
             if (!FenixFramework.isDomainObjectValid(group)) {
                 throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group + '" + group.toString() + "' doesnt exist.");
+            }
+
+            if (canalNotificacao.getRemetente().getGruposSet().stream().noneMatch(e -> e.equals(group))) {
+                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "No permissions to send messages to group + '" + group.getExternalId() + "'!");
             }
         }
 
