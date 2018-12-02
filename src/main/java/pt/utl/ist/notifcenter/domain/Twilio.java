@@ -23,7 +23,7 @@ public class Twilio extends Twilio_Base {
 
     @Override
     public void sendMessage(Mensagem msg) {
-        System.out.print("NAO DEVERIA IMPRIMIR ISTO (SENDMESSAGE em Twilio.java");
+
     }
 
 }

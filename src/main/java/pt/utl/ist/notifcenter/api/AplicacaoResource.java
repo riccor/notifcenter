@@ -463,7 +463,7 @@ public class AplicacaoResource extends BennuRestResource {
 
         //hmm https://howtodoinjava.com/spring-boot2/enableasync-async-controller/
         ///new Thread(() -> {
-        InterfaceDeCanal ic = msg.getCanalNotificacao().getCanal();
+        Canal ic = msg.getCanalNotificacao().getCanal();
         ic.sendMessage(msg);
         ///}).start();
 

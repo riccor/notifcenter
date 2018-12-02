@@ -5,5 +5,10 @@ public class Twitter extends Twitter_Base {
     public Twitter() {
         super();
     }
-    
+
+    @Override
+    public void sendMessage(Mensagem msg) {
+
+    }
+
 }
