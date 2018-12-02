@@ -532,14 +532,9 @@ public class AplicacaoResource extends BennuRestResource {
         HttpHeaders header = new HttpHeaders();
 
         if (ex.getMoreDetails() != null) {
-            //TODO
-            System.out.println("details: " + ex.getMoreDetails());
-
             return new ResponseEntity<>(ex.getErrorsAndWarnings().toJsonWithDetails(ex.getMoreDetails()), header, ex.getErrorsAndWarnings().getHttpStatus());
         }
         else {
-            System.out.println("no details to show");
-
             return new ResponseEntity<>(ex.getErrorsAndWarnings().toJson(), header, ex.getErrorsAndWarnings().getHttpStatus());
         }
     }
