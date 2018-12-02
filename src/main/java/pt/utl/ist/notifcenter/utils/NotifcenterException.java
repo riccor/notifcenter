@@ -11,8 +11,13 @@ public class NotifcenterException extends RuntimeException {
         return errorsAndWarnings;
     }
 
+    public String getMoreDetails() {
+        return moreDetails;
+    }
+
     public NotifcenterException(ErrorsAndWarnings errorsAndWarnings) {
         this.errorsAndWarnings = errorsAndWarnings;
+        this.moreDetails = null;
     }
 
     public NotifcenterException(ErrorsAndWarnings errorsAndWarnings, String moreDetails) {
