@@ -269,11 +269,11 @@ public class AplicacaoResource extends BennuRestResource {
         ///TwilioWhatsapp
         //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
         if (!body.getAsJsonObject().has("sid")) {
-            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No 'sid' parameter.");
+            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No \"sid\" parameter.");
         }
 
         if (!body.getAsJsonObject().has("status")) {
-            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No 'status' parameter.");
+            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No \"status\" parameter.");
         }
         ///}
 
@@ -409,7 +409,7 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         if (!FenixFramework.isDomainObjectValid(canalNotificacao)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "canalNotificacao + '" + canalNotificacao.toString() + "' doesnt exist.");
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "canalNotificacao + \"" + canalNotificacao.toString() + "\" doesnt exist.");
         }
         if (!app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR);
@@ -417,11 +417,11 @@ public class AplicacaoResource extends BennuRestResource {
 
         for (PersistentGroup group : gruposDestinatarios) {
             if (!FenixFramework.isDomainObjectValid(group)) {
-                throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group + '" + group.toString() + "' doesnt exist.");
+                throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group + \"" + group.toString() + "\" doesnt exist.");
             }
 
             if (canalNotificacao.getRemetente().getGruposSet().stream().noneMatch(e -> e.equals(group))) {
-                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "No permissions to send messages to group + '" + group.getExternalId() + "'!");
+                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "No permissions to send messages to group + \"" + group.getExternalId() + "\"!");
             }
         }
 
@@ -441,7 +441,7 @@ public class AplicacaoResource extends BennuRestResource {
                     //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
                 } catch (IOException e) {
                     //e.printStackTrace();
-                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment '" + file.getOriginalFilename() + "' could not be loaded.");
+                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment \"" + file.getOriginalFilename() + "\" could not be loaded.");
                 }
             }
         }
@@ -478,7 +478,7 @@ public class AplicacaoResource extends BennuRestResource {
 
         responseEntities.stream().forEach(responseEntity -> {
             if (responseEntity == null) {
-                throw new NotifcenterException(ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE, "Channel '" + msg.getCanalNotificacao().getCanal().getClass().getName() + "' is unavailable right now. Try again later.");
+                throw new NotifcenterException(ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE, "Channel \"" + msg.getCanalNotificacao().getCanal().getClass().getName() + "\" is unavailable right now. Try again later.");
                 //ODO dizer que falhou envio para pessoa X ///
             }
         });
@@ -486,7 +486,7 @@ public class AplicacaoResource extends BennuRestResource {
         ///
 
         /*if (responseEntity == null) {
-            throw new NotifcenterException(ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE, "Channel '" + msg.getCanalNotificacao().getCanal().getClass().getName() + "' is unavailable right now. Try again later.");
+            throw new NotifcenterException(ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE, "Channel \"" + msg.getCanalNotificacao().getCanal().getClass().getName() + "\" is unavailable right now. Try again later.");
             //return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.NOT_FOUND);
         }*/
 
@@ -984,7 +984,7 @@ public class AplicacaoResource extends BennuRestResource {
     public String test9() {
         User user = User.findByUsername("admin");
         if(user != null)
-            return "username '" + user.getName() + "' exists!";
+            return "username \"" + user.getName() + "\" exists!";
         else
             return "non-existing user name";
     }
