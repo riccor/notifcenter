@@ -262,18 +262,18 @@ public class AplicacaoResource extends BennuRestResource {
     public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, @RequestBody JsonElement body) {
 
         if (!FenixFramework.isDomainObjectValid(canal)) {
-            return ErrorsAndWarnings.INVALID_CHANNEL_ERROR.toJson();
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
         }
 
         //TODO - NAO É PRECISO FAZER ESTA DISTINCAO, POIS ESTE RECURSO ESTARÀ DENTRO DE TWILIOWHATSAPPRESOURCE.java!
         ///TwilioWhatsapp
         //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
         if (!body.getAsJsonObject().has("sid")) {
-            return ErrorsAndWarnings.ERROR_MISSING_PARAMETER.toJsonWithDetails("No \"sid\" parameter.");
+            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No \"sid\" parameter.");
         }
 
         if (!body.getAsJsonObject().has("status")) {
-            return ErrorsAndWarnings.ERROR_MISSING_PARAMETER.toJsonWithDetails("No \"status\" parameter.");
+            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No \"status\" parameter.");
         }
         ///}
 
@@ -292,10 +292,10 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         if (!knownIdExterno) {
-            return ErrorsAndWarnings.UNKNOWN_MESSAGE_SID.toJson();
+            throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
         }
         else {
-            return ErrorsAndWarnings.SUCCESS_THANKS.toJson();
+            throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
         }
     }
 
