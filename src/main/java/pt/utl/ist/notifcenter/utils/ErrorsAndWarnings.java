@@ -22,7 +22,7 @@ public enum ErrorsAndWarnings {
     NOTALLOWED_VIEWMESSAGE_ERROR ("notAllowedToViewMessage", "No permissions to view such message.", HttpStatus.FORBIDDEN),
     SUCCESS_THANKS ("success", "Thank you.", HttpStatus.OK),
     ERROR_MISSING_PARAMETER ("missingParameter", "Missing parameter.", HttpStatus.FORBIDDEN),
-    UNKNOWN_MESSAGE_SID ("missingParameter", "Missing parameter.", HttpStatus.NOT_FOUND);
+    UNKNOWN_MESSAGE_SID ("unknownMessageSid", "Unknown message SID.", HttpStatus.NOT_FOUND);
 
 
     //add new errors/warnings above this line

@@ -269,11 +269,11 @@ public class AplicacaoResource extends BennuRestResource {
         ///TwilioWhatsapp
         //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
         if (!body.getAsJsonObject().has("sid")) {
-            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No \"sid\" parameter.");
+            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No 'sid' parameter.");
         }
 
         if (!body.getAsJsonObject().has("status")) {
-            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No \"status\" parameter.");
+            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No 'status' parameter.");
         }
         ///}
 
@@ -298,6 +298,7 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
         }
     }
+
 
     private String getRequiredValue(JsonObject obj, String property) {
         if (obj.has(property)) {
@@ -440,7 +441,7 @@ public class AplicacaoResource extends BennuRestResource {
                     //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
                 } catch (IOException e) {
                     //e.printStackTrace();
-                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment \"" + file.getOriginalFilename() + "\" could not be loaded.");
+                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment '" + file.getOriginalFilename() + "' could not be loaded.");
                 }
             }
         }
@@ -531,9 +532,14 @@ public class AplicacaoResource extends BennuRestResource {
         HttpHeaders header = new HttpHeaders();
 
         if (ex.getMoreDetails() != null) {
+            //TODO
+            System.out.println("details: " + ex.getMoreDetails());
+
             return new ResponseEntity<>(ex.getErrorsAndWarnings().toJsonWithDetails(ex.getMoreDetails()), header, ex.getErrorsAndWarnings().getHttpStatus());
         }
         else {
+            System.out.println("no details to show");
+
             return new ResponseEntity<>(ex.getErrorsAndWarnings().toJson(), header, ex.getErrorsAndWarnings().getHttpStatus());
         }
     }
