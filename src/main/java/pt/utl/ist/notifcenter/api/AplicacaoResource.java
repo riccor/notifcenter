@@ -361,11 +361,44 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
+        for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
+            if (cn.getCanal().equals(canal)) {
+                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RESOURCE, "Such notification channel was already created before.");
+            }
+        }
+
         ///TODO associar canais de notificacao todos ao sistemadenotifiacoes? (sim ou nao? por ccausa do pedidocriacaocanalnotificacao)
         CanalNotificacao pedidoCriacaoCanalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente, true);
 
         return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
     }
+
+    //debug purposes:
+    @SkipCSRF
+    @RequestMapping(value = "approvecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement approveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
+
+        if (!FenixFramework.isDomainObjectValid(cn)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
+        }
+
+        cn.approveCanalNotificacao();
+
+        return view(cn, CanalNotificacaoAdapter.class);
+    }
+    @SkipCSRF
+    @RequestMapping(value = "disapprovecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement disapproveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
+
+        if (!FenixFramework.isDomainObjectValid(cn)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
+        }
+
+        cn.disapproveCanalNotificacao();
+
+        return view(cn, CanalNotificacaoAdapter.class);
+    }
+
 
     @RequestMapping(value = "/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement getMessageStatus(/*@PathVariable("app") Aplicacao app,*/ @PathVariable("msg") Mensagem msg) {

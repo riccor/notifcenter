@@ -31,6 +31,17 @@ public class CanalNotificacao extends CanalNotificacao_Base {
     */
 
     @Atomic
+    public void approveCanalNotificacao() {
+        this.setAguardandoAprovacao(false);
+    }
+
+    @Atomic
+    public void disapproveCanalNotificacao() {
+        this.setAguardandoAprovacao(true);
+    }
+
+
+    @Atomic
     public void delete() {
         this.getRemetente().removeCanaisNotificacao(this);
         this.setRemetente(null); ///
