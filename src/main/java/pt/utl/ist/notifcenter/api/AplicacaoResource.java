@@ -2,12 +2,23 @@
 
 //PARA TESTAR:
 //curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"sid":"algumsid", "status":"algumstatus"}' http://localhost:8080/notifcenter/apiaplicacoes/281835753963522/messagedeliverystatus
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/pedidocanalnotificacao?canal=281835753963522&remetente=281724084813826
 //POST http://localhost:8080/notifcenter/apiaplicacoes/approvecanalnotificacao?cn=281775624421378
 //POST http://localhost:8080/notifcenter/apiaplicacoes/disapprovecanalnotificacao?cn=281775624421378
 //GET http://localhost:8080/notifcenter/apiaplicacoes/{msg}/deliverystatus
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421378&gdest=281702609977345&assunto=umassunto3&textocurto=aparecenowhatsppcurto3&textolongo=algumtextolongo3
 //GET http://localhost:8080/notifcenter/apiaplicacoes/listmessages
+
+
+//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/listremetentes
+//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826 //{app}/{remetente}
+//curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"nameee":"novo_nome"}' http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/update
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/delete
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/addGrupoDestinario?group=awd
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/removeGrupoDestinario?group=awd
+//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/listGruposDestinatarios
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/pedidocanalnotificacao?canal=281835753963522
+
+
 
 
 //ROBOT
@@ -18,7 +29,6 @@
 //response: https://robotizandotestes.blogspot.com/2017/11/season-api-testing-ep-02-trabalhando.html
 //stackoverflow: https://stackoverflow.com/questions/45204684/robot-framework-differences-between-suite-setup-and-test-setup
 
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/pedidocanalnotificacao?canal=281835753963522&remetente=281724084813826
 //https://www.twilio.com/console/sms/whatsapp/learn
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421378&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
@@ -41,10 +51,8 @@
 //POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
 //GET http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715714?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
-//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/listremetentes?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //GET/POST http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281582350893057/adddadoscontacto?canal=281835753963522&data=dados1contacto@ex.com
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/pedidocanalnotificacao?canal=281835753963522&remetente=281724084813826
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421378&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
 //UTEIS:
@@ -136,12 +144,15 @@ public class AplicacaoResource extends BennuRestResource {
        /{app}/{remetente}/delete
        /{app}/{remetente}/addGrupoDestinario
        /{app}/{remetente}/removeGrupoDestinario
-       /{app}/{remetente}/listarGruposDestinatarios
+       /{app}/{remetente}/listGruposDestinatarios
 
-
-       /{app}/pedidoCanalNotificacao
+       /{app}/{remetente}/pedidoCanalNotificacao
+       /{app}/{remetente}/{canalnotificacao}/delete
+       /{app}/{remetente}/listCanaisNotificacao
+       
        /{app}/sendmessage
-
+       
+      
 
        //API canal (/apicanais):
 
@@ -253,7 +264,7 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/{app}/{remetente}/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{app}/{remetente}/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateRemetente(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente,
                                        @RequestBody JsonElement body) {
 
@@ -342,8 +353,8 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
-    @RequestMapping(value = "/{app}/{remetente}/listargruposdestinatarios", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement listarGruposDestinatarios(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente) {
+    @RequestMapping(value = "/{app}/{remetente}/listGruposDestinatarios", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listGruposDestinatarios(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -385,6 +396,114 @@ public class AplicacaoResource extends BennuRestResource {
         jObj.add("remetentes", jArray);
 
         return jObj;
+    }
+
+
+    // CANAL NOTIFICACAO
+
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/{remetente}/pedidocanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement pedidoCanalNotificacao(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente,
+                                              @RequestParam("canal") Canal canal) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(canal)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
+        }
+
+        for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
+            if (cn.getCanal().equals(canal)) {
+                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RESOURCE, "Notification channel id " + cn.getExternalId()  + " for user " + remetente.getExternalId() + " and channel " + canal.getExternalId() + " was already created before.");
+            }
+        }
+
+        CanalNotificacao pedidoCriacaoCanalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente, true);
+
+        return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/{remetente}/{canalnotificacao}/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement deleteCanalNotificacao(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente,
+                                              @PathVariable("canalnotificacao") CanalNotificacao cn) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(cn) || !remetente.getCanaisNotificacaoSet().contains(cn)){
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
+        }
+
+        JsonObject jObj = new JsonObject();
+        jObj.add("deleted canalnotificacao", view(cn, CanalNotificacaoAdapter.class));
+
+        cn.delete();
+
+        return jObj;
+    }
+
+    @RequestMapping(value = "/{app}/{remetente}/listcanaisnotificacao", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listCanaisNotificacao(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
+        }
+
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        for (CanalNotificacao cn: remetente.getCanaisNotificacaoSet()) {
+            jArray.add(view(cn, CanalNotificacaoAdapter.class));
+        }
+
+        jObj.addProperty("appId", app.getExternalId());
+        jObj.addProperty("remetenteId", remetente.getExternalId());
+        jObj.add("canais notificacao", jArray);
+
+        return jObj;
+    }
+
+
+    //debug purposes:
+    @SkipCSRF
+    @RequestMapping(value = "approvecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement approveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
+
+        if (!FenixFramework.isDomainObjectValid(cn)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
+        }
+
+        cn.approveCanalNotificacao();
+
+        return view(cn, CanalNotificacaoAdapter.class);
+    }
+    @SkipCSRF
+    @RequestMapping(value = "disapprovecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement disapproveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
+
+        if (!FenixFramework.isDomainObjectValid(cn)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
+        }
+
+        cn.disapproveCanalNotificacao();
+
+        return view(cn, CanalNotificacaoAdapter.class);
     }
 
 
@@ -474,65 +593,6 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
-    // CANAL NOTIFICACAO
-
-    @SkipCSRF
-    @RequestMapping(value = "/{app}/pedidocanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement pedidoCanalNotificacao(@PathVariable("app") Aplicacao app,
-                                           @RequestParam("canal") Canal canal,
-                                           @RequestParam("remetente") Remetente remetente) {
-
-        if (!FenixFramework.isDomainObjectValid(app)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
-        }
-
-        if (!FenixFramework.isDomainObjectValid(canal)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
-        }
-
-        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
-        }
-
-        for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
-            if (cn.getCanal().equals(canal)) {
-                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RESOURCE, "Notification channel id " + cn.getExternalId()  + " was already created before.");
-            }
-        }
-
-        ///TODO associar canais de notificacao todos ao sistemadenotifiacoes? (sim ou nao? por ccausa do pedidocriacaocanalnotificacao)
-        CanalNotificacao pedidoCriacaoCanalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente, true);
-
-        return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
-    }
-
-    //debug purposes:
-    @SkipCSRF
-    @RequestMapping(value = "approvecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement approveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
-
-        if (!FenixFramework.isDomainObjectValid(cn)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
-        }
-
-        cn.approveCanalNotificacao();
-
-        return view(cn, CanalNotificacaoAdapter.class);
-    }
-    @SkipCSRF
-    @RequestMapping(value = "disapprovecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement disapproveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
-
-        if (!FenixFramework.isDomainObjectValid(cn)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
-        }
-
-        cn.disapproveCanalNotificacao();
-
-        return view(cn, CanalNotificacaoAdapter.class);
-    }
-
-
     @RequestMapping(value = "/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement getMessageStatus(/*@PathVariable("app") Aplicacao app,*/ @PathVariable("msg") Mensagem msg) {
 
@@ -574,11 +634,11 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
-        if (!FenixFramework.isDomainObjectValid(canalNotificacao)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "canalNotificacao + " + canalNotificacao.toString() + " doesnt exist.");
+        if (!FenixFramework.isDomainObjectValid(canalNotificacao) || !app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "Such canalnotificacao doesnt exist.");
         }
-        if (!app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
-            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR);
+        if (!canalNotificacao.isApproved()) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR, "Canal notificacao id " + canalNotificacao.getExternalId() + " is awaiting approval by system administrators.");
         }
 
         for (PersistentGroup group : gruposDestinatarios) {

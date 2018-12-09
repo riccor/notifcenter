@@ -40,6 +40,9 @@ public class CanalNotificacao extends CanalNotificacao_Base {
         this.setAguardandoAprovacao(true);
     }
 
+    public boolean isApproved() {
+        return !this.getAguardandoAprovacao();
+    }
 
     @Atomic
     public void delete() {
