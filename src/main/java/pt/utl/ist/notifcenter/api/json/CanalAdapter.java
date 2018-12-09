@@ -37,7 +37,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         jObj.addProperty("type", obj.getClass().getSimpleName());
         jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("email", obj.getEmail());
-        jObj.addProperty("password", obj.getPassword());
+        ///jObj.addProperty("password", obj.getPassword());
         return jObj;
     }
 
@@ -45,7 +45,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         if (obj.has(property)) {
             return obj.get(property).getAsString();
         }
-        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR); //"HTTP Status 412 - Não foi possível criar a entidade"
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!"); //"HTTP Status 412 - Não foi possível criar a entidade"
     }
 
 }

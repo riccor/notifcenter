@@ -49,7 +49,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         if (obj.has(property)) {
             return obj.get(property).getAsString();
         }
-        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR);
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
     }
 
 }
@@ -70,7 +70,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
                 return AppPermissions.NONE;
             }
         }
-        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR);
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
     }
 
 }*/

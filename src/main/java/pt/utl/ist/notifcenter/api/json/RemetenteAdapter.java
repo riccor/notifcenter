@@ -27,7 +27,7 @@ public class RemetenteAdapter implements JsonAdapter<Remetente> {
     public Remetente update(JsonElement jsonElement, Remetente remetente, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String nome = getRequiredValue(jObj, "name");
-        return remetente.updateRemetenteName(nome);
+        return remetente.update(nome);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class RemetenteAdapter implements JsonAdapter<Remetente> {
         if (obj.has(property)) {
             return obj.get(property).getAsString();
         }
-        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR);
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
     }
 
 }

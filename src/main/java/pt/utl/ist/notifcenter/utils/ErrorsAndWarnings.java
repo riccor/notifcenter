@@ -23,7 +23,9 @@ public enum ErrorsAndWarnings {
     SUCCESS_THANKS ("success", "Thank you.", HttpStatus.OK),
     ERROR_MISSING_PARAMETER ("missingParameter", "Missing parameter.", HttpStatus.FORBIDDEN),
     UNKNOWN_MESSAGE_SID ("unknownMessageSid", "Unknown message SID.", HttpStatus.NOT_FOUND),
-    ALREADY_EXISTING_RESOURCE ("resourceAlreadyExists", "Resource already exists.", HttpStatus.CONFLICT);
+    ALREADY_EXISTING_RESOURCE ("resourceAlreadyExists", "Resource already exists.", HttpStatus.CONFLICT),
+    ALREADY_EXISTING_RELATION ("relationAlreadyExists", "Such relation already exists.", HttpStatus.CONFLICT),
+    NON_EXISTING_RELATION ("nonExistingRelation", "Such relation does not exist.", HttpStatus.CONFLICT);
 
 
     //add new errors/warnings above this line

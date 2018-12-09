@@ -42,7 +42,7 @@ public class PersistentGroupAdapter implements JsonAdapter<PersistentGroup> {
         if (obj.has(property)) {
             return obj.get(property).getAsString();
         }
-        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR);
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
     }
 
 }

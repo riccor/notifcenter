@@ -18,7 +18,7 @@ public class Remetente extends Remetente_Base {
     }
 
     @Atomic
-    public Remetente updateRemetenteName(final String nome) {
+    public Remetente update(final String nome) {
         this.setNome(nome);
         return this;
     }
