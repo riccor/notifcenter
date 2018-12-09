@@ -3,8 +3,10 @@
 //PARA TESTAR:
 //curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"sid":"algumsid", "status":"algumstatus"}' http://localhost:8080/notifcenter/apiaplicacoes/281835753963522/messagedeliverystatus
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/pedidocanalnotificacao?canal=281835753963522&remetente=281724084813826
+//POST http://localhost:8080/notifcenter/apiaplicacoes/approvecanalnotificacao?cn=281775624421378
+//POST http://localhost:8080/notifcenter/apiaplicacoes/disapprovecanalnotificacao?cn=281775624421378
 //GET http://localhost:8080/notifcenter/apiaplicacoes/{msg}/deliverystatus
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto2&textocurto=aparecenowhatsppcurto2&textolongo=algumtextolongo2
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto3&textocurto=aparecenowhatsppcurto3&textolongo=algumtextolongo3
 //GET http://localhost:8080/notifcenter/apiaplicacoes/listmessages
 
 
@@ -363,7 +365,7 @@ public class AplicacaoResource extends BennuRestResource {
 
         for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
             if (cn.getCanal().equals(canal)) {
-                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RESOURCE, "Such notification channel was already created before.");
+                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RESOURCE, "Notification channel id " + cn.getExternalId()  + " was already created before.");
             }
         }
 
@@ -586,6 +588,16 @@ public class AplicacaoResource extends BennuRestResource {
 
         return jArray;
     }
+    @RequestMapping(value = "/apagacanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String apagaCanais() {
+
+        for (Canal c: SistemaNotificacoes.getInstance().getCanaisSet()) {
+            c.delete();
+        }
+
+        return "All channels were deleted!";
+    }
+
 
     @RequestMapping(value = "/listapps", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listApps() {
@@ -658,6 +670,20 @@ public class AplicacaoResource extends BennuRestResource {
 
         return jArray;
     }
+    @RequestMapping(value = "/apagamensagens", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String apagaMensagens() {
+
+        for (Canal c: SistemaNotificacoes.getInstance().getCanaisSet()) {
+            for (CanalNotificacao cn : c.getCanalNotificacaoSet()) {
+                for (Mensagem msg : cn.getMensagemSet()) {
+                    msg.delete();
+                }
+            }
+        }
+
+        return "All messages were deleted!";
+    }
+
 
     @RequestMapping(value = "/deletemessages", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement deleteMessages(@RequestParam(value = "msg", required = false) Mensagem msg) {

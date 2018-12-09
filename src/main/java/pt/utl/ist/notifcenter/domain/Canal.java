@@ -27,7 +27,7 @@ public abstract class Canal extends Canal_Base {
     }
     */
 
-    public abstract void sendMessage(Mensagem msg);
+    public abstract void sendMessage(Mensagem msg); //{ System.out.println("\n\nshould not see this"); }
 
     @Atomic
     public void delete() {
