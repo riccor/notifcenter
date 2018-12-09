@@ -17,8 +17,8 @@
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/removeGrupoDestinario?group=awd
 //GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/listGruposDestinatarios
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/pedidocanalnotificacao?canal=281835753963522
-
-
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/{canalnotificacao}/delete
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/listCanaisNotificacao
 
 
 //ROBOT
