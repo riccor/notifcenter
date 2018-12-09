@@ -575,7 +575,21 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
-    // LIST CANAIS / APPS / USERS / GROUPS / ATTACHMENTS / MENSAGENS
+    // LIST CANAIS / APPS / USERS / GROUPS / ATTACHMENTS / MENSAGENS / CONTACTOS
+
+    @RequestMapping(value = "/listcontactos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listContactos() {
+
+        JsonArray jArray = new JsonArray();
+
+        for (User u : FenixFramework.getDomainRoot().getBennu().getUserSet()) {
+            for (Contacto c : u.getContactosSet()) {
+                jArray.add(view(c, ContactoAdapter.class));
+            }
+        }
+
+        return jArray;
+    }
 
     @RequestMapping(value = "/listcanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listCanais() {
