@@ -23,14 +23,17 @@ public class Remetente extends Remetente_Base {
         return this;
     }
 
+    @Atomic
     public void addGroupToSendMesssages(PersistentGroup group) {
         this.addGrupos(group);
     }
 
+    @Atomic
     public void removeGroupToSendMesssages(PersistentGroup group) {
         this.removeGrupos(group);
     }
 
+    @Atomic
     public void delete() {
         for (PersistentGroup pg : this.getGruposSet()) {
             pg.removeRemetente(this);

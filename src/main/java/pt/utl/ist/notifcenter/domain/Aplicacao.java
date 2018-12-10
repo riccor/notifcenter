@@ -125,6 +125,7 @@ public class Aplicacao extends Aplicacao_Base {
     }
     */
 
+    @Atomic
     public void delete() {
         map.remove(this.getName(), this);
 

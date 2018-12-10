@@ -2,23 +2,31 @@
 
 //PARA TESTAR:
 //curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"sid":"algumsid", "status":"algumstatus"}' http://localhost:8080/notifcenter/apiaplicacoes/281835753963522/messagedeliverystatus
-//POST http://localhost:8080/notifcenter/apiaplicacoes/approvecanalnotificacao?cn=281775624421378
-//POST http://localhost:8080/notifcenter/apiaplicacoes/disapprovecanalnotificacao?cn=281775624421378
 //GET http://localhost:8080/notifcenter/apiaplicacoes/{msg}/deliverystatus
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421378&gdest=281702609977345&assunto=umassunto3&textocurto=aparecenowhatsppcurto3&textolongo=algumtextolongo3
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto3&textocurto=aparecenowhatsppcurto3&textolongo=algumtextolongo3
+
+
+
+//OK:
+//POST {"nameEEE":"novo_nome"} -> http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/update
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/delete
+//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/listremetentes
+
+//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855 //{app}/{remetente}
+//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/listGruposDestinatarios
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/removeGrupoDestinario?group=281702609977345
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/addGrupoDestinario?group=281702609977345
+
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/pedidocanalnotificacao?canal=281835753963522
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/281775624421380/delete ///{app}/{remetente}/{canalnotificacao}/delete"
+//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/listcanaisnotificacao
+//DEBUG POST http://localhost:8080/notifcenter/apiaplicacoes/approvecanalnotificacao?cn=281775624421380
+//DEBUG POST http://localhost:8080/notifcenter/apiaplicacoes/disapprovecanalnotificacao?cn=281775624421380
+
 //GET http://localhost:8080/notifcenter/apiaplicacoes/listmessages
 
 
-//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/listremetentes
-//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826 //{app}/{remetente}
-//curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"nameee":"novo_nome"}' http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/update
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/delete
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/addGrupoDestinario?group=awd
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/removeGrupoDestinario?group=awd
-//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/listGruposDestinatarios
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/pedidocanalnotificacao?canal=281835753963522
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/{canalnotificacao}/delete
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813826/listCanaisNotificacao
+
 
 
 //ROBOT
@@ -30,16 +38,16 @@
 //stackoverflow: https://stackoverflow.com/questions/45204684/robot-framework-differences-between-suite-setup-and-test-setup
 
 //https://www.twilio.com/console/sms/whatsapp/learn
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421378&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
 //DADOS EXEMPLO:
 //app "app_77": 281736969715714
-//remetente "rem1": 281724084813826
+//remetente "rem1": 281724084813855
 //user "bennu0": 281582350893059
 //user "admin": 281582350893057
 //grupo "managers": 281702609977345
 //canal TwilioWhatsApp: 281835753963522
-//pedido de canal de notificacao: 281775624421378 <--- criar novo!
+//pedido de canal de notificacao: 281775624421380 <--- criar novo!
 
 //REGISTAR APP:
 //POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
@@ -53,7 +61,7 @@
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //GET/POST http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281582350893057/adddadoscontacto?canal=281835753963522&data=dados1contacto@ex.com
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421378&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
 //UTEIS:
 //http://localhost:8080/notifcenter/apiaplicacoes/viewcanal/281835753963522
@@ -321,6 +329,7 @@ public class AplicacaoResource extends BennuRestResource {
         JsonObject jObj = new JsonObject();
 
         jObj.addProperty("appId", app.getExternalId());
+        jObj.addProperty("remetenteId", remetente.getExternalId());
         jObj.add("added group", view(group, PersistentGroupAdapter.class));
 
         return jObj;
@@ -340,7 +349,7 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         if (!remetente.getGruposSet().contains(group)) {
-            throw new NotifcenterException(ErrorsAndWarnings.NON_EXISTING_RELATION, "Remetente " + remetente.getExternalId() + " does not contain " + group.getExternalId() + "!");
+            throw new NotifcenterException(ErrorsAndWarnings.NON_EXISTING_RELATION, "Remetente " + remetente.getExternalId() + " does not have group id " + group.getExternalId() + " permissions!");
         }
 
         remetente.removeGroupToSendMesssages(group);
@@ -348,6 +357,7 @@ public class AplicacaoResource extends BennuRestResource {
         JsonObject jObj = new JsonObject();
 
         jObj.addProperty("appId", app.getExternalId());
+        jObj.addProperty("remetenteId", remetente.getExternalId());
         jObj.add("removed group", view(group, PersistentGroupAdapter.class));
 
         return jObj;
@@ -447,6 +457,8 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         JsonObject jObj = new JsonObject();
+        jObj.addProperty("appId", app.getExternalId());
+        jObj.addProperty("remetenteId", remetente.getExternalId());
         jObj.add("deleted canalnotificacao", view(cn, CanalNotificacaoAdapter.class));
 
         cn.delete();
