@@ -35,7 +35,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
     public JsonElement view(Aplicacao obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("name", obj.getName());
-        jObj.addProperty("client_id", obj.getExternalId());
+        jObj.addProperty("clientId", obj.getExternalId());
         jObj.addProperty("author", obj.getAuthorName());
         jObj.addProperty("permissoes", obj.getPermissoesAplicacao().name());
         jObj.addProperty("description", obj.getDescription());

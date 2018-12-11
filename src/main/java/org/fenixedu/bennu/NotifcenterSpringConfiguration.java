@@ -31,8 +31,8 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport
         @ConfigurationProperty(key = "notifcenter.url", defaultValue = "http://localhost:8080/notifcenter")
         public String notifcenterUrl();
 
-        @ConfigurationProperty(key = "notifcenter.mytest.url", defaultValue = "http://localhost:8080/mytest")
-        public String notifcenterMyTestUrl();
+        //@ConfigurationProperty(key = "notifcenter.mytest.url", defaultValue = "http://localhost:8080/notifcenter")
+        //public String notifcenterMyTestUrl();
 
         @ConfigurationProperty(key = "notifcenter.channels.credentials", defaultValue = "channelscredentials/%s.properties")
         public String notifcenterChannelsCredentials();

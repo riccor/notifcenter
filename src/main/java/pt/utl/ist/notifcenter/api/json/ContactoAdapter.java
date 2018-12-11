@@ -19,16 +19,18 @@ public class ContactoAdapter implements JsonAdapter<Contacto> {
     }
 
     @Override
-    public Contacto update(JsonElement jsonElement, Contacto Contacto, JsonBuilder ctx) {
-
-        return null;
+    public Contacto update(JsonElement jsonElement, Contacto contacto, JsonBuilder ctx) {
+        final JsonObject jObj = jsonElement.getAsJsonObject();
+        String dadosContacto = getRequiredValue(jObj, "data");
+        return contacto.update(dadosContacto);
     }
 
     @Override
     public JsonElement view(Contacto obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("utilizador", obj.getUtilizador().getUsername());
         jObj.addProperty("id", obj.getExternalId());
+        jObj.addProperty("utilizador", obj.getUtilizador().getExternalId());
+        jObj.addProperty("canal", obj.getCanal().getExternalId());
         jObj.addProperty("dados", obj.getDadosContacto());
         return jObj;
     }

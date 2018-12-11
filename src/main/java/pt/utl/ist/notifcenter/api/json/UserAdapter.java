@@ -27,8 +27,11 @@ public class UserAdapter implements JsonAdapter<User> {
     @Override
     public JsonElement view(User obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("utilizador", obj.getName());
         jObj.addProperty("id", obj.getExternalId());
+        jObj.addProperty("username", obj.getUsername());
+        jObj.addProperty("name", obj.getName());
+        jObj.addProperty("displayName", obj.getDisplayName());
+        jObj.addProperty("email", obj.getEmail());
         return jObj;
     }
 

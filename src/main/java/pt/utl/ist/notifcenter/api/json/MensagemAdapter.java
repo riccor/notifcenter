@@ -42,6 +42,7 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         }
 
         JsonObject jObj = new JsonObject();
+        jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("canalnotificacao", obj.getCanalNotificacao().getExternalId());
         jObj.addProperty("remetente", obj.getCanalNotificacao().getRemetente().getExternalId());
         jObj.add("gruposDestinatarios", jArrayGruposDestinatarios);
@@ -51,7 +52,7 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         jObj.addProperty("dataEntrega", obj.getDataEntrega().toString("dd.MM.yyyy HH:mm:ss.SSS"));
         jObj.addProperty("callbackUrlEstadoEntrega", obj.getCallbackUrlEstadoEntrega());
         jObj.add("attachments", jArrayAttachments);
-        jObj.addProperty("link",NotifcenterSpringConfiguration.getConfiguration().notifcenterMyTestUrl() + "/mytest/" + obj.getExternalId() + "/view");
+        jObj.addProperty("link",NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/notifcenter/" + obj.getExternalId() + "/view");
 
         return jObj;
     }

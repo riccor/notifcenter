@@ -2,9 +2,12 @@
 
 //PARA TESTAR:
 //curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"sid":"algumsid", "status":"algumstatus"}' http://localhost:8080/notifcenter/apiaplicacoes/281835753963522/messagedeliverystatus
-//GET http://localhost:8080/notifcenter/apiaplicacoes/{msg}/deliverystatus
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto3&textocurto=aparecenowhatsppcurto3&textolongo=algumtextolongo3
 
+
+//OK2:
+//GET http://localhost:8080/notifcenter/apiaplicacoes/281681135140872/deliverystatus
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto3&textocurto=aparecenowhatsppcurto3&textolongo=algumtextolongo3
+//DEBUG http://localhost:8080/notifcenter/apiaplicacoes/deletemessages //?msg=opcional
 
 
 //OK:
@@ -25,7 +28,14 @@
 
 //GET http://localhost:8080/notifcenter/apiaplicacoes/listmessages
 
-
+//GET http://localhost:8080/notifcenter/apiutilizadores/listutilizadores
+//GET http://localhost:8080/notifcenter/apiutilizadores/{utilizador}
+//POST http://localhost:8080/notifcenter/apiutilizadores/281582350893057/addcontacto?canal=281835753963522&dados=whatsapp:%2B351961077271
+//GET http://localhost:8080/notifcenter/apiutilizadores/281582350893057/listcontactos
+//GET http://localhost:8080/notifcenter/apiutilizadores/281582350893057/281715494879236 ///{utilizador}/{contacto}
+//POST http://localhost:8080/notifcenter/apiutilizadores/281582350893057/281715494879234/delete
+//POST http://localhost:8080/notifcenter/apiutilizadores/281582350893057/281715494879236/update
+//POST {"data":"novos_dados"} http://localhost:8080/notifcenter/apiutilizadores/281582350893057/281715494879236/update2
 
 
 
@@ -47,7 +57,8 @@
 //user "admin": 281582350893057
 //grupo "managers": 281702609977345
 //canal TwilioWhatsApp: 281835753963522
-//pedido de canal de notificacao: 281775624421380 <--- criar novo!
+//(pedido) de canal de notificacao: 281775624421380
+//user "admin" -> contacto whatsapp: 281715494879236
 
 //REGISTAR APP:
 //POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
@@ -60,13 +71,12 @@
 //GET http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715714?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //GET/POST http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281582350893057/adddadoscontacto?canal=281835753963522&data=dados1contacto@ex.com
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
 //UTEIS:
 //http://localhost:8080/notifcenter/apiaplicacoes/viewcanal/281835753963522
 //http://localhost:8080/notifcenter/apiaplicacoes/listcanais
-//http://localhost:8080/notifcenter/apiaplicacoes/listusers
+//http://localhost:8080/notifcenter/apiaplicacoes/listutilizadores
 //http://localhost:8080/notifcenter/apiaplicacoes/listapps
 //http://localhost:8080/notifcenter/apiaplicacoes/listgroups
 //http://localhost:8080/notifcenter/apiaplicacoes/attachments/list
@@ -131,7 +141,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
-@SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api")
+@SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api.aplicacoes")
 public class AplicacaoResource extends BennuRestResource {
 
     /*
@@ -141,44 +151,50 @@ public class AplicacaoResource extends BennuRestResource {
         //API Aplicacao (/apiaplicacoes):
 
        /adicionarAplicacao
-       /listarAplicacoes
+       (falta)
+       /listAplicacoes
        /{app}
        /{app}/update
        /{app}/delete
+
+
        /{app}/addremetente
        /{app}/listremetentes
        /{app}/{remetente}
        /{app}/{remetente}/update
        /{app}/{remetente}/delete
-       /{app}/{remetente}/addGrupoDestinario
-       /{app}/{remetente}/removeGrupoDestinario
-       /{app}/{remetente}/listGruposDestinatarios
+       /{app}/{remetente}/addgrupodestinario
+       /{app}/{remetente}/removegrupodestinario
+       /{app}/{remetente}/listgruposdestinatarios
 
-       /{app}/{remetente}/pedidoCanalNotificacao
+
+       /{app}/{remetente}/pedidocanalnotificacao
        /{app}/{remetente}/{canalnotificacao}/delete
-       /{app}/{remetente}/listCanaisNotificacao
+       /{app}/{remetente}/listcanaisnotificacao
        
        /{app}/sendmessage
        
       
 
        //API canal (/apicanais):
-
+       (falta)
        /adicionarCanal
-       /listarCanais
+       /listCanais
        /{canal}
        /{canal}/update
-       // /{canal}/listarCanaisNotificacao
-       // /{canal}/listarContactos
+       // /{canal}/listCanaisNotificacao
+       // /{canal}/listContactos
 
 
        //API utilizador (/apiutilizadores):
 
-       /listarUtilizadores
+       /listutilizadores
        /{utilizador}
-       /{utilizador}/adicionarContacto
-       /{utilizador}/listarContactos
-
+       /{utilizador}/addcontacto
+       /{utilizador}/{contacto}
+       /{utilizador}/{contacto}/delete
+       /{utilizador}/{contacto}/update
+       /{utilizador}/listcontactos
 
         O que fazer: orientar a API ao recurso.
     */
@@ -215,35 +231,8 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
-    //ADICIONAR DADOS CONTACTO
 
-    @SkipCSRF
-    @RequestMapping(value = "/{app}/{user}/adddadoscontacto", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addDadosContactoUtilizador(@PathVariable("app") Aplicacao app,
-                                                  @PathVariable("user") User utilizador,
-                                                  @RequestParam(value = "data") String dadosContacto,
-                                                  @RequestParam(value = "canal") Canal canal) {
-
-        if (!FenixFramework.isDomainObjectValid(app)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
-        }
-
-        if (!FenixFramework.isDomainObjectValid(utilizador)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
-        }
-
-        //opcional (?)
-        if (!FenixFramework.isDomainObjectValid(canal)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
-        }
-
-        Contacto contacto = Contacto.createContacto(utilizador, canal, dadosContacto);
-
-        return view(contacto, ContactoAdapter.class);
-    }
-
-
-    //NOTA: REMETENTES
+    //AGRUPAMENTO: REMETENTES
 
     @SkipCSRF
     @RequestMapping(value = "/{app}/addremetente", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -286,6 +275,25 @@ public class AplicacaoResource extends BennuRestResource {
 
         return view(update(body, remetente, RemetenteAdapter.class), RemetenteAdapter.class);
     }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/{remetente}/update2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement updateRemetente2(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente,
+                                       @RequestParam(value = "name") String name) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
+        }
+
+        remetente.update(name);
+
+        return view(remetente, RemetenteAdapter.class);
+    }
+
 
     @SkipCSRF
     @RequestMapping(value = "/{app}/{remetente}/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -650,7 +658,7 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "Such canalnotificacao doesnt exist.");
         }
         if (!canalNotificacao.isApproved()) {
-            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR, "Canal notificacao id " + canalNotificacao.getExternalId() + " is awaiting approval by system administrators.");
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR, "Canalnotificacao id " + canalNotificacao.getExternalId() + " is awaiting approval by system administrators.");
         }
 
         for (PersistentGroup group : gruposDestinatarios) {
@@ -828,18 +836,6 @@ public class AplicacaoResource extends BennuRestResource {
         return jArray;
     }
 
-    @RequestMapping(value = "/listusers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement listUsers() {
-
-        JsonArray jArray = new JsonArray();
-
-        for (User a: FenixFramework.getDomainRoot().getBennu().getUserSet()) {
-            jArray.add(view(a, UserAdapter.class));
-        }
-
-        return jArray;
-    }
-
     @RequestMapping(value = "/listgroups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listGroups() {
 
@@ -891,8 +887,11 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
-    @RequestMapping(value = "/deletemessages", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @SkipCSRF
+    @RequestMapping(value = "/deletemessages", method = RequestMethod.POST)
     public String deleteMessages(@RequestParam(value = "msg", required = false) Mensagem msg) {
+
+        boolean flag = false;
 
         for (Canal c: SistemaNotificacoes.getInstance().getCanaisSet()) {
             for (CanalNotificacao cn : c.getCanalNotificacaoSet()) {
@@ -900,17 +899,23 @@ public class AplicacaoResource extends BennuRestResource {
                     if (FenixFramework.isDomainObjectValid(msg)) {
                         if (msg.equals(msg2)) {
                             msg2.delete();
+                            flag = true;
                             return "Message deleted!";
                         }
                     }
                     else {
-                        msg.delete();
+                        msg2.delete();
                     }
                 }
             }
         }
 
-        return "All messages were deleted!";
+        if (FenixFramework.isDomainObjectValid(msg) && !flag) {
+            return "Message not found!";
+        }
+        else {
+            return "All messages were deleted!";
+        }
     }
 
 

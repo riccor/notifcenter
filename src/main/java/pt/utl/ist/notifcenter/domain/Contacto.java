@@ -36,6 +36,12 @@ public class Contacto extends Contacto_Base {
     }
 
     @Atomic
+    public Contacto update(final String dadosContacto) {
+        this.setDadosContacto(dadosContacto);
+        return this;
+    }
+
+    @Atomic
     public void delete() {
         this.getUtilizador().removeContactos(this);
         this.setUtilizador(null); ///

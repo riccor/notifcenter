@@ -73,7 +73,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
             group.getMembers().forEach(user -> {
 
                 //Debug
-                System.out.println("user: " + user.getUsername() + " with email: " + user.getEmail());
+                System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
 
                 boolean userHasNoContactForThisChannel = true;
 
@@ -106,7 +106,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                 }
 
                 if (userHasNoContactForThisChannel) {
-                    System.out.println("user " + user.getUsername() + " has no contact for twiliowhatsapp");
+                    System.out.println("WARNING: user " + user.getUsername() + " has no contact for " + this.getClass().getSimpleName());
                 }
 
             });
