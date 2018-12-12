@@ -2,41 +2,41 @@
 
 //PARA TESTAR:
 //curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"sid":"algumsid", "status":"algumstatus"}'
-// http://localhost:8080/notifcenter/apiaplicacoes/281835753963522/messagedeliverystatus
+// http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281835753963522/messagedeliverystatus
 
 
 //OK2:
-//GET http://localhost:8080/notifcenter/apiaplicacoes/281681135140872/deliverystatus
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto3&textocurto=aparecenowhatsppcurto3&textolongo=algumtextolongo3
-//DEBUG http://localhost:8080/notifcenter/apiaplicacoes/deletemessages //?msg=opcional
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281681135140872/deliverystatus
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto3&textocurto=aparecenowhatsppcurto3&textolongo=algumtextolongo3
+//DEBUG http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/deletemessages //?msg=opcional
 
 
 //OK:
-//POST {"nameEEE":"novo_nome"} -> http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/update
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/delete
-//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/listremetentes
+//POST {"nameEEE":"novo_nome"} -> http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/update
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/delete
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/listremetentes
 
-//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855 //{app}/{remetente}
-//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/listGruposDestinatarios
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/removeGrupoDestinario?group=281702609977345
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/addGrupoDestinario?group=281702609977345
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855 //{app}/{remetente}
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/listGruposDestinatarios
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/removeGrupoDestinario?group=281702609977345
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/addGrupoDestinario?group=281702609977345
 
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/pedidocanalnotificacao?canal=281835753963522
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/281775624421380/delete ///{app}/{remetente}/{canalnotificacao}/delete"
-//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/listcanaisnotificacao
-//DEBUG POST http://localhost:8080/notifcenter/apiaplicacoes/approvecanalnotificacao?cn=281775624421380
-//DEBUG POST http://localhost:8080/notifcenter/apiaplicacoes/disapprovecanalnotificacao?cn=281775624421380
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/pedidocanalnotificacao?canal=281835753963522
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/281775624421380/delete ///{app}/{remetente}/{canalnotificacao}/delete"
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/listcanaisnotificacao
+//DEBUG POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/approvecanalnotificacao?cn=281775624421380
+//DEBUG POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/disapprovecanalnotificacao?cn=281775624421380
 
-//GET http://localhost:8080/notifcenter/apiaplicacoes/listmessages
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listmessages
 
-//GET http://localhost:8080/notifcenter/apiutilizadores/listutilizadores
-//GET http://localhost:8080/notifcenter/apiutilizadores/{utilizador}
-//POST http://localhost:8080/notifcenter/apiutilizadores/281582350893057/addcontacto?canal=281835753963522&dados=whatsapp:%2B351961077271
-//GET http://localhost:8080/notifcenter/apiutilizadores/281582350893057/listcontactos
-//GET http://localhost:8080/notifcenter/apiutilizadores/281582350893057/281715494879236 ///{utilizador}/{contacto}
-//POST http://localhost:8080/notifcenter/apiutilizadores/281582350893057/281715494879234/delete
-//POST http://localhost:8080/notifcenter/apiutilizadores/281582350893057/281715494879236/update
-//POST {"data":"novos_dados"} http://localhost:8080/notifcenter/apiutilizadores/281582350893057/281715494879236/update2
+//GET http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/listutilizadores
+//GET http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/{utilizador}
+//POST http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/addcontacto?canal=281835753963522&dados=whatsapp:%2B351961077271
+//GET http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/listcontactos
+//GET http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879236 ///{utilizador}/{contacto}
+//POST http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879234/delete
+//POST http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879236/update
+//POST {"data":"novos_dados"} http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879236/update2
 
 
 
@@ -49,7 +49,7 @@
 //stackoverflow: https://stackoverflow.com/questions/45204684/robot-framework-differences-between-suite-setup-and-test-setup
 
 //https://www.twilio.com/console/sms/whatsapp/learn
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
 //DADOS EXEMPLO:
 //app "app_77": 281736969715714
@@ -62,39 +62,39 @@
 //user "admin" -> contacto whatsapp: 281715494879236
 
 //REGISTAR APP:
-//POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
-//GET http://localhost:8080/notifcenter/oauth/userdialog?client_id=281736969715714&redirect_uri=http://app77_site.com/code
-//POST http://localhost:8080/notifcenter/oauth/access_token?client_id=281736969715714&client_secret=y3MW4pX%2B3hGu9DbfSpYYtFx71llEx5qCpKsJdWrtlVjuG9%2FRozatZkYvWj9FbHkDEM52%2B3oWUuRCI7HYowXEfw%3D%3D&redirect_uri=http://app77_site.com/code&code=d46d6939c0564846fed10cdcb3233b18716f6fb5770d3f58c134379e43316d138471e47d42f1a49160c65c22577180705fc615df027e0017a68f47f4b595a0c3&grant_type=authorization_code
-//POST http://localhost:8080/notifcenter/oauth/refresh_token?client_id=281736969715714&client_secret=y3MW4pX%2B3hGu9DbfSpYYtFx71llEx5qCpKsJdWrtlVjuG9%2FRozatZkYvWj9FbHkDEM52%2B3oWUuRCI7HYowXEfw%3D%3D&refresh_token=MjgxNjg1NDMwMTA4MTYzOjdhOWIzNDIyNTRmZDIzN2ZmODQ4N2U2NjFjMjllYWQyODAxYjhhZWMwNDFiZDhiZDU1MDEwZjI5OWNiZmQzOGI3NDQwMGEwZGNhMTAwMjFhYjMyOTYwN2U2NDJkNjMzMWMwZDQ3YmFjYmNkZDk2ZjA3ZGQ3ZmI0NTMyZTg3MzRj&grant_type=refresh_token
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
+//GET http://{{DOMAIN}}:8080/notifcenter/oauth/userdialog?client_id=281736969715714&redirect_uri=http://app77_site.com/code
+//POST http://{{DOMAIN}}:8080/notifcenter/oauth/access_token?client_id=281736969715714&client_secret=y3MW4pX%2B3hGu9DbfSpYYtFx71llEx5qCpKsJdWrtlVjuG9%2FRozatZkYvWj9FbHkDEM52%2B3oWUuRCI7HYowXEfw%3D%3D&redirect_uri=http://app77_site.com/code&code=d46d6939c0564846fed10cdcb3233b18716f6fb5770d3f58c134379e43316d138471e47d42f1a49160c65c22577180705fc615df027e0017a68f47f4b595a0c3&grant_type=authorization_code
+//POST http://{{DOMAIN}}:8080/notifcenter/oauth/refresh_token?client_id=281736969715714&client_secret=y3MW4pX%2B3hGu9DbfSpYYtFx71llEx5qCpKsJdWrtlVjuG9%2FRozatZkYvWj9FbHkDEM52%2B3oWUuRCI7HYowXEfw%3D%3D&refresh_token=MjgxNjg1NDMwMTA4MTYzOjdhOWIzNDIyNTRmZDIzN2ZmODQ4N2U2NjFjMjllYWQyODAxYjhhZWMwNDFiZDhiZDU1MDEwZjI5OWNiZmQzOGI3NDQwMGEwZGNhMTAwMjFhYjMyOTYwN2U2NDJkNjMzMWMwZDQ3YmFjYmNkZDk2ZjA3ZGQ3ZmI0NTMyZTg3MzRj&grant_type=refresh_token
 
 //METODOS
-//POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
-//GET http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715714?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
-//GET/POST http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715714?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
+//GET/POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/notifcentercallback
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
 //UTEIS:
-//http://localhost:8080/notifcenter/apiaplicacoes/viewcanal/281835753963522
-//http://localhost:8080/notifcenter/apiaplicacoes/listcanais
-//http://localhost:8080/notifcenter/apiaplicacoes/listutilizadores
-//http://localhost:8080/notifcenter/apiaplicacoes/listapps
-//http://localhost:8080/notifcenter/apiaplicacoes/listgroups
-//http://localhost:8080/notifcenter/apiaplicacoes/attachments/list
-//http://localhost:8080/notifcenter/apiaplicacoes/attachments/{fileName}
+//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/viewcanal/281835753963522
+//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listcanais
+//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listutilizadores
+//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listapps
+//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listgroups
+//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/attachments/list
+//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/attachments/{fileName}
 
-//"no" http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893059&group=281702609977345
-//"yes" http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893057&group=281702609977345
+//"no" http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893059&group=281702609977345
+//"yes" http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893057&group=281702609977345
 
 //CURL
 //curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"id":100}' http://localhost/api/postJsonReader.do
-//curl -H "Content-type: application/json" -X POST -d '{"id":101, "content":"ola1"}' http://localhost:8080/notifcenter/apiaplicacoes/greet
-//curl -H "Content-type: application/json" -X POST -d '{"email":"someemail@awd.com", "password":"pass1"}' http://localhost:8080/notifcenter/apiaplicacoes/canal1
+//curl -H "Content-type: application/json" -X POST -d '{"id":101, "content":"ola1"}' http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/greet
+//curl -H "Content-type: application/json" -X POST -d '{"email":"someemail@awd.com", "password":"pass1"}' http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/canal1
 
-//curl -F 'file=@/home/cr/imgg.png' http://localhost:8080/notifcenter/apiaplicacoes/upload
+//curl -F 'file=@/home/cr/imgg.png' http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/upload
 
 
-//curl -H "Content-type: application/x-www-form-urlencoded; charset=utf-8" -x POST -d "param1=value1&param2=value2" http://localhost:8080/notifcenter/apiaplicacoes/xyz
+//curl -H "Content-type: application/x-www-form-urlencoded; charset=utf-8" -x POST -d "param1=value1&param2=value2" http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/xyz
 
 
 package pt.utl.ist.notifcenter.api;
@@ -531,11 +531,11 @@ public class AplicacaoResource extends BennuRestResource {
     //RECEBER NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS:
 
     @SkipCSRF
-    @RequestMapping(value = "/{canal}/messagedeliverystatus", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{canal}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, @RequestBody JsonElement body) {
 
         if (!FenixFramework.isDomainObjectValid(canal)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR); ///
         }
 
         //TODO - NAO É PRECISO FAZER ESTA DISTINCAO, POIS ESTE RECURSO ESTARÀ DENTRO DE TWILIOWHATSAPPRESOURCE.java!
@@ -1005,7 +1005,7 @@ public class AplicacaoResource extends BennuRestResource {
 
     // CANAL (TEST)
 
-    //POST http://localhost:8080/notifcenter/apiaplicacoes/canal?email=email2&password=password2
+    //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/canal?email=email2&password=password2
     /*@RequestMapping(value = "/canal", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement canal(@RequestParam(value = "email") String email, @RequestParam(value = "password") String password) {
 
@@ -1216,7 +1216,7 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     //FUNCIONA (POSSO USAR ESTE MODO EM ALTERNATIVA AOS @RequestParam's!!
-    //e.g. curl -H "Content-type: application/json" -X POST -d '{"email":"someemail@awd.com", "password":"pass1"}' http://localhost:8080/notifcenter/apiaplicacoes/canal4
+    //e.g. curl -H "Content-type: application/json" -X POST -d '{"email":"someemail@awd.com", "password":"pass1"}' http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/canal4
     @SkipCSRF
     @RequestMapping(value = "canal4", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement canal4(@RequestBody JsonElement c) {
@@ -1300,7 +1300,7 @@ public class AplicacaoResource extends BennuRestResource {
     */
 
 //Notifcenter callback:
-//String callbackURL = "http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback";
+//String callbackURL = "http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/notifcentercallback";
 //String queryParams = "?code=1223456789";
 //HTTPClient.restSyncClient(HttpMethod.GET, callbackURL + queryParams, header, body);
 
