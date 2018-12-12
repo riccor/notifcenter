@@ -528,83 +528,6 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
-    //RECEBER NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS:
-
-    @SkipCSRF
-    @RequestMapping(value = "/{canal}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, @RequestBody JsonElement body) {
-
-        System.out.println("#1");
-        if (!FenixFramework.isDomainObjectValid(canal)) {
-
-            System.out.println("#2");
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR); ///
-        }
-
-
-        System.out.println("#3");
-        //TODO - NAO É PRECISO FAZER ESTA DISTINCAO, POIS ESTE RECURSO ESTARÀ DENTRO DE TWILIOWHATSAPPRESOURCE.java!
-        ///TwilioWhatsapp
-        //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
-        if (!body.getAsJsonObject().has("sid")) {
-
-            System.out.println("#4");
-            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No sid parameter.");
-        }
-
-
-        System.out.println("#5");
-        if (!body.getAsJsonObject().has("status")) {
-
-            System.out.println("#6");
-            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No status parameter.");
-        }
-        ///}
-
-
-        System.out.println("#7");
-        String idExterno = body.getAsJsonObject().get("sid").getAsString();
-        String estadoEntrega = body.getAsJsonObject().get("status").getAsString();
-        boolean knownIdExterno = false;
-
-
-        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
-
-            System.out.println("#8");
-            if (e.getIdExterno().equals(idExterno)) {
-
-                e.changeEstadoEntrega(estadoEntrega);
-                knownIdExterno = true;
-
-                System.out.println("#9");
-                break;
-            }
-        }
-
-
-        System.out.println("#10");
-
-        if (!knownIdExterno) {
-
-            System.out.println("#11");
-            throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
-        }
-        else {
-
-            System.out.println("#12");
-            throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
-        }
-    }
-
-
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            return obj.get(property).getAsString();
-        }
-        return null;
-    }
-
-
     //Notifcenter callback
 
     @SkipCSRF
@@ -647,6 +570,9 @@ public class AplicacaoResource extends BennuRestResource {
 
         return jObj;
     }
+
+
+    //RECEBER NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS:
 
     @SkipCSRF
     @RequestMapping(value = "/{canal}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
