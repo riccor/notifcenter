@@ -684,8 +684,11 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/notifcentercallbackbackup", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement notifcenterCallbackBACKUP(HttpServletRequest request) {
+    @RequestMapping(value = "/notifcentercallbackbackup/{canal}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement notifcenterCallbackBACKUP(@PathVariable("canal") Canal canal, HttpServletRequest request) {
+
+        System.out.println("####### got new notifcentercallback message!! 999");
+
         List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
         JsonObject jObj = new JsonObject();
         jObj.addProperty("response", "elements are these:");
