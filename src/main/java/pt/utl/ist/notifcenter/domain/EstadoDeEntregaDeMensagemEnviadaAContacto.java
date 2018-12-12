@@ -20,6 +20,11 @@ public class EstadoDeEntregaDeMensagemEnviadaAContacto extends EstadoDeEntregaDe
     }
 
     @Atomic
+    public void changeEstadoEntrega(String estadoEntrega) {
+        this.setEstadoEntrega(estadoEntrega);
+    }
+
+    @Atomic
     public void delete() {
         this.getCanal().removeEstadoDeEntregaDeMensagemEnviadaAContacto(this);
         this.setCanal(null); ///

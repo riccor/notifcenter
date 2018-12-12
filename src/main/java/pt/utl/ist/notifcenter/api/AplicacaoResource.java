@@ -557,7 +557,7 @@ public class AplicacaoResource extends BennuRestResource {
         for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
             if (e.getIdExterno().equals(idExterno)) {
 
-                e.setEstadoEntrega(estadoEntrega);
+                e.changeEstadoEntrega(estadoEntrega);
                 knownIdExterno = true;
 
                 break;
