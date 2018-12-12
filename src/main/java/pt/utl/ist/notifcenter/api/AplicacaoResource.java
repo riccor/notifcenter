@@ -692,19 +692,100 @@ public class AplicacaoResource extends BennuRestResource {
 
         System.out.println("####### got new notifcentercallback message!! 999");
 
+        //"MessageStatus":"delivered","To":"whatsapp:+351961077271","MessageSid":"SM9f705525cc4143ef8dece27557549a5f"
 
-
-        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("response", "elements are these:");
-        jObj.addProperty("header names", request.getHeaderNames().toString());
+        jObj.addProperty("got_response", "elements are these:");
 
-        for (String name : parameterNames) {
-            jObj.addProperty(name, request.getParameter(name));
+        JsonObject jHeaders = new JsonObject();
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            jHeaders.addProperty(headerName, request.getHeader(headerName));
         }
+
+        jObj.add("header_names", jHeaders);
+
+        JsonObject jParams = new JsonObject();
+        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
+        for (String name : parameterNames) {
+            jParams.addProperty(name, request.getParameter(name));
+        }
+
+        jObj.add("param_names", jHeaders);
 
         System.out.println("####### got new notifcentercallback message!!");
         System.out.println(jObj.toString());
+
+
+
+
+        System.out.println("#1");
+        if (!FenixFramework.isDomainObjectValid(canal)) {
+
+            System.out.println("#2");
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR); ///
+        }
+
+
+        System.out.println("#3");
+        //TODO - NAO É PRECISO FAZER ESTA DISTINCAO, POIS ESTE RECURSO ESTARÀ DENTRO DE TWILIOWHATSAPPRESOURCE.java!
+        ///TwilioWhatsapp
+        //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
+        if (!jParams.getAsJsonObject().has("MessageSid")) {
+
+            System.out.println("#4");
+            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No sid parameter.");
+        }
+
+
+        System.out.println("#5");
+        if (!jParams.getAsJsonObject().has("MessageStatus")) {
+
+            System.out.println("#6");
+            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No status parameter.");
+        }
+        ///}
+
+
+        System.out.println("#7");
+        String idExterno = jParams.get("MessageSid").getAsString();
+        String estadoEntrega = jParams.get("MessageStatus").getAsString();
+        boolean knownIdExterno = false;
+
+
+        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+
+            System.out.println("#8");
+            if (e.getIdExterno().equals(idExterno)) {
+
+                e.changeEstadoEntrega(estadoEntrega);
+                knownIdExterno = true;
+
+                System.out.println("#9");
+                break;
+            }
+        }
+
+
+        System.out.println("#10");
+
+        if (!knownIdExterno) {
+
+            System.out.println("#11");
+            throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
+        }
+        else {
+
+            System.out.println("#12");
+            throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
+        }
+
+
+
+
+
+
 
         /*
         String sid = null;
@@ -718,7 +799,7 @@ public class AplicacaoResource extends BennuRestResource {
         }
         */
 
-        return jObj;
+        ///return jObj;
     }
 
 
