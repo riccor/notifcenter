@@ -1,7 +1,8 @@
 // Pedidos disponíveis:
 
 //PARA TESTAR:
-//curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"sid":"algumsid", "status":"algumstatus"}' http://localhost:8080/notifcenter/apiaplicacoes/281835753963522/messagedeliverystatus
+//curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"sid":"algumsid", "status":"algumstatus"}'
+// http://localhost:8080/notifcenter/apiaplicacoes/281835753963522/messagedeliverystatus
 
 
 //OK2:

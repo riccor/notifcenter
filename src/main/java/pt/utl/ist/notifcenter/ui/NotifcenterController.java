@@ -12,10 +12,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.servlet.view.RedirectView;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.domain.Mensagem;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RequestMapping("/notifcenter")
 @SpringApplication(group = "anyone", path = "notifcenter", title = "title.Notifcenter")
@@ -60,12 +65,11 @@ public class NotifcenterController {
     }
 
     @RequestMapping(value = "/{msg}/view")
-    public String messages(@PathVariable("msg") Mensagem msg, Model model) {
-
-        model.addAttribute("world", "World");
+    public String messages(@PathVariable("msg") Mensagem msg, Model model, HttpServletRequest request) {
 
         if (!isUserLoggedIn()) {
-            throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
+            ///throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
+            return "redirect:/login?callback=" + request.getRequestURL();
         }
 
         if (!FenixFramework.isDomainObjectValid(msg)) {
@@ -77,6 +81,8 @@ public class NotifcenterController {
         if (user == null || !FenixFramework.isDomainObjectValid(user)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
         }
+
+        model.addAttribute("world", "World");
 
         for (PersistentGroup g : msg.getGruposDestinatariosSet()) {
             if (g.isMember(user)) {
