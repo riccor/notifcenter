@@ -608,8 +608,84 @@ public class AplicacaoResource extends BennuRestResource {
     //Notifcenter callback
 
     @SkipCSRF
-    @RequestMapping(value = "notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement notifcenterCallback(HttpServletRequest request) {
+    @RequestMapping(value = "/notifcentercallback/{canal}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement notifcenterCallback(@PathVariable("canal") Canal canal, @RequestBody JsonElement body, HttpServletRequest request) {
+        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("response", "elements are these:");
+        jObj.addProperty("header names", request.getHeaderNames().toString());
+
+        for (String name : parameterNames) {
+            jObj.addProperty(name, request.getParameter(name));
+        }
+
+        System.out.println("####### got new notifcentercallback message!! 1");
+        System.out.println(jObj.toString());
+        System.out.println("body->" + body.getAsJsonObject().toString());
+
+        return jObj;
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{canal}/notifcentercallback2", produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement notifcenterCallback2(@PathVariable("canal") Canal canal, @RequestBody JsonElement body, HttpServletRequest request) {
+        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("response", "elements are these:");
+        jObj.addProperty("header names", request.getHeaderNames().toString());
+
+        for (String name : parameterNames) {
+            jObj.addProperty(name, request.getParameter(name));
+        }
+
+        System.out.println("####### got new notifcentercallback message!! 2");
+        System.out.println(jObj.toString());
+        System.out.println("body->" + body.getAsJsonObject().toString());
+
+        return jObj;
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/notifcentercallback3", produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement notifcenterCallback3(@RequestBody JsonElement body, HttpServletRequest request) {
+        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("response", "elements are these:");
+        jObj.addProperty("header names", request.getHeaderNames().toString());
+
+        for (String name : parameterNames) {
+            jObj.addProperty(name, request.getParameter(name));
+        }
+
+        System.out.println("####### got new notifcentercallback message!! 3");
+        System.out.println(jObj.toString());
+        System.out.println("body->" + body.getAsJsonObject().toString());
+
+        return jObj;
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/notifcentercallback4", produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement notifcenterCallback4(@RequestBody JsonElement body, HttpServletRequest request) {
+        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("response", "elements are these:");
+        jObj.addProperty("header names", request.getHeaderNames().toString());
+
+        for (String name : parameterNames) {
+            jObj.addProperty(name, request.getParameter(name));
+        }
+
+        System.out.println("####### got new notifcentercallback message!! 4");
+        System.out.println(jObj.toString());
+        System.out.println("body->" + body.getAsJsonObject().toString());
+
+        return jObj;
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/notifcentercallbackBACKUP/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement notifcenterCallbackBACKUP(HttpServletRequest request) {
         List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
         JsonObject jObj = new JsonObject();
         jObj.addProperty("response", "elements are these:");
