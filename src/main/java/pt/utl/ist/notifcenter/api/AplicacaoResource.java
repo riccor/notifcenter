@@ -685,9 +685,20 @@ public class AplicacaoResource extends BennuRestResource {
 
     @SkipCSRF
     @RequestMapping(value = "/{canal}/notifcentercallbackbackup", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement notifcenterCallbackBACKUP(@PathVariable("canal") Canal canal, HttpServletRequest request) {
+    public JsonElement notifcenterCallbackBACKUP(@PathVariable("canal") Canal canal, @RequestBody JsonElement body, HttpServletRequest request) {
 
         System.out.println("####### got new notifcentercallback message!! 999");
+
+        System.out.println("#1");
+        if (!FenixFramework.isDomainObjectValid(canal)) {
+
+            System.out.println("#2");
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR); ///
+        }
+
+
+        System.out.println("####### got new notifcentercallback message!! 888");
+
 
         List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
         JsonObject jObj = new JsonObject();
@@ -700,6 +711,7 @@ public class AplicacaoResource extends BennuRestResource {
 
         System.out.println("####### got new notifcentercallback message!!");
         System.out.println(jObj.toString());
+        System.out.println("body: " + body.toString());
 
         /*
         String sid = null;
