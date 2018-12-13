@@ -533,8 +533,19 @@ public class AplicacaoResource extends BennuRestResource {
     @SkipCSRF
     @RequestMapping(value = "/notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement notifcenterCallback(HttpServletRequest request) {
+
+        JsonObject jObj = getHttpServletRequestParams(request);
+
+        System.out.println("####### got new notifcentercallback message!!");
+
+        System.out.println(jObj.toString());
+
+        return jObj;
+    }
+
+    public JsonObject getHttpServletRequestParams(HttpServletRequest request) {
+
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("got_response", "elements are these:");
 
         JsonObject jHeaders = new JsonObject();
         Enumeration<String> headerNames = request.getHeaderNames();
@@ -543,7 +554,7 @@ public class AplicacaoResource extends BennuRestResource {
             jHeaders.addProperty(headerName, request.getHeader(headerName));
         }
 
-        jObj.add("header_names", jHeaders);
+        jObj.add("headers", jHeaders);
 
         JsonObject jParams = new JsonObject();
         List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
@@ -551,26 +562,17 @@ public class AplicacaoResource extends BennuRestResource {
             jParams.addProperty(name, request.getParameter(name));
         }
 
-        jObj.add("param_names", jParams);
-
-        System.out.println("####### got new notifcentercallback message!!");
-        System.out.println(jObj.toString());
-
-        /*
-        String sid = null;
-        String status = null;
-
-        if((sid = getRequiredValue(jObj, "sid")) != null && (status = getRequiredValue(jObj, "MessageStatus")) != null) {
-            System.out.println("sid: " + sid + ", messsagestatus: " + status + ", MessageSid: " + getRequiredValue(jObj, "MessageSid") + ", AccountSid: " + getRequiredValue(jObj, "AccountSid"));
-        }
-        else {
-            System.out.println("no sid and status");
-        }
-        */
+        jObj.add("body", jParams);
 
         return jObj;
     }
 
+    private String getRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            return obj.get(property).getAsString();
+        }
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
+    }
 
     //RECEBER NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS:
 
@@ -578,51 +580,24 @@ public class AplicacaoResource extends BennuRestResource {
     @RequestMapping(value = "/{canal}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, HttpServletRequest request) {
 
+        if (!FenixFramework.isDomainObjectValid(canal)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
+        }
+
         //PROBLEMA: Nao pode levar "@RequestBody JsonElement body"!
-
-        JsonObject jObj = new JsonObject();
-        jObj.addProperty("got_response", "elements are these:");
-
-        JsonObject jHeaders = new JsonObject();
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            jHeaders.addProperty(headerName, request.getHeader(headerName));
-        }
-
-        jObj.add("header_names", jHeaders);
-
-        JsonObject jParams = new JsonObject();
-        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
-        for (String name : parameterNames) {
-            jParams.addProperty(name, request.getParameter(name));
-        }
-
-        jObj.add("param_names", jParams);
+        JsonObject jObj = getHttpServletRequestParams(request);
 
         System.out.println("####### got new messagedeliverystatus message!!");
         System.out.println(jObj.toString());
-
-
-        if (!FenixFramework.isDomainObjectValid(canal)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR); ///
-        }
 
         //TODO - NAO É PRECISO FAZER ESTA DISTINCAO, POIS ESTE RECURSO ESTARÀ DENTRO DE TWILIOWHATSAPPRESOURCE.java!
         ///TwilioWhatsapp
         //"MessageStatus":"delivered","MessageSid":"SM9f705525cc4143ef8dece27557549a5f"
         //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
-        if (!jParams.getAsJsonObject().has("MessageSid")) {
-            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No sid parameter.");
-        }
-
-        if (!jParams.getAsJsonObject().has("MessageStatus")) {
-            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No status parameter.");
-        }
+        String idExterno = getRequiredValue(jObj.getAsJsonObject("body").getAsJsonObject(), "MessageSid");
+        String estadoEntrega = getRequiredValue(jObj.getAsJsonObject("body").getAsJsonObject(), "MessageStatus");
         ///}
 
-        String idExterno = jParams.get("MessageSid").getAsString();
-        String estadoEntrega = jParams.get("MessageStatus").getAsString();
         boolean knownIdExterno = false;
 
         for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
@@ -1422,3 +1397,15 @@ System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).colle
         return jObj;
     }
          */
+
+
+           /*
+        if (!jObj.getAsJsonObject("body").getAsJsonObject().has("MessageSid")) {
+            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No sid parameter.");
+        }
+
+        if (!jObj.getAsJsonObject("body").getAsJsonObject().has("MessageStatus")) {
+            throw new NotifcenterException(ErrorsAndWarnings.ERROR_MISSING_PARAMETER, "No status parameter.");
+        }
+
+                */
