@@ -80,8 +80,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                 for (Contacto contacto : user.getContactosSet()) {
 
                     if (contacto.getCanal().getExternalId().equals(this.getExternalId())) {
-                        //responseEntities.add(tw.sendMessage("whatsapp:+351961077271", msg.getTextoCurto()));
-                        ///responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));
+                        //responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));
 
                         //Debug
                         System.out.println("has dadosContacto " + contacto.getDadosContacto());

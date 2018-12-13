@@ -664,58 +664,12 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments);
-        /*return*/
-        //System.out.println(view(msg, MensagemAdapter.class).toString());
 
-        //TwilioWhatsapp tw = FenixFramework.getDomainObject("281835753963522");
-        //TwilioWhatsapp tw = (TwilioWhatsapp) msg.getCanalNotificacao().getCanal();
-
-        ///
-        /*
-        Canal tw = msg.getCanalNotificacao().getCanal();
-
-        List<ResponseEntity<String>> responseEntities = new ArrayList<>();
-
-        for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
-            group.getMembers().forEach(user -> {
-
-                System.out.println("user: " + user.getDisplayName() + " with email: " + user.getEmail());
-
-                for (Contacto contacto : user.getContactosSet()) {
-
-                    if (contacto.getCanal().getExternalId().equals(tw.getExternalId())) {
-                        //responseEntities.add(tw.sendMessage("whatsapp:+351961077271", msg.getTextoCurto()));
-                        responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));
-                    }
-                }
-            });
-        }
-
-        //ResponseEntity<String> responseEntity = tw.sendMessage("whatsapp:+351961077271", msg.getTextoCurto());
-
-        responseEntities.stream().forEach(responseEntity -> {
-            if (responseEntity == null) {
-                throw new NotifcenterException(ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE, "Channel \"" + msg.getCanalNotificacao().getCanal().getClass().getName() + "\" is unavailable right now. Try again later.");
-                //ODO dizer que falhou envio para pessoa X ///
-            }
-        });
-        */
-        ///
-
-        /*if (responseEntity == null) {
-            throw new NotifcenterException(ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE, "Channel \"" + msg.getCanalNotificacao().getCanal().getClass().getName() + "\" is unavailable right now. Try again later.");
-            //return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.NOT_FOUND);
-        }*/
-
-        //return responseEntity.getBody().toString();
-        ///return new JsonParser().parse(responseEntity.getBody());
-        ///return new JsonParser().parse(responseEntities.stream().map(HttpEntity::getBody).collect(Collectors.joining(",")));
-
-        //hmm https://howtodoinjava.com/spring-boot2/enableasync-async-controller/
-        ///new Thread(() -> {
+        //https://howtodoinjava.com/spring-boot2/enableasync-async-controller/
+        //new Thread(() -> {
         Canal ic = msg.getCanalNotificacao().getCanal();
         ic.sendMessage(msg);
-        ///}).start();
+        //}).start();
 
         return view(msg, MensagemAdapter.class);
     }
@@ -1013,25 +967,6 @@ public class AplicacaoResource extends BennuRestResource {
 
 
     //IGNORAR TWILIO
-
-    /* ///
-    @RequestMapping(value = "/twiliowhatsappsms", method = RequestMethod.POST)
-    public ResponseEntity<String> twilioWhatsappSMS(@RequestParam(value = "message",
-            defaultValue = "mensagem teste do notifcenter 1 =D") String message) {
-
-        ///comentar depois de usar:
-        ///TwilioWhatsapp twilioWhatsapp = TwilioWhatsapp.createTwilioWhatsappFromPropertiesFile("twiliowhatsapp1");
-        TwilioWhatsapp twilioWhatsapp = FenixFramework.getDomainObject("281835753963522");
-
-        ResponseEntity<String> responseEntity = twilioWhatsapp.sendMessage("whatsapp:+351961077271", message);
-
-        if (responseEntity == null) {
-            return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.NOT_FOUND);
-        }
-
-        return responseEntity;
-    }
-    */
 
     /*
     @RequestMapping(value = "/twilio", method = RequestMethod.GET)
