@@ -534,44 +534,13 @@ public class AplicacaoResource extends BennuRestResource {
     @RequestMapping(value = "/notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement notifcenterCallback(HttpServletRequest request) {
 
-        JsonObject jObj = getHttpServletRequestParams(request);
+        JsonObject jObj = HTTPClient.getHttpServletRequestParams(request);
 
         System.out.println("####### got new notifcentercallback message!!");
 
         System.out.println(jObj.toString());
 
         return jObj;
-    }
-
-    public JsonObject getHttpServletRequestParams(HttpServletRequest request) {
-
-        JsonObject jObj = new JsonObject();
-
-        JsonObject jHeaders = new JsonObject();
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            jHeaders.addProperty(headerName, request.getHeader(headerName));
-        }
-
-        jObj.add("headers", jHeaders);
-
-        JsonObject jParams = new JsonObject();
-        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
-        for (String name : parameterNames) {
-            jParams.addProperty(name, request.getParameter(name));
-        }
-
-        jObj.add("body", jParams);
-
-        return jObj;
-    }
-
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            return obj.get(property).getAsString();
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
     }
 
     //RECEBER NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS:
@@ -585,7 +554,7 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         //PROBLEMA: Nao pode levar "@RequestBody JsonElement body"!
-        JsonObject jObj = getHttpServletRequestParams(request);
+        JsonObject jObj = HTTPClient.getHttpServletRequestParams(request);
 
         System.out.println("####### got new messagedeliverystatus message!!");
         System.out.println(jObj.toString());
@@ -598,22 +567,21 @@ public class AplicacaoResource extends BennuRestResource {
         String estadoEntrega = getRequiredValue(jObj.getAsJsonObject("body").getAsJsonObject(), "MessageStatus");
         ///}
 
-        boolean knownIdExterno = false;
-
         for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
             if (e.getIdExterno().equals(idExterno)) {
                 e.changeEstadoEntrega(estadoEntrega);
-                knownIdExterno = true;
-                break;
+                throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
             }
         }
 
-        if (!knownIdExterno) {
-            throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
+        throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
+    }
+
+    private String getRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            return obj.get(property).getAsString();
         }
-        else {
-            throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
-        }
+        throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + property + "!");
     }
 
     @RequestMapping(value = "/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

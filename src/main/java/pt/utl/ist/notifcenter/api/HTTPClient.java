@@ -1,5 +1,6 @@
 package pt.utl.ist.notifcenter.api;
 
+import com.google.gson.JsonObject;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -9,10 +10,9 @@ import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
+import java.util.*;
 
 public class HTTPClient {
 
@@ -130,6 +130,31 @@ public class HTTPClient {
         System.out.println("header: " + response.getHeaders());
         System.out.println("body: " + response.getBody());
         System.out.println(" ");
+    }
+
+
+    public static JsonObject getHttpServletRequestParams(HttpServletRequest request) {
+
+        JsonObject jObj = new JsonObject();
+
+        JsonObject jHeaders = new JsonObject();
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            jHeaders.addProperty(headerName, request.getHeader(headerName));
+        }
+
+        jObj.add("headers", jHeaders);
+
+        JsonObject jParams = new JsonObject();
+        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
+        for (String name : parameterNames) {
+            jParams.addProperty(name, request.getParameter(name));
+        }
+
+        jObj.add("body", jParams);
+
+        return jObj;
     }
 
 }
