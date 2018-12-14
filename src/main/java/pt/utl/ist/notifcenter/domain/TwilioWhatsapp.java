@@ -69,7 +69,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         body.put("From", Arrays.asList(this.getFromPhoneNumber()));
 
         String httpLinkForMessage = " " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/notifcenter/" + this.getExternalId() + "/view";
-        String message = msg.getTextoCurto() + " localhost:8080/notifcenter/21123123321/view";
+        String message = msg.getTextoCurto() + " http://trollspt.club/notifcenter/123123/view";
         System.out.println(message);
         body.put("Body", Arrays.asList(message));
 
