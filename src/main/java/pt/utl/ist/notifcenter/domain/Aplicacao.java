@@ -1,5 +1,6 @@
 package pt.utl.ist.notifcenter.domain;
 
+import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.oauth.domain.*;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
@@ -59,6 +60,48 @@ public class Aplicacao extends Aplicacao_Base {
     @Atomic
     public Aplicacao setAppName(final String nome) {
         this.setName(nome);
+        return this;
+    }
+
+    public boolean isValidString(@Nullable String str) {
+        return (str != null && !str.isEmpty());
+    }
+
+    @Atomic
+    public Aplicacao updateAplicacao(@Nullable final String name, @Nullable final String redirectUrl, @Nullable final String description, @Nullable final String authorName, @Nullable final String siteUrl) {
+
+        Aplicacao foundApp;
+
+        if (isValidString(name)) {
+            if ((foundApp = findByAplicacaoName(name)) != null) {
+                if (foundApp.equals(this)) {
+                    this.setName(name);
+                }
+                else{
+                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
+                }
+            }
+            else {
+                this.setName(name);
+            }
+        }
+
+        if (isValidString(redirectUrl)) {
+            this.setRedirectUrl(redirectUrl);
+        }
+
+        if (isValidString(description)) {
+            this.setDescription(description);
+        }
+
+        if (isValidString(authorName)) {
+            this.setAuthorName(authorName);
+        }
+
+        if (isValidString(siteUrl)) {
+            this.setSiteUrl(siteUrl);
+        }
+
         return this;
     }
 
@@ -132,6 +175,10 @@ public class Aplicacao extends Aplicacao_Base {
         for (Remetente r : this.getRemetentesSet()) {
             r.delete();
         }
+
+        //needed because of ExternalApplication (note: Aplicacao extends ExternalApplication)
+        this.getBennu().removeApplications(this);
+        this.setBennu(null);
 
         this.getSistemaNotificacoes().removeAplicacoes(this);
         this.setSistemaNotificacoes(null);

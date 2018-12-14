@@ -1,15 +1,23 @@
 // Pedidos disponíveis:
 
-//PARA TESTAR:
-//curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"sid":"algumsid", "status":"algumstatus"}'
-// http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281835753963522/messagedeliverystatus
+//curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"param1":"value1"}'
 
+
+
+//OK3:
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/addaplicacao?name=app_99&redirect_uri=http://app99_site.com/code&description=descricao_app99
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listaplicacoes
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715716/update?description=d1&name=n1&redirect_uri=r1&author=a1&site_urlTONULL=s1
+//POST {"description":"d2", "name":"n2", "redirect_uri":"r2", "author":"a2", "site_url": "s2"} http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715716/update2
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715716/delete
+
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714 (view app)
 
 //OK2:
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281835753963522/messagedeliverystatus // {canal}/messagedeliverystatus
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281681135140872/deliverystatus
-//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto3&textocurto=aparecenowhatsppcurto3&textolongo=algumtextolongo3
-//DEBUG http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/deletemessages //?msg=opcional
-
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmensagem?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto3&textocurto=aparecenowhatsppcurto3&textolongo=algumtextolongo3
+//DEBUG http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/deletemensagens //?msg=opcional
 
 //OK:
 //POST {"nameEEE":"novo_nome"} -> http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/update
@@ -17,9 +25,9 @@
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/listremetentes
 
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855 //{app}/{remetente}
-//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/listGruposDestinatarios
-//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/removeGrupoDestinario?group=281702609977345
-//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/addGrupoDestinario?group=281702609977345
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/listgruposdestinatarios
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/removegrupodestinario?group=281702609977345
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/adddrupodestinario?group=281702609977345
 
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/pedidocanalnotificacao?canal=281835753963522
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/281724084813855/281775624421380/delete ///{app}/{remetente}/{canalnotificacao}/delete"
@@ -27,7 +35,9 @@
 //DEBUG POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/approvecanalnotificacao?cn=281775624421380
 //DEBUG POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/disapprovecanalnotificacao?cn=281775624421380
 
-//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listmessages
+
+
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listmensagens
 
 //GET http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/listutilizadores
 //GET http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/{utilizador}
@@ -49,7 +59,7 @@
 //stackoverflow: https://stackoverflow.com/questions/45204684/robot-framework-differences-between-suite-setup-and-test-setup
 
 //https://www.twilio.com/console/sms/whatsapp/learn
-//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmensagem?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
 //DADOS EXEMPLO:
 //app "app_77": 281736969715714
@@ -62,23 +72,23 @@
 //user "admin" -> contacto whatsapp: 281715494879236
 
 //REGISTAR APP:
-//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
 //GET http://{{DOMAIN}}:8080/notifcenter/oauth/userdialog?client_id=281736969715714&redirect_uri=http://app77_site.com/code
 //POST http://{{DOMAIN}}:8080/notifcenter/oauth/access_token?client_id=281736969715714&client_secret=y3MW4pX%2B3hGu9DbfSpYYtFx71llEx5qCpKsJdWrtlVjuG9%2FRozatZkYvWj9FbHkDEM52%2B3oWUuRCI7HYowXEfw%3D%3D&redirect_uri=http://app77_site.com/code&code=d46d6939c0564846fed10cdcb3233b18716f6fb5770d3f58c134379e43316d138471e47d42f1a49160c65c22577180705fc615df027e0017a68f47f4b595a0c3&grant_type=authorization_code
 //POST http://{{DOMAIN}}:8080/notifcenter/oauth/refresh_token?client_id=281736969715714&client_secret=y3MW4pX%2B3hGu9DbfSpYYtFx71llEx5qCpKsJdWrtlVjuG9%2FRozatZkYvWj9FbHkDEM52%2B3oWUuRCI7HYowXEfw%3D%3D&refresh_token=MjgxNjg1NDMwMTA4MTYzOjdhOWIzNDIyNTRmZDIzN2ZmODQ4N2U2NjFjMjllYWQyODAxYjhhZWMwNDFiZDhiZDU1MDEwZjI5OWNiZmQzOGI3NDQwMGEwZGNhMTAwMjFhYjMyOTYwN2U2NDJkNjMzMWMwZDQ3YmFjYmNkZDk2ZjA3ZGQ3ZmI0NTMyZTg3MzRj&grant_type=refresh_token
 
 //METODOS
-//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
-//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715714?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714   (view app) ?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //GET/POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/notifcentercallback
-//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmensagem?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
 //UTEIS:
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/viewcanal/281835753963522
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listcanais
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listutilizadores
-//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listapps
+//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listaplicacoes
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listgroups
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/attachments/list
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/attachments/{fileName}
@@ -151,9 +161,8 @@ public class AplicacaoResource extends BennuRestResource {
 
         //API Aplicacao (/apiaplicacoes):
 
-       /adicionarAplicacao
-       (falta)
-       /listAplicacoes
+       /addaplicacao
+       /listaplicacoes
        /{app}
        /{app}/update
        /{app}/delete
@@ -173,18 +182,21 @@ public class AplicacaoResource extends BennuRestResource {
        /{app}/{remetente}/{canalnotificacao}/delete
        /{app}/{remetente}/listcanaisnotificacao
        
-       /{app}/sendmessage
-       
+       /{app}/sendmensagem
+
+
       
 
        //API canal (/apicanais):
        (falta)
-       /adicionarCanal
-       /listCanais
+       /addanal
+       /listcanais
        /{canal}
        /{canal}/update
        // /{canal}/listCanaisNotificacao
        // /{canal}/listContactos
+
+
 
 
        //API utilizador (/apiutilizadores):
@@ -201,12 +213,12 @@ public class AplicacaoResource extends BennuRestResource {
     */
 
 
-    //ADICIONAR APLICACAO
+    //AGRUPAMENTO: APLICACOES
 
     //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security
     //@SkipAccessTokenValidation //diz ao método preHandler em "NotifcenterInterceptor.java" para aceitar pedidos sem access_token
     @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
-    @RequestMapping(value = "/oauth/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addAplicacao(@RequestParam(value = "description") String description,
                                @RequestParam(value = "name") String name,
                                @RequestParam(value = "redirect_uri") String redirectUrl,
@@ -221,7 +233,7 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class);
     }
 
-    @RequestMapping(value = "/oauth/viewaplicacao/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement viewAplicacao(@PathVariable("app") Aplicacao app) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
@@ -231,9 +243,61 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class);
     }
 
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement updateAplicacao(@PathVariable("app") Aplicacao app,
+                                       @RequestParam(value = "description", required = false) String description,
+                                       @RequestParam(value = "name", required = false) String name,
+                                       @RequestParam(value = "redirect_uri", required = false) String redirectUrl,
+                                       @RequestParam(value = "author", required = false) String authorName,
+                                       @RequestParam(value = "site_url", required = false) String siteUrl) {
+
+        return view(app.updateAplicacao(name, redirectUrl, description, authorName, siteUrl), AplicacaoAdapter.class);
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/update2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement updateAplicacao2(@PathVariable("app") Aplicacao app, @RequestBody JsonElement body) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        return view(update(body, app, AplicacaoAdapter.class), AplicacaoAdapter.class);
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement deleteAplicacao(@PathVariable("app") Aplicacao app) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        JsonObject jObj = new JsonObject();
+        jObj.add("deleted_app", view(app, AplicacaoAdapter.class));
+
+        app.delete();
+
+        return jObj;
+    }
+
+    @RequestMapping(value = "/listaplicacoes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listAplicacoes() {
+
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        for (Aplicacao a: SistemaNotificacoes.getInstance().getAplicacoesSet()) {
+            jArray.add(view(a, AplicacaoAdapter.class));
+        }
+
+        jObj.add("aplicacoes", jArray);
+        return jObj;
+    }
 
 
-    //AGRUPAMENTO: REMETENTES
+    //SUB-AGRUPAMENTO: APLICACOES->REMETENTES
 
     @SkipCSRF
     @RequestMapping(value = "/{app}/addremetente", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -264,23 +328,7 @@ public class AplicacaoResource extends BennuRestResource {
     @SkipCSRF
     @RequestMapping(value = "/{app}/{remetente}/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateRemetente(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente,
-                                       @RequestBody JsonElement body) {
-
-        if (!FenixFramework.isDomainObjectValid(app)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
-        }
-
-        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
-        }
-
-        return view(update(body, remetente, RemetenteAdapter.class), RemetenteAdapter.class);
-    }
-
-    @SkipCSRF
-    @RequestMapping(value = "/{app}/{remetente}/update2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement updateRemetente2(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente,
-                                       @RequestParam(value = "name") String name) {
+                                        @RequestParam(value = "name") String name) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -295,6 +343,21 @@ public class AplicacaoResource extends BennuRestResource {
         return view(remetente, RemetenteAdapter.class);
     }
 
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/{remetente}/update2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement updateRemetente2(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente,
+                                       @RequestBody JsonElement body) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
+        }
+
+        return view(update(body, remetente, RemetenteAdapter.class), RemetenteAdapter.class);
+    }
 
     @SkipCSRF
     @RequestMapping(value = "/{app}/{remetente}/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -309,7 +372,7 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         JsonObject jObj = new JsonObject();
-        jObj.add("deleted remetente", view(remetente, RemetenteAdapter.class));
+        jObj.add("deleted_remetente", view(remetente, RemetenteAdapter.class));
 
         remetente.delete();
 
@@ -372,7 +435,7 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
-    @RequestMapping(value = "/{app}/{remetente}/listGruposDestinatarios", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{app}/{remetente}/listgruposdestinatarios", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listGruposDestinatarios(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
@@ -392,7 +455,7 @@ public class AplicacaoResource extends BennuRestResource {
 
         jObj.addProperty("appId", app.getExternalId());
         jObj.addProperty("remetenteId", remetente.getExternalId());
-        jObj.add("groups", jArray);
+        jObj.add("grupos", jArray);
 
         return jObj;
     }
@@ -468,7 +531,7 @@ public class AplicacaoResource extends BennuRestResource {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("appId", app.getExternalId());
         jObj.addProperty("remetenteId", remetente.getExternalId());
-        jObj.add("deleted canalnotificacao", view(cn, CanalNotificacaoAdapter.class));
+        jObj.add("deleted_canalnotificacao", view(cn, CanalNotificacaoAdapter.class));
 
         cn.delete();
 
@@ -495,7 +558,7 @@ public class AplicacaoResource extends BennuRestResource {
 
         jObj.addProperty("appId", app.getExternalId());
         jObj.addProperty("remetenteId", remetente.getExternalId());
-        jObj.add("canais notificacao", jArray);
+        jObj.add("canais_notificacao", jArray);
 
         return jObj;
     }
@@ -610,8 +673,8 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/{app}/sendmessage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement sendMessage(@PathVariable("app") Aplicacao app,
+    @RequestMapping(value = "/{app}/sendmensagem", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement sendMensagem(@PathVariable("app") Aplicacao app,
                                    @RequestParam("canalnotificacao") CanalNotificacao canalNotificacao,
                                    @RequestParam("gdest") PersistentGroup[] gruposDestinatarios,
                                    @RequestParam("assunto") String assunto,
@@ -716,6 +779,7 @@ public class AplicacaoResource extends BennuRestResource {
     @RequestMapping(value = "/listcontactos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listContactos() {
 
+        JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
         for (User u : FenixFramework.getDomainRoot().getBennu().getUserSet()) {
@@ -724,20 +788,24 @@ public class AplicacaoResource extends BennuRestResource {
             }
         }
 
-        return jArray;
+        jObj.add("contactos", jArray);
+        return jObj;
     }
 
     @RequestMapping(value = "/listcanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listCanais() {
 
+        JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
         for (Canal c: SistemaNotificacoes.getInstance().getCanaisSet()) {
             jArray.add(view(c, CanalAdapter.class));
         }
 
-        return jArray;
+        jObj.add("canais", jArray);
+        return jObj;
     }
+
     @RequestMapping(value = "/deletecanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String deleteCanais() {
 
@@ -748,32 +816,21 @@ public class AplicacaoResource extends BennuRestResource {
         return "All channels were deleted!";
     }
 
+    @RequestMapping(value = "/listgrupos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listGrupos() {
 
-    @RequestMapping(value = "/listapps", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement listApps() {
-
-        JsonArray jArray = new JsonArray();
-
-        for (Aplicacao a: SistemaNotificacoes.getInstance().getAplicacoesSet()) {
-            jArray.add(view(a, AplicacaoAdapter.class));
-        }
-
-        return jArray;
-    }
-
-    @RequestMapping(value = "/listgroups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement listGroups() {
-
+        JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
         for (PersistentGroup g: FenixFramework.getDomainRoot().getBennu().getGroupSet()) {
             jArray.add(view(g, PersistentGroupAdapter.class));
         }
 
-        return jArray;
+        jObj.add("grupos", jArray);
+        return jObj;
     }
 
-    @RequestMapping(value = "/attachments/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/listattachments", method = RequestMethod.GET)
     public JsonElement listAttachments() {
 
         JsonObject jObj = new JsonObject();
@@ -789,12 +846,11 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         jObj.add("attachments", jArray);
-
         return jObj;
     }
 
-    @RequestMapping(value = "/listmessages", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement listMessages() {
+    @RequestMapping(value = "/listmensagens", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listMensagens() {
 
         JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
@@ -813,8 +869,8 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/deletemessages", method = RequestMethod.POST)
-    public String deleteMessages(@RequestParam(value = "msg", required = false) Mensagem msg) {
+    @RequestMapping(value = "/deletemensagens", method = RequestMethod.POST)
+    public String deleteMnsagens(@RequestParam(value = "msg", required = false) Mensagem msg) {
 
         boolean flag = false;
 

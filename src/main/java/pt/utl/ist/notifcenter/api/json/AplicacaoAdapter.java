@@ -26,9 +26,12 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
     @Override
     public Aplicacao update(JsonElement jsonElement, Aplicacao app, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        String nome = getRequiredValue(jObj, "name");
-        ///outros parametros (será que ctx pode ajudar?)
-        return app.setAppName(nome);
+        String name = getRequiredValue(jObj, "name");
+        String redirectUrl = tryTogetRequiredValue(jObj, "redirect_uri");
+        String description = tryTogetRequiredValue(jObj, "description");
+        String authorName = tryTogetRequiredValue(jObj, "author");
+        String siteUrl = tryTogetRequiredValue(jObj, "site_url");
+        return app.updateAplicacao(name, redirectUrl, description, authorName, siteUrl);
     }
 
     @Override
@@ -50,6 +53,13 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
             return obj.get(property).getAsString();
         }
         throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
+    }
+
+    private String tryTogetRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            return obj.get(property).getAsString();
+        }
+        return null;
     }
 
 }
