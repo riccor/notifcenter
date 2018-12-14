@@ -28,7 +28,7 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport
     @ConfigurationManager(description = "Notifcenter Configuration")
     public interface ConfigurationProperties {
 
-        @ConfigurationProperty(key = "notifcenter.url", defaultValue = "http://localhost:8080/notifcenter")
+        @ConfigurationProperty(key = "notifcenter.url", defaultValue = "localhost:8080/notifcenter")
         public String notifcenterUrl();
 
         //@ConfigurationProperty(key = "notifcenter.mytest.url", defaultValue = "http://localhost:8080/notifcenter")
