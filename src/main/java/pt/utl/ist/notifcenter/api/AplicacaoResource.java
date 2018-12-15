@@ -196,8 +196,10 @@ public class AplicacaoResource extends BennuRestResource {
        (falta)
        /addcanal
        /listcanais
-       /{canal}
+       /listclassescanais
+       /{canal} // /viewcanal/{canal} por agora
        /{canal}/update
+       /{canal}/delete
        // /{canal}/listCanaisNotificacao
        // /{canal}/listContactos
 
