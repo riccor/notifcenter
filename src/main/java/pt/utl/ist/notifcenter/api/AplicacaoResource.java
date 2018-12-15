@@ -1041,16 +1041,22 @@ public class AplicacaoResource extends BennuRestResource {
         JsonObject jObj = new JsonObject();
 
         try {
-            Class<?> clazz = Class.forName(name);
-            String[] args = {"accountSID1", "authToken1", "fromPhoneNumber1", "uri1"};
-            Class[] cArg = new Class[args.length];
-            Arrays.fill(cArg, String.class);
-            Method m = clazz.getDeclaredMethod("create", cArg);
-            Canal novoCanal = (Canal) m.invoke(null, new Object[] {args});
-            view(novoCanal, CanalAdapter.class);
+            Class<?> clazz = Class.forName(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain() + "." + name);
 
+            AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
+            String[] params = annotation.creatingParams();
+            Class[] cArg = new Class[params.length]; //sempre strings
+            Arrays.fill(cArg, String.class);
+
+            String[] args = {"accountSID1", "authToken1", "fromPhoneNumber1", "uri1"};
+            Object[] methodArgs = new Object[] {args};
+
+            Method m = clazz.getMethod("createChannel", cArg);
+            Canal novoCanal = (Canal) m.invoke(null, methodArgs);
+            view(novoCanal, CanalAdapter.class);
         }
         catch (Exception e) {
+            e.printStackTrace();
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_NAME_ERROR);
         }
 
@@ -1066,11 +1072,10 @@ public class AplicacaoResource extends BennuRestResource {
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(AnotacaoCanal.class));
 
-        for (BeanDefinition bd : scanner.findCandidateComponents("pt.utl.ist.notifcenter.domain")) {
+        for (BeanDefinition bd : scanner.findCandidateComponents(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain())) {
             try {
                 Class<?> clazz = Class.forName(bd.getBeanClassName());
                 AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
-                //String name = annotation.name();
                 String name = clazz.getSimpleName(); //bd.getBeanClassName().substring(bd.getBeanClassName().lastIndexOf('.') + 1);
                 String[] params = annotation.creatingParams();
 

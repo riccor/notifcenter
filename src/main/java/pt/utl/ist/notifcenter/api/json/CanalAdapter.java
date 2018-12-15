@@ -1,6 +1,5 @@
 package pt.utl.ist.notifcenter.api.json;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
@@ -10,9 +9,6 @@ import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.domain.Canal;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 
 @DefaultJsonAdapter(Canal.class)
 public class CanalAdapter implements JsonAdapter<Canal> {
@@ -67,20 +63,13 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         try {
             AnotacaoCanal annotation = obj.getClass().getAnnotation(AnotacaoCanal.class);
 
-            System.out.println("#111");
-
             for (String str : annotation.creatingParams()) {
-
-                System.out.println("#222: " + str);
-                String methodName = "get" + str.substring(0, 1).toUpperCase()   + str.substring(1);
-                System.out.println("#333: " + methodName);
-
-                String value = (String) obj.getClass().getDeclaredMethod(methodName).invoke(this);
-                jObj.addProperty(str, value); //getAccountSID()
+                String methodName = "get" + str.substring(0, 1).toUpperCase() + str.substring(1);
+                String value = (String) obj.getClass().getMethod(methodName).invoke(obj); //são sempre strings
+                jObj.addProperty(str, value);
             }
         }
         catch (Exception e) {
-            e.getStackTrace();
             System.out.println("error on getting a channel class params");
         }
 
@@ -95,3 +84,9 @@ public class CanalAdapter implements JsonAdapter<Canal> {
     }
 
 }
+
+/*
+    private <T> T castToSpecificChannel(Class<T> clazz, Canal canal) {
+        return (T) canal;
+    }
+*/
