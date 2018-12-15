@@ -1030,37 +1030,41 @@ public class AplicacaoResource extends BennuRestResource {
     }
     */
 
-
-    //TODO AQUI!
-
     @SkipCSRF
     @RequestMapping(value = "/addcanal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addCanal(@RequestParam("name") String name, @RequestBody JsonElement body) {
 
         //TwilioWhatsapp.createTwilioWhatsApp(accountSID, authToken, fromPhoneNumber, uri);
         JsonObject jObj = new JsonObject();
+        Class<?> clazz;
+        String[] params;
 
         try {
-            Class<?> clazz = Class.forName(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain() + "." + name);
-
+            clazz = Class.forName(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain() + "." + name);
             AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
-            String[] params = annotation.creatingParams();
-            Class[] cArg = new Class[params.length]; //sempre strings
-            Arrays.fill(cArg, String.class);
-
-            String[] args = {"accountSID1", "authToken1", "fromPhoneNumber1", "uri1"};
-            Object[] methodArgs = new Object[] {args};
-
-            Method m = clazz.getMethod("createChannel", cArg);
-            Canal novoCanal = (Canal) m.invoke(null, methodArgs);
-            view(novoCanal, CanalAdapter.class);
+            params = annotation.classFields();
         }
         catch (Exception e) {
-            e.printStackTrace();
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_NAME_ERROR);
         }
 
-        return jObj;
+        Class[] args = new Class[params.length]; //sempre strings
+        Arrays.fill(args, String.class);
+
+        Object[] methodArgs = new Object[params.length];
+        for (int i = 0; i < params.length; i++) {
+            methodArgs[i] = getRequiredValue(body.getAsJsonObject(), params[i]);
+        }
+
+        try {
+            Method m = clazz.getMethod("createChannel", args);
+            Canal novoCanal = (Canal) m.invoke(null, methodArgs);
+            return view(novoCanal, CanalAdapter.class);
+        }
+        catch (Exception e) {
+            ///e.printStackTrace();
+            throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Server could not create a new channel.");
+        }
     }
 
     @RequestMapping(value = "/listclassescanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -1077,7 +1081,7 @@ public class AplicacaoResource extends BennuRestResource {
                 Class<?> clazz = Class.forName(bd.getBeanClassName());
                 AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
                 String name = clazz.getSimpleName(); //bd.getBeanClassName().substring(bd.getBeanClassName().lastIndexOf('.') + 1);
-                String[] params = annotation.creatingParams();
+                String[] params = annotation.classFields();
 
                 JsonObject jO = new JsonObject();
                 JsonArray jA = new JsonArray();

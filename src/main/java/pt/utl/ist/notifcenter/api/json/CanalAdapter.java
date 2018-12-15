@@ -63,7 +63,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         try {
             AnotacaoCanal annotation = obj.getClass().getAnnotation(AnotacaoCanal.class);
 
-            for (String str : annotation.creatingParams()) {
+            for (String str : annotation.classFields()) {
                 String methodName = "get" + str.substring(0, 1).toUpperCase() + str.substring(1);
                 String value = (String) obj.getClass().getMethod(methodName).invoke(obj); //são sempre strings
                 jObj.addProperty(str, value);

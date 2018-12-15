@@ -17,7 +17,7 @@ import pt.utl.ist.notifcenter.utils.Utils;
 
 import java.util.*;
 
-@AnotacaoCanal(creatingParams = {"accountSID", "authToken", "fromPhoneNumber", "uri"})
+@AnotacaoCanal(classFields = {"accountSID", "authToken", "fromPhoneNumber", "uri"})
 public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
     private TwilioWhatsapp() {

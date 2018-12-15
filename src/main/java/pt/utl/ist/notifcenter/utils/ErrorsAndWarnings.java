@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorsAndWarnings {
 
+    INTERNAL_SERVER_ERROR ("internalServerError", "Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_APP_ERROR ("invalidApp", "Invalid application ID.", HttpStatus.NOT_FOUND),
     INVALID_APPNAME_ERROR ("applicationNameAlreadyInUse", "Such application name cannot be used.", HttpStatus.NOT_FOUND),
     INVALID_CHANNEL_ERROR ("invalidCanal", "Invalid channel ID.", HttpStatus.NOT_FOUND),
