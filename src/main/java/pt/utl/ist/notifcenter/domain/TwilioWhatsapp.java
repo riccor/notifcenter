@@ -17,6 +17,7 @@ import pt.utl.ist.notifcenter.utils.Utils;
 
 import java.util.*;
 
+@AnotacaoCanal(name = "TwilioWhatsapp", creatingParams = {"accountSID", "authToken", "fromPhoneNumber", "uri"})
 public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
     private TwilioWhatsapp() {
@@ -25,7 +26,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
     }
 
     @Atomic
-    public static TwilioWhatsapp createTwilioWhatsApp(final String accountSID, final String authToken, final String fromPhoneNumber, final String uri) {
+    public static TwilioWhatsapp create/*TwilioWhatsApp*/(final String accountSID, final String authToken, final String fromPhoneNumber, final String uri) {
         TwilioWhatsapp twilioWhatsapp = new TwilioWhatsapp();
         twilioWhatsapp.setAccountSID(accountSID);
         twilioWhatsapp.setAuthToken(authToken);
@@ -47,7 +48,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
             return null;
         }
 
-        return createTwilioWhatsApp(propertiesMap.get("accountSID"), propertiesMap.get("authToken"), propertiesMap.get("fromPhoneNumber"), propertiesMap.get("uri"));
+        return create/*TwilioWhatsApp*/(propertiesMap.get("accountSID"), propertiesMap.get("authToken"), propertiesMap.get("fromPhoneNumber"), propertiesMap.get("uri"));
     }
 
     /*

@@ -1,13 +1,18 @@
 package pt.utl.ist.notifcenter.api.json;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
+import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.domain.Canal;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 @DefaultJsonAdapter(Canal.class)
 public class CanalAdapter implements JsonAdapter<Canal> {
@@ -31,13 +36,54 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         return null;
     }
 
+    /* ///JsonObject jO = getJsonFromPa(obj.getClass());
+    public JsonObject getJsonFromPa(Class<? extends Canal> clazz) {
+        AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
+        //String name = annotation.name();
+        String name = clazz.getSimpleName(); //bd.getBeanClassName().substring(bd.getBeanClassName().lastIndexOf('.') + 1);
+        String[] params = annotation.creatingParams();
+
+        JsonObject jO = new JsonObject();
+        JsonArray jA = new JsonArray();
+
+        for (String s : params) {
+            jA.add(s);
+        }
+
+        jO.addProperty("name", name);
+        jO.add("params", jA);
+
+        return jO;
+    }*/
+
     @Override
     public JsonElement view(Canal obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("type", obj.getClass().getSimpleName());
         jObj.addProperty("id", obj.getExternalId());
+        jObj.addProperty("type", obj.getClass().getSimpleName());
         jObj.addProperty("email", obj.getEmail());
         ///jObj.addProperty("password", obj.getPassword());
+
+        try {
+            AnotacaoCanal annotation = obj.getClass().getAnnotation(AnotacaoCanal.class);
+
+            System.out.println("#111");
+
+            for (String str : annotation.creatingParams()) {
+
+                System.out.println("#222: " + str);
+                String methodName = "get" + str.substring(0, 1).toUpperCase()   + str.substring(1);
+                System.out.println("#333: " + methodName);
+
+                String value = (String) obj.getClass().getDeclaredMethod(methodName).invoke(this);
+                jObj.addProperty(str, value); //getAccountSID()
+            }
+        }
+        catch (Exception e) {
+            e.getStackTrace();
+            System.out.println("error on getting a channel class params");
+        }
+
         return jObj;
     }
 

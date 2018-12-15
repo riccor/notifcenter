@@ -125,8 +125,11 @@ import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
@@ -147,6 +150,8 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -189,7 +194,7 @@ public class AplicacaoResource extends BennuRestResource {
 
        //API canal (/apicanais):
        (falta)
-       /addanal
+       /addcanal
        /listcanais
        /{canal}
        /{canal}/update
@@ -994,16 +999,6 @@ public class AplicacaoResource extends BennuRestResource {
         return view(canal, CanalAdapter.class);
     }*/
 
-    @RequestMapping(value = "/viewcanal/{canal}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement viewCanal(@PathVariable(value = "canal") Canal canal) {
-
-        if (!FenixFramework.isDomainObjectValid(canal)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
-        }
-
-        return view(canal, CanalAdapter.class);
-    }
-
 
     /* IGNORAR - UpdateAppPermissions
     @SkipCSRF
@@ -1034,6 +1029,82 @@ public class AplicacaoResource extends BennuRestResource {
         return "emails dos canais: " + t;
     }
     */
+
+
+    //TODO AQUI!
+
+    @SkipCSRF
+    @RequestMapping(value = "/addcanal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addCanal(@RequestParam("name") String name, @RequestBody JsonElement body) {
+
+        //TwilioWhatsapp.createTwilioWhatsApp(accountSID, authToken, fromPhoneNumber, uri);
+        JsonObject jObj = new JsonObject();
+
+        try {
+            Class<?> clazz = Class.forName(name);
+            String[] args = {"accountSID1", "authToken1", "fromPhoneNumber1", "uri1"};
+            Class[] cArg = new Class[args.length];
+            Arrays.fill(cArg, String.class);
+            Method m = clazz.getDeclaredMethod("create", cArg);
+            Canal novoCanal = (Canal) m.invoke(null, new Object[] {args});
+            view(novoCanal, CanalAdapter.class);
+
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_NAME_ERROR);
+        }
+
+        return jObj;
+    }
+
+    @RequestMapping(value = "/listclassescanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listClassesCanais() {
+
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+        scanner.addIncludeFilter(new AnnotationTypeFilter(AnotacaoCanal.class));
+
+        for (BeanDefinition bd : scanner.findCandidateComponents("pt.utl.ist.notifcenter.domain")) {
+            try {
+                Class<?> clazz = Class.forName(bd.getBeanClassName());
+                AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
+                //String name = annotation.name();
+                String name = clazz.getSimpleName(); //bd.getBeanClassName().substring(bd.getBeanClassName().lastIndexOf('.') + 1);
+                String[] params = annotation.creatingParams();
+
+                JsonObject jO = new JsonObject();
+                JsonArray jA = new JsonArray();
+
+                for (String s : params) {
+                    jA.add(s);
+                }
+
+                jO.addProperty("name", name);
+                jO.add("params", jA);
+
+                jArray.add(jO);
+
+            }
+            catch (Exception e) {
+                System.out.println("error on getting a channel class params");
+            }
+        }
+
+        jObj.add("classes_canais", jArray);
+        return jObj;
+    }
+
+    @RequestMapping(value = "/viewcanal/{canal}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement viewCanal(@PathVariable(value = "canal") Canal canal) {
+
+        if (!FenixFramework.isDomainObjectValid(canal)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
+        }
+
+        return view(canal, CanalAdapter.class);
+    }
 
     @RequestMapping(value = "/twiliowhatsappfile", method = RequestMethod.GET)
     public String twiliofile() {
@@ -1368,3 +1439,29 @@ System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).colle
         }
 
                 */
+
+           /*
+        Reflections reflections = new Reflections("pt.utl.ist.notifcenter");
+        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(AnotacaoCanal.class);
+
+        annotated.forEach(e -> {
+            AnotacaoCanal annotation = e.getAnnotation(AnotacaoCanal.class);
+            String name = annotation.name();
+            String[] params = annotation.creatingParams();
+
+            System.out.println("name: " + name);
+            System.out.println("params: " + params);
+
+            JsonObject jO = new JsonObject();
+            JsonArray jA = new JsonArray();
+
+            for (String s : params) {
+                jA.add(s);
+            }
+
+            jO.addProperty("name", name);
+            jO.add("params", jA);
+
+            jArray.add(jO);
+        });
+        */

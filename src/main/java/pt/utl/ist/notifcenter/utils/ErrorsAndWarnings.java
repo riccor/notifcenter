@@ -9,6 +9,7 @@ public enum ErrorsAndWarnings {
     INVALID_APP_ERROR ("invalidApp", "Invalid application ID.", HttpStatus.NOT_FOUND),
     INVALID_APPNAME_ERROR ("applicationNameAlreadyInUse", "Such application name cannot be used.", HttpStatus.NOT_FOUND),
     INVALID_CHANNEL_ERROR ("invalidCanal", "Invalid channel ID.", HttpStatus.NOT_FOUND),
+    INVALID_CHANNEL_NAME_ERROR ("invalidCanalName", "Invalid channel name.", HttpStatus.NOT_FOUND),
     INVALID_REMETENTE_ERROR ("invalidRemetente", "Invalid remetente ID.", HttpStatus.NOT_FOUND),
     INVALID_CONTACT_ERROR ("invalidContacto", "Invalid contacto ID.", HttpStatus.NOT_FOUND),
     INVALID_USER_ERROR ("invalidUser", "Invalid user ID.", HttpStatus.NOT_FOUND),
