@@ -16,7 +16,7 @@ public class Twilio extends Twilio_Base {
         twilio.setAuthToken(authToken);
 
         //Debug
-        twilio.setEmail("twilio@notifcenter.com");
+        twilio.setEmail("twilio-" + twilio.getExternalId() + "@notifcenter.com");
 
         return twilio;
     }

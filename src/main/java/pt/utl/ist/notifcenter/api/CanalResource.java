@@ -26,6 +26,7 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+
 @RestController
 @RequestMapping("/apicanais")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api.canais")
@@ -35,39 +36,11 @@ public class CanalResource extends BennuRestResource {
 
     @SkipCSRF
     @RequestMapping(value = "/addcanal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addCanal(@RequestParam("name") String name, @RequestBody JsonElement body) {
+    public JsonElement addCanal(@RequestBody JsonElement body) {
 
         //TwilioWhatsapp.createTwilioWhatsApp(accountSID, authToken, fromPhoneNumber, uri);
-        JsonObject jObj = new JsonObject();
-        Class<?> clazz;
-        String[] params;
 
-        try {
-            clazz = Class.forName(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain() + "." + name);
-            AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
-            params = annotation.classFields();
-        }
-        catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_NAME_ERROR);
-        }
-
-        Class[] args = new Class[params.length]; //sempre strings
-        Arrays.fill(args, String.class);
-
-        Object[] methodArgs = new Object[params.length];
-        for (int i = 0; i < params.length; i++) {
-            methodArgs[i] = getRequiredValue(body.getAsJsonObject(), params[i]);
-        }
-
-        try {
-            Method m = clazz.getMethod("createChannel", args);
-            Canal novoCanal = (Canal) m.invoke(null, methodArgs);
-            return view(novoCanal, CanalAdapter.class);
-        }
-        catch (Exception e) {
-            ///e.printStackTrace();
-            throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Server could not create a new channel.");
-        }
+        return view(create2(body), CanalAdapter.class);
     }
 
     @RequestMapping(value = "/listclassescanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -134,7 +107,7 @@ public class CanalResource extends BennuRestResource {
 
     @SkipCSRF
     @RequestMapping(value = "/{canal}/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement deleteAplicacao(@PathVariable(value = "canal") Canal canal) {
+    public JsonElement deleteCanal(@PathVariable(value = "canal") Canal canal) {
 
         if (!FenixFramework.isDomainObjectValid(canal)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
@@ -151,20 +124,13 @@ public class CanalResource extends BennuRestResource {
     //vários canais têm diferentes parâmetros -> portanto uso apenas este /update que recebe um objecto json no body do pedido
     @SkipCSRF
     @RequestMapping(value = "/{canal}/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement updateAplicacao2(@PathVariable("canal") Canal canal, @RequestBody JsonElement body) {
+    public JsonElement updateCanal(@PathVariable("canal") Canal canal, @RequestBody JsonElement body) {
 
         if (!FenixFramework.isDomainObjectValid(canal)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
         }
 
-        return view(update(body, canal, CanalAdapter.class), CanalAdapter.class);
-    }
-
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            return obj.get(property).getAsString();
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + property + "!");
+        return view(update2(body, canal), CanalAdapter.class);
     }
 
     @ExceptionHandler({NotifcenterException.class})
@@ -178,6 +144,86 @@ public class CanalResource extends BennuRestResource {
         else {
             return new ResponseEntity<>(ex.getErrorsAndWarnings().toJson(), header, ex.getErrorsAndWarnings().getHttpStatus());
         }
+    }
+
+
+    //As seguintes funções não estão no ficheiro CanalAdapter.java porque se estivessem precisaria de adicionar nele a anotação @DefaultJsonAdapter cada vez que se adiciona uma nova classe de canal ao sistema
+    public Canal create2(JsonElement jsonElement /*, JsonBuilder ctx*/) {
+        String name = getRequiredValue(jsonElement.getAsJsonObject(), "name");
+        Class<?> clazz;
+        String[] params;
+
+        try {
+            clazz = Class.forName(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain() + "." + name);
+            AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
+            params = annotation.classFields();
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_NAME_ERROR);
+        }
+
+        Class[] args = new Class[params.length]; //sempre strings
+        Arrays.fill(args, String.class);
+
+        Object[] methodArgs = new Object[params.length];
+        for (int i = 0; i < params.length; i++) {
+            methodArgs[i] = getRequiredValue(jsonElement.getAsJsonObject(), params[i]);
+        }
+
+        try {
+            Method m = clazz.getMethod("createChannel", args);
+            Canal novoCanal = (Canal) m.invoke(null, methodArgs);
+            return novoCanal;
+        }
+        catch (Exception e) {
+            ///e.printStackTrace();
+            throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Server could not create a new channel.");
+        }
+    }
+
+    public Canal update2(JsonElement jsonElement, Canal canal /*, JsonBuilder ctx*/) {
+        Class<?> clazz = canal.getClass();
+        String[] params;
+
+        try {
+            AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
+            params = annotation.classFields();
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Such class is not identified as a channel.");
+        }
+
+        Class[] args = new Class[params.length]; //sempre strings
+        Arrays.fill(args, String.class);
+
+        Object[] methodArgs = new Object[params.length];
+        for (int i = 0; i < params.length; i++) {
+            methodArgs[i] = tryTogetRequiredValue(jsonElement.getAsJsonObject(), params[i]);
+        }
+
+        try {
+            Method m = clazz.getMethod("updateChannel", args);
+            Canal updatedCanal = (Canal) m.invoke(canal, methodArgs);
+            return updatedCanal;
+        }
+        catch (Exception e) {
+            ///e.printStackTrace();
+            throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Server could not update channel.");
+        }
+    }
+
+    private String getRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            return obj.get(property).getAsString();
+        }
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!"); //"HTTP Status 412 - Não foi possível criar a entidade"
+    }
+
+    private String tryTogetRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            return obj.get(property).getAsString();
+        }
+        return null;
     }
 
 }

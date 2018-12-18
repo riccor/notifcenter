@@ -63,10 +63,6 @@ public class Aplicacao extends Aplicacao_Base {
         return this;
     }
 
-    public boolean isValidString(@Nullable String str) {
-        return (str != null && !str.isEmpty());
-    }
-
     @Atomic
     public Aplicacao updateAplicacao(@Nullable final String name, @Nullable final String redirectUrl, @Nullable final String description, @Nullable final String authorName, @Nullable final String siteUrl) {
 
@@ -103,6 +99,10 @@ public class Aplicacao extends Aplicacao_Base {
         }
 
         return this;
+    }
+
+    public boolean isValidString(@Nullable String str) {
+        return (str != null && !str.isEmpty());
     }
 
     @Atomic

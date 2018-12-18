@@ -7,7 +7,7 @@
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/listcanais
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/listclassescanais
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/281835753963522 (show canal)
-//POST {"accountSID":"accountSID1", "authToken":"authToken1", "fromPhoneNumber":"fromPhoneNumber1", "uriaa":"uri2"} -> http://{{DOMAIN}}:8080/notifcenter/apicanais/addcanal?name=Messenger
+//POST {"name": "Messenger", "accountSID":"accountSID1", "authToken":"authToken1", "fromPhoneNumber":"fromPhoneNumber1", "uriaa":"uri2"} -> http://{{DOMAIN}}:8080/notifcenter/apicanais/addcanal
 
 
 //OK3:
@@ -130,11 +130,8 @@ import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
@@ -155,8 +152,6 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -177,7 +172,6 @@ public class AplicacaoResource extends BennuRestResource {
        /{app}/update
        /{app}/delete
 
-
        /{app}/addremetente
        /{app}/listremetentes
        /{app}/{remetente}
@@ -187,7 +181,6 @@ public class AplicacaoResource extends BennuRestResource {
        /{app}/{remetente}/removegrupodestinario
        /{app}/{remetente}/listgruposdestinatarios
 
-
        /{app}/{remetente}/pedidocanalnotificacao
        /{app}/{remetente}/{canalnotificacao}/delete
        /{app}/{remetente}/listcanaisnotificacao
@@ -195,10 +188,7 @@ public class AplicacaoResource extends BennuRestResource {
        /{app}/sendmensagem
 
 
-      
-
        //API canal (/apicanais):
-       (falta)
        /addcanal
        /listcanais
        /listclassescanais

@@ -7,36 +7,17 @@ import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.domain.Canal;
-import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
-import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 @DefaultJsonAdapter(Canal.class)
 public class CanalAdapter implements JsonAdapter<Canal> {
 
     @Override
     public Canal create(JsonElement jsonElement, JsonBuilder ctx) {
-
-        /*
-        final JsonObject jObj = jsonElement.getAsJsonObject();
-        String email = getRequiredValue(jObj, "email");
-        String password = getRequiredValue(jObj, "password");
-        return Canal.createCanal(email, password);
-        */
-
-        return null; //Classe Canal é abstrato
+        return null;
     }
 
     @Override
-    public Canal update(JsonElement jsonElement, Canal Canal, JsonBuilder ctx) {
-
-        final JsonObject jObj = jsonElement.getAsJsonObject();
-        String name = getRequiredValue(jObj, "name");
-        String redirectUrl = tryTogetRequiredValue(jObj, "redirect_uri");
-        String description = tryTogetRequiredValue(jObj, "description");
-        String authorName = tryTogetRequiredValue(jObj, "author");
-        String siteUrl = tryTogetRequiredValue(jObj, "site_url");
-        return canal.updateCanal(name, redirectUrl, description, authorName, siteUrl);
-
+    public Canal update(JsonElement jsonElement, Canal canal, JsonBuilder ctx) {
         return null;
     }
 
@@ -82,20 +63,6 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         }
 
         return jObj;
-    }
-
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            return obj.get(property).getAsString();
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!"); //"HTTP Status 412 - Não foi possível criar a entidade"
-    }
-
-    private String tryTogetRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            return obj.get(property).getAsString();
-        }
-        return null;
     }
 
 }
