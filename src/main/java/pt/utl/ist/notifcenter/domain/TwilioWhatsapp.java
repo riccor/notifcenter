@@ -93,7 +93,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
         header.add("Authorization", HTTPClient.createBasicAuthString(this.getAccountSID(), this.getAuthToken()));
 
-        body.put("To", Arrays.asList("initialized")); ///
+        body.put("To", Arrays.asList("initializing...")); ///
         body.put("From", Arrays.asList(this.getFromPhoneNumber()));
 
         String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/notifcenter/" + this.getExternalId() + "/view";

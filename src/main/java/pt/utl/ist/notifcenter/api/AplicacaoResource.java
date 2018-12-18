@@ -637,6 +637,26 @@ public class AplicacaoResource extends BennuRestResource {
         for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
             if (e.getIdExterno().equals(idExterno)) {
                 e.changeEstadoEntrega(estadoEntrega);
+
+                //If there is a message callback, then send message status to the app
+                if (!e.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
+
+                    MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+                    MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+
+                    header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                    body.put("MessageId", Collections.singletonList(e.getMensagem().getExternalId()));
+                    body.put("User", Collections.singletonList(e.getContacto().getUtilizador().getUsername())); ///?
+                    body.put("MessageStatus", Collections.singletonList(estadoEntrega));
+
+                    DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+                    deferredResult.setResultHandler((Object responseEntity) -> {
+                        HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity); /// anything else to do?
+                    });
+
+                    HTTPClient.restASyncClient(HttpMethod.POST, e.getMensagem().getCallbackUrlEstadoEntrega(), header, body, deferredResult);
+                }
+
                 throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
             }
         }
