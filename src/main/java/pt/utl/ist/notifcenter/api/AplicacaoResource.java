@@ -675,10 +675,16 @@ public class AplicacaoResource extends BennuRestResource {
 
     private String[] getRequiredArrayValue(JsonObject obj, String property) {
         if (obj.has(property)) {
-            return obj.get(property).getAsJsonArray().toString().split(",");
-            ///Gson googleJson = new Gson();
-            ///ArrayList<String> arrayList = googleJson.fromJson(obj.get(property).getAsJsonArray(), ArrayList.class);
-            ///return arrayList.toArray(new String[0]);
+            //Gson googleJson = new Gson();
+            //ArrayList<String> arrayList = googleJson.fromJson(obj.get(property).getAsJsonArray(), ArrayList.class);
+            ArrayList<String> arrayList = new ArrayList<>();
+            Iterator<JsonElement> i = obj.get(property).getAsJsonArray().iterator();
+
+            while (i.hasNext()) {
+                arrayList.add(i.next().getAsString());
+            }
+
+            return arrayList.toArray(new String[0]);
         }
         throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + property + "!");
     }
@@ -802,14 +808,17 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         String[] gd = getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
-        ArrayList<PersistentGroup> al = new ArrayList<PersistentGroup>();
+
+        ArrayList<PersistentGroup> al = new ArrayList<>();
+        String ss = "groupId";
         try {
             for (String s : gd) {
+                ss = s;
                 al.add(FenixFramework.getDomainObject(s));
             }
         }
         catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR);
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group " + ss + " doesnt exist.");
         }
         PersistentGroup[] gruposDestinatarios = al.toArray(new PersistentGroup[0]);
 
@@ -827,6 +836,7 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         String callbackUrlEstadoEntrega = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "callbackurl");
+
 
 
 
