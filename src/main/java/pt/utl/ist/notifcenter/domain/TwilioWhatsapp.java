@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
+import org.fenixedu.bennu.core.groups.Group;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -102,6 +103,9 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
         for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
             group.getMembers().forEach(user -> {
+
+                Group gg = user.groupOf();
+                System.out.println("$$$$$$$ -> group gg: " + gg.getPresentationName() + " expression: " + gg.getExpression());
 
                 //Debug
                 System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
