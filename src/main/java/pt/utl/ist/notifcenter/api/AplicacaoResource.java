@@ -792,19 +792,40 @@ public class AplicacaoResource extends BennuRestResource {
 
         ///return view(create(body, MensagemAdapter.class), MensagemAdapter.class);
 
-        CanalNotificacao canalNotificacao = FenixFramework.getDomainObject(getRequiredValue(jsonElement.getAsJsonObject(), "canalnotificacao"));
+        String cn = getRequiredValue(jsonElement.getAsJsonObject(), "canalnotificacao");
+        CanalNotificacao canalNotificacao;
+        try {
+            canalNotificacao = FenixFramework.getDomainObject(cn);
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
+        }
 
         String[] gd = getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
         ArrayList<PersistentGroup> al = new ArrayList<PersistentGroup>();
-        for (String s : gd) {
-            al.add(FenixFramework.getDomainObject(s));
+        try {
+            for (String s : gd) {
+                al.add(FenixFramework.getDomainObject(s));
+            }
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR);
         }
         PersistentGroup[] gruposDestinatarios = al.toArray(new PersistentGroup[0]);
 
         String assunto = getRequiredValue(jsonElement.getAsJsonObject(), "assunto");
         String textoCurto = getRequiredValue(jsonElement.getAsJsonObject(), "textocurto");
         String textoLongo = getRequiredValue(jsonElement.getAsJsonObject(), "textolongo");
-        DateTime dataEntrega = DateTime.parse(tryTogetRequiredValue(jsonElement.getAsJsonObject(), "dataentrega"), org.joda.time.format.DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss.SSS"));
+
+        String de = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "dataentrega");
+        DateTime dataEntrega;
+        try {
+            dataEntrega = DateTime.parse(de, org.joda.time.format.DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss.SSS"));
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_DELIVERY_DATETIME_ERROR);
+        }
+
         String callbackUrlEstadoEntrega = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "callbackurl");
 
 
