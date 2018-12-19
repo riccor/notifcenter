@@ -104,9 +104,6 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
             group.getMembers().forEach(user -> {
 
-                Group gg = user.groupOf();
-                System.out.println("$$$$$$$ -> group gg: " + gg.getPresentationName() + " expression: " + gg.getExpression());
-
                 //Debug
                 System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
 
@@ -115,23 +112,29 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                 for (Contacto contacto : user.getContactosSet()) {
 
                     if (contacto.getCanal().getExternalId().equals(this.getExternalId())) {
-                        //responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));
 
                         //Debug
                         System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
-                        body.remove("To");
-                        body.put("To", Collections.singletonList(contacto.getDadosContacto()));
+                        //impedir que a mesma mensagem seja enviada duas vezes para o mesmo destinatário:
+                        if (contacto.getEstadoDeEntregaDeMensagemEnviadaAContactoSet().stream().anyMatch(e -> e.getMensagem().getExternalId().equals(msg.getExternalId()))) {
+                            System.out.println("DEBUG: Prevented duplicated message to user " + user.getUsername());
+                        }
+                        else {
+                            //responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));
+                            body.remove("To");
+                            body.put("To", Collections.singletonList(contacto.getDadosContacto()));
 
-                        DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-                        deferredResult.setResultHandler((Object responseEntity) -> {
+                            DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+                            deferredResult.setResultHandler((Object responseEntity) -> {
 
-                            handleDeliveryStatus((ResponseEntity<String>) responseEntity, this, msg, contacto);
+                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, this, msg, contacto);
 
-                        });
+                            });
 
-                        //HTTPClient.restSyncClient(HttpMethod.POST, this.getUri(), header, body);
-                        HTTPClient.restASyncClient(HttpMethod.POST, this.getUri(), header, body, deferredResult);
+                            //HTTPClient.restSyncClient(HttpMethod.POST, this.getUri(), header, body);
+                            HTTPClient.restASyncClient(HttpMethod.POST, this.getUri(), header, body, deferredResult);
+                        }
 
                         userHasNoContactForThisChannel = false;
 
