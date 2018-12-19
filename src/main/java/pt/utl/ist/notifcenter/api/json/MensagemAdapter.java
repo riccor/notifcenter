@@ -18,13 +18,15 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
 
     @Override
     public Mensagem create(JsonElement jsonElement, JsonBuilder ctx) {
-
+        //Não é conveninente usar, porque:
+        //- preciso de passar uma instancia de Aplicacao para aqui para poder fazer uma verificação necessária no /sendmessage2;
+        //- e o /sendmessage já usa o spring para fazer a conversão dos parametros recebidos para os objectos de dominio envolvidos numa mensagem
         return null;
     }
 
     @Override
     public Mensagem update(JsonElement jsonElement, Mensagem app, JsonBuilder ctx) {
-        
+        //instâncias de mensagens não precisam de atualizações
         return null;
     }
 

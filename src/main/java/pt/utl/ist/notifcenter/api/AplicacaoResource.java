@@ -115,7 +115,6 @@
 package pt.utl.ist.notifcenter.api;
 
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -153,14 +152,14 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api.aplicacoes")
-public class AplicacaoResource extends BennuRestResource {
+public class
+AplicacaoResource extends BennuRestResource {
 
     /*
     Numa API REST, neste caso o resource é aplicação, e queremos adicionar
@@ -730,60 +729,12 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
-        if (!FenixFramework.isDomainObjectValid(canalNotificacao) || !app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "Such canalnotificacao doesnt exist.");
-        }
-        if (!canalNotificacao.isApproved()) {
-            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR, "Canalnotificacao id " + canalNotificacao.getExternalId() + " is awaiting approval by system administrators.");
-        }
-
-        for (PersistentGroup group : gruposDestinatarios) {
-            if (!FenixFramework.isDomainObjectValid(group)) {
-                throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group id " + group.toString() + " doesnt exist.");
-            }
-
-            if (canalNotificacao.getRemetente().getGruposSet().stream().noneMatch(e -> e.equals(group))) {
-                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "No permissions to send messages to group id " + group.getExternalId() + " !");
-            }
-        }
-
-        if (textoCurto.length() > Integer.parseInt(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize())) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "TextoCurto must be at most " +
-                    NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize() + " characters long.");
-        }
-
-        ArrayList<Attachment> attachments = null;
-
-        if (anexos != null) {
-            attachments = new ArrayList<>();
-
-            for (MultipartFile file: anexos) {
-                try {
-                    attachments.add(Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + canalNotificacao.getExternalId() + " " + file.getOriginalFilename(), file.getInputStream()));
-                    //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
-                } catch (IOException e) {
-                    //e.printStackTrace();
-                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment " + file.getOriginalFilename() + " could not be loaded.");
-                }
-            }
-        }
-
-        Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments);
-
-        //https://howtodoinjava.com/spring-boot2/enableasync-async-controller/
-        //new Thread(() -> {
+        //create and send message
+        Mensagem msg = verifyParamsAndCreateAMessage(app, canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, anexos);
         Canal ic = msg.getCanalNotificacao().getCanal();
         ic.sendMessage(msg);
-        //}).start();
 
         return view(msg, MensagemAdapter.class);
-    }
-
-    private String tryTogetRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            return obj.get(property).getAsString();
-        }
-        return null;
     }
 
     @SkipCSRF
@@ -796,8 +747,7 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
-        ///return view(create(body, MensagemAdapter.class), MensagemAdapter.class);
-
+        //extract message params from JsonElement:
         String cn = getRequiredValue(jsonElement.getAsJsonObject(), "canalnotificacao");
         CanalNotificacao canalNotificacao;
         try {
@@ -837,9 +787,16 @@ public class AplicacaoResource extends BennuRestResource {
 
         String callbackUrlEstadoEntrega = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "callbackurl");
 
+        //create and send message
+        Mensagem msg = verifyParamsAndCreateAMessage(app, canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, anexos);
+        Canal ic = msg.getCanalNotificacao().getCanal();
+        ic.sendMessage(msg);
+
+        return view(msg, MensagemAdapter.class);
+    }
 
 
-
+    private Mensagem verifyParamsAndCreateAMessage(Aplicacao app, CanalNotificacao canalNotificacao, PersistentGroup[] gruposDestinatarios, String assunto, String textoCurto, String textoLongo, DateTime dataEntrega, String callbackUrlEstadoEntrega, MultipartFile[] anexos) {
 
         if (!FenixFramework.isDomainObjectValid(canalNotificacao) || !app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "Such canalnotificacao doesnt exist.");
@@ -880,16 +837,15 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments);
-
-        //https://howtodoinjava.com/spring-boot2/enableasync-async-controller/
-        //new Thread(() -> {
-        Canal ic = msg.getCanalNotificacao().getCanal();
-        ic.sendMessage(msg);
-        //}).start();
-
-        return view(msg, MensagemAdapter.class);
+        return msg;
     }
 
+    private String tryTogetRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            return obj.get(property).getAsString();
+        }
+        return null;
+    }
 
     @RequestMapping(value = "/attachments/{fileName}", method = RequestMethod.GET)
     public HttpEntity<byte[]> downloadAttachment(@PathVariable("fileName") GenericFile genericFile) {
