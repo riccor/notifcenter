@@ -20,9 +20,21 @@ public class EstadoDeEntregaDeMensagemEnviadaAContacto extends EstadoDeEntregaDe
     }
 
     @Atomic
+    public void changeIdExterno(String idExterno) {
+        this.setIdExterno(idExterno);
+    }
+
+    @Atomic
     public void changeEstadoEntrega(String estadoEntrega) {
         this.setEstadoEntrega(estadoEntrega);
     }
+
+    @Atomic
+    public void changeIdExternoAndEstadoEntrega(String idExterno, String estadoEntrega) {
+        this.setIdExterno(idExterno);
+        this.setEstadoEntrega(estadoEntrega);
+    }
+
 
     @Atomic
     public void delete() {

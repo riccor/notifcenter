@@ -125,10 +125,13 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                             body.remove("To");
                             body.put("To", Collections.singletonList(contacto.getDadosContacto()));
 
+                            EstadoDeEntregaDeMensagemEnviadaAContacto edm = EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(this, msg, contacto, "none_yet", "none_yet");
+
                             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                             deferredResult.setResultHandler((Object responseEntity) -> {
 
-                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, this, msg, contacto);
+                                //handleDeliveryStatus((ResponseEntity<String>) responseEntity, this, msg, contacto);
+                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm);
 
                             });
 
@@ -153,7 +156,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         }
     }
 
-    static void handleDeliveryStatus(ResponseEntity<String> responseEntity, Canal canal, Mensagem msg, Contacto contacto) {
+    static void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm) {
 
         //Debug
         HTTPClient.printResponseEntity(responseEntity);
@@ -162,13 +165,14 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         String idExterno = getRequiredValue(jObj.getAsJsonObject(), "sid");
         String estadoEntrega = getRequiredValue(jObj.getAsJsonObject(), "status");
 
-        EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(canal, msg, contacto, idExterno, estadoEntrega);
+        //EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(canal, msg, contacto, idExterno, estadoEntrega);
+        edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
         if (responseEntity.getStatusCode() != HttpStatus.OK || responseEntity.getStatusCode() != HttpStatus.CREATED || idExterno == null || estadoEntrega == null) {
-            System.out.println("Failed to send message to " + contacto.getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Failed to send message to " + edm.getContacto().getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
         else {
-            System.out.println("Success on sending message to " + contacto.getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Success on sending message to " + edm.getContacto().getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
     }
 
