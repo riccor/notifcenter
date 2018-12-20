@@ -744,13 +744,10 @@ AplicacaoResource extends BennuRestResource {
             headers = {"content-type=multipart/mixed","content-type=multipart/form-data"})
     public ResponseEntity<String> esteAqui(
             @RequestHeader HttpHeaders headers,
-            @PathVariable String userId,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestPart(value = "scouting_activity", required = true) String scouting_activity_json) {
 
         System.out.println("POST_v1_scouting_activities: headers.getContentType(): " + headers.getContentType());
-
-        System.out.println("POST_v1_scouting_activities: userId: " + userId);
 
         System.out.println(String.format("POST_v1_scouting_activities: image.originalFilename: %s, image: %s",
                 (image!=null) ? image.getOriginalFilename() : null, image));
