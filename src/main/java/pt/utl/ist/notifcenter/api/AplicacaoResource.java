@@ -716,7 +716,7 @@ AplicacaoResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/{app}/sendmensagem", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{app}/sendmensagem", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement sendMensagem(@PathVariable("app") Aplicacao app,
                                    @RequestParam("canalnotificacao") CanalNotificacao canalNotificacao,
                                    @RequestParam("gdest") PersistentGroup[] gruposDestinatarios,
@@ -739,53 +739,21 @@ AplicacaoResource extends BennuRestResource {
         return view(msg, MensagemAdapter.class);
     }
 
-    //DEBUG
     @SkipCSRF
-    @RequestMapping(value = "/esteaqui2", method = RequestMethod.POST,
-            headers = {"content-type=multipart/mixed","content-type=multipart/form-data"})
-    public JsonElement esteAqui2(
-            @RequestHeader HttpHeaders headers,
-            @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart(value = "scouting_activity", required = true) String scouting_activity_json) {
-
-        System.out.println("POST_v1_scouting_activities: headers.getContentType(): " + headers.getContentType());
-
-        System.out.println(String.format("POST_v1_scouting_activities: image.originalFilename: %s, image: %s",
-                (image!=null) ? image.getOriginalFilename() : null, image));
-
-        System.out.println(String.format("POST_v1_scouting_activities: scouting_activity_json.getType().getName(): %s, scouting_activity: %s",
-                scouting_activity_json.getClass().getName(), scouting_activity_json));
-
-
-        JsonParser parser = new JsonParser();
-        JsonObject jObj = parser.parse(scouting_activity_json).getAsJsonObject();
-        return jObj;
-    }
-
-    @SkipCSRF
-    @RequestMapping(value = "/esteaqui", method = RequestMethod.POST,
-            headers = {"content-type=multipart/mixed"/*,"content-type=multipart/form-data" */})
-    public ResponseEntity<String> esteAqui(
-            @RequestHeader HttpHeaders headers,
-            @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart(value = "scouting_activity", required = true) String scouting_activity_json) {
-
-        System.out.println("POST_v1_scouting_activities: headers.getContentType(): " + headers.getContentType());
-
-        System.out.println(String.format("POST_v1_scouting_activities: image.originalFilename: %s, image: %s",
-                (image!=null) ? image.getOriginalFilename() : null, image));
-
-        System.out.println(String.format("POST_v1_scouting_activities: scouting_activity_json.getType().getName(): %s, scouting_activity: %s",
-                scouting_activity_json.getClass().getName(), scouting_activity_json));
-
-        return new ResponseEntity<>("esteAQUI\n", HttpStatus.OK);
-    }
-
-    @SkipCSRF
-    @RequestMapping(value = "/{app}/sendmensagem2", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
-                    headers = {"content-type=multipart/mixed","content-type=multipart/form-data"})
+    @RequestMapping(value = "/{app}/sendmensagem2", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement sendMensagem2(@PathVariable("app") Aplicacao app,
-                                    @RequestBody JsonElement jsonElement, @RequestParam(value = "anexos", required = false) MultipartFile[] anexos) {
+                                     @RequestPart(value = "json", required = true) String message_json,
+                                     @RequestPart(value = "anexos", required = false) MultipartFile[] anexos) {
+
+        //try to get JSON data:
+        JsonElement jsonElement;
+        try {
+            JsonParser parser = new JsonParser();
+            jsonElement = parser.parse(message_json);
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_JSON_ERROR, "Bad JSON received: " + message_json);
+        }
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -1099,7 +1067,7 @@ AplicacaoResource extends BennuRestResource {
 
     @SkipCSRF
     @RequestMapping(value = "/upload/{msg}", method = RequestMethod.POST)
-    public String uploadFile(@PathVariable("msg") Mensagem msg, @RequestParam(value = "file", required = false) MultipartFile file) {
+    public String uploadFile(@PathVariable("msg") Mensagem msg, @RequestParam(value = "file", required = false) MultipartFile[] files) {
 
         ///System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
 
@@ -1110,21 +1078,24 @@ AplicacaoResource extends BennuRestResource {
         Attachment at;
         String toReturn = "no file to save\n";
 
-        if(file != null) {
-            try {
-                at = Attachment.createAttachment(msg, file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
+        for (MultipartFile file : files) {
 
-                System.out.println("getOriginalFileName: " + file.getOriginalFilename());
-                System.out.println("externalId: " + at.getExternalId());
+            if (file != null) {
+                try {
+                    at = Attachment.createAttachment(msg, file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
 
-                //toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
-                toReturn = NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + at.getExternalId() + "\n";
+                    System.out.println("getOriginalFileName: " + file.getOriginalFilename());
+                    System.out.println("externalId: " + at.getExternalId());
 
-                System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(at));
-                System.out.println("file url: " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + at.getExternalId());
+                    //toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
+                    toReturn = toReturn + "\n" + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + at.getExternalId() + "\n";
 
-            } catch (IOException e) {
-                e.printStackTrace();
+                    System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(at));
+                    System.out.println("file url: " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + at.getExternalId());
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
