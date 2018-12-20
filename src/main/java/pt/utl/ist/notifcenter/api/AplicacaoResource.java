@@ -139,6 +139,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
+import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.*;
 
@@ -749,34 +750,43 @@ AplicacaoResource extends BennuRestResource {
 
         //extract message params from JsonElement:
         String cn = getRequiredValue(jsonElement.getAsJsonObject(), "canalnotificacao");
-        CanalNotificacao canalNotificacao;
+        CanalNotificacao canalNotificacao = getDomainObject(CanalNotificacao.class, cn);
+        /* ///
         try {
             canalNotificacao = FenixFramework.getDomainObject(cn);
         }
         catch (Exception e) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
         }
+        */
 
         String[] gd = getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
 
+        /* ///
         ArrayList<PersistentGroup> al = new ArrayList<>();
-        String ss = "groupId";
+        //String ss = "groupId";
+        int i = 0;
         try {
-            for (String s : gd) {
-                ss = s;
-                al.add(FenixFramework.getDomainObject(s));
+            //for (String s : gd) {
+            for(i = 0; i < gd.length; i++) {
+                //ss = s;
+                al.add(FenixFramework.getDomainObject(gd[i]));
             }
         }
         catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group " + ss + " doesnt exist.");
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group " + gd[i] + " doesnt exist.");
         }
+
         PersistentGroup[] gruposDestinatarios = al.toArray(new PersistentGroup[0]);
+        */
+        PersistentGroup[] gruposDestinatarios = getDomainObjectsArray(PersistentGroup.class, gd).toArray(new PersistentGroup[0]);
 
         String assunto = getRequiredValue(jsonElement.getAsJsonObject(), "assunto");
         String textoCurto = getRequiredValue(jsonElement.getAsJsonObject(), "textocurto");
         String textoLongo = getRequiredValue(jsonElement.getAsJsonObject(), "textolongo");
 
         String de = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "dataentrega");
+        /*///
         DateTime dataEntrega;
         try {
             dataEntrega = DateTime.parse(de, org.joda.time.format.DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss.SSS"));
@@ -784,6 +794,8 @@ AplicacaoResource extends BennuRestResource {
         catch (Exception e) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_DELIVERY_DATETIME_ERROR);
         }
+        */
+        DateTime dataEntrega = getDatetime(de);
 
         String callbackUrlEstadoEntrega = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "callbackurl");
 
@@ -794,7 +806,6 @@ AplicacaoResource extends BennuRestResource {
 
         return view(msg, MensagemAdapter.class);
     }
-
 
     private Mensagem verifyParamsAndCreateAMessage(Aplicacao app, CanalNotificacao canalNotificacao, PersistentGroup[] gruposDestinatarios, String assunto, String textoCurto, String textoLongo, DateTime dataEntrega, String callbackUrlEstadoEntrega, MultipartFile[] anexos) {
 
@@ -827,9 +838,13 @@ AplicacaoResource extends BennuRestResource {
 
             for (MultipartFile file: anexos) {
                 try {
-                    attachments.add(Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + canalNotificacao.getExternalId() + " " + file.getOriginalFilename(), file.getInputStream()));
+                    Attachment at =  Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + canalNotificacao.getExternalId() + " " + file.getOriginalFilename(), file.getInputStream());
+                    attachments.add(at);
                     //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
-                } catch (IOException e) {
+                    //debug:
+                    System.out.println(view(at, AttachmentAdapter.class).toString());
+                }
+                catch (IOException e) {
                     //e.printStackTrace();
                     throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment " + file.getOriginalFilename() + " could not be loaded.");
                 }
@@ -838,6 +853,65 @@ AplicacaoResource extends BennuRestResource {
 
         Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments);
         return msg;
+    }
+
+    private <T> T getDomainObject(Class<T> clazz, String id) {
+        try {
+            DomainObject dObj = FenixFramework.getDomainObject(id);
+            T t = (T) dObj;
+            return t;
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + id + " !");
+        }
+    }
+
+    /*
+    private <T> List<T> getDomainObjectsArray(Class<T> clazz, String[] id) {
+        int i = 0;
+
+        try {
+            ArrayList<T> al = new ArrayList<>();
+
+            for(i = 0; i < id.length; i++) {
+                DomainObject dObj = FenixFramework.getDomainObject(id[i]);
+                T t = (T) dObj;
+                al.add(t);
+            }
+
+            return al;
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + id[i] + " !");
+        }
+    }
+    */
+
+    private <T> List<T> getDomainObjectsArray(Class<T> clazz, String[] id) {
+        ArrayList<T> al = new ArrayList<>();
+
+        for (String i : id) {
+            try {
+                DomainObject dObj = FenixFramework.getDomainObject(i);
+                T t = (T) dObj;
+                al.add(t);
+            }
+            catch (Exception e) {
+                throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + i + " !");
+            }
+        }
+
+        return al;
+    }
+
+    private DateTime getDatetime(String dt) {
+        try {
+            DateTime date = DateTime.parse(dt, org.joda.time.format.DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss.SSS"));
+            return date;
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_DATETIME_ERROR, "Invalid datetime " + dt + " !");
+        }
     }
 
     private String tryTogetRequiredValue(JsonObject obj, String property) {
