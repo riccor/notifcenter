@@ -118,6 +118,7 @@ package pt.utl.ist.notifcenter.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
@@ -740,8 +741,30 @@ AplicacaoResource extends BennuRestResource {
 
     //DEBUG
     @SkipCSRF
-    @RequestMapping(value = "/esteaqui", method = RequestMethod.POST,
+    @RequestMapping(value = "/esteaqui2", method = RequestMethod.POST,
             headers = {"content-type=multipart/mixed","content-type=multipart/form-data"})
+    public JsonElement esteAqui2(
+            @RequestHeader HttpHeaders headers,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestPart(value = "scouting_activity", required = true) String scouting_activity_json) {
+
+        System.out.println("POST_v1_scouting_activities: headers.getContentType(): " + headers.getContentType());
+
+        System.out.println(String.format("POST_v1_scouting_activities: image.originalFilename: %s, image: %s",
+                (image!=null) ? image.getOriginalFilename() : null, image));
+
+        System.out.println(String.format("POST_v1_scouting_activities: scouting_activity_json.getType().getName(): %s, scouting_activity: %s",
+                scouting_activity_json.getClass().getName(), scouting_activity_json));
+
+
+        JsonParser parser = new JsonParser();
+        JsonObject jObj = parser.parse(scouting_activity_json).getAsJsonObject();
+        return jObj;
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/esteaqui", method = RequestMethod.POST,
+            headers = {"content-type=multipart/mixed"/*,"content-type=multipart/form-data" */})
     public ResponseEntity<String> esteAqui(
             @RequestHeader HttpHeaders headers,
             @RequestPart(value = "image", required = false) MultipartFile image,
