@@ -751,34 +751,8 @@ AplicacaoResource extends BennuRestResource {
         //extract message params from JsonElement:
         String cn = getRequiredValue(jsonElement.getAsJsonObject(), "canalnotificacao");
         CanalNotificacao canalNotificacao = getDomainObject(CanalNotificacao.class, cn);
-        /* ///
-        try {
-            canalNotificacao = FenixFramework.getDomainObject(cn);
-        }
-        catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
-        }
-        */
 
         String[] gd = getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
-
-        /* ///
-        ArrayList<PersistentGroup> al = new ArrayList<>();
-        //String ss = "groupId";
-        int i = 0;
-        try {
-            //for (String s : gd) {
-            for(i = 0; i < gd.length; i++) {
-                //ss = s;
-                al.add(FenixFramework.getDomainObject(gd[i]));
-            }
-        }
-        catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group " + gd[i] + " doesnt exist.");
-        }
-
-        PersistentGroup[] gruposDestinatarios = al.toArray(new PersistentGroup[0]);
-        */
         PersistentGroup[] gruposDestinatarios = getDomainObjectsArray(PersistentGroup.class, gd).toArray(new PersistentGroup[0]);
 
         String assunto = getRequiredValue(jsonElement.getAsJsonObject(), "assunto");
@@ -786,20 +760,11 @@ AplicacaoResource extends BennuRestResource {
         String textoLongo = getRequiredValue(jsonElement.getAsJsonObject(), "textolongo");
 
         String de = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "dataentrega");
-        /*///
-        DateTime dataEntrega;
-        try {
-            dataEntrega = DateTime.parse(de, org.joda.time.format.DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss.SSS"));
-        }
-        catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_DELIVERY_DATETIME_ERROR);
-        }
-        */
         DateTime dataEntrega = getDatetime(de);
 
         String callbackUrlEstadoEntrega = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "callbackurl");
 
-        //create and send message
+        //try to create and send message
         Mensagem msg = verifyParamsAndCreateAMessage(app, canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, anexos);
         Canal ic = msg.getCanalNotificacao().getCanal();
         ic.sendMessage(msg);
@@ -831,27 +796,32 @@ AplicacaoResource extends BennuRestResource {
                     NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize() + " characters long.");
         }
 
-        ArrayList<Attachment> attachments = null;
+        //Tenho de criar a mensagem antes de criar os attachments
+        Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega);
+
+        ///ArrayList<Attachment> attachments = null;
 
         if (anexos != null) {
-            attachments = new ArrayList<>();
+            ///attachments = new ArrayList<>();
 
             for (MultipartFile file: anexos) {
                 try {
-                    Attachment at =  Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + canalNotificacao.getExternalId() + " " + file.getOriginalFilename(), file.getInputStream());
-                    attachments.add(at);
+                    Attachment at =  Attachment.createAttachment(msg, file.getOriginalFilename(), "lowlevelname-" + canalNotificacao.getExternalId() + " " + file.getOriginalFilename(), file.getInputStream());
+                    ///attachments.add(at);
                     //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
                     //debug:
                     System.out.println(view(at, AttachmentAdapter.class).toString());
                 }
                 catch (IOException e) {
-                    //e.printStackTrace();
+                    e.printStackTrace(); ///debug - depois comentar isto
+                    msg.delete(); ///apagar mensagem criada em caso de falha num anexo
                     throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment " + file.getOriginalFilename() + " could not be loaded.");
                 }
             }
         }
 
-        Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments);
+        ///Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments);
+
         return msg;
     }
 
@@ -1080,8 +1050,8 @@ AplicacaoResource extends BennuRestResource {
     //Upload attachment (TEST)
 
     @SkipCSRF
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public String uploadFile(@RequestParam(value = "file", required = false) MultipartFile file) {
+    @RequestMapping(value = "/upload/{msg}", method = RequestMethod.POST)
+    public String uploadFile(@PathVariable("msg") Mensagem msg, @RequestParam(value = "file", required = false) MultipartFile file) {
 
         ///System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
 
@@ -1094,7 +1064,7 @@ AplicacaoResource extends BennuRestResource {
 
         if(file != null) {
             try {
-                at = Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
+                at = Attachment.createAttachment(msg, file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
 
                 System.out.println("getOriginalFileName: " + file.getOriginalFilename());
                 System.out.println("externalId: " + at.getExternalId());
@@ -1115,8 +1085,8 @@ AplicacaoResource extends BennuRestResource {
 
     //SAVE FILE FROM OWN COMPUTER(TEST)
     @SkipCSRF
-    @RequestMapping(value = "/uploadcomfiletxt", method = RequestMethod.POST)
-    public String uploadFileTXT(@RequestParam(value = "filename", defaultValue = "/home/cr/file.txt") String filename) {
+    @RequestMapping(value = "/uploadcomfiletxt/{msg}", method = RequestMethod.POST)
+    public String uploadFileTXT(@PathVariable("msg") Mensagem msg, @RequestParam(value = "filename", defaultValue = "/home/cr/file.txt") String filename) {
 
         System.out.println(" ");
         System.out.println("files in fenix (2): " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
@@ -1131,7 +1101,7 @@ AplicacaoResource extends BennuRestResource {
 
             System.out.println("getAbsolutePath: " + file.getAbsolutePath());
 
-            at = Attachment.createAttachment("prettyname2", "lowlevelname2", file);
+            at = Attachment.createAttachment(msg, "prettyname2", "lowlevelname2", file);
         }
         catch (IOException e){
             e.printStackTrace();

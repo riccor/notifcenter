@@ -18,7 +18,7 @@ public class Mensagem extends Mensagem_Base {
     }
 
     @Atomic
-    public static Mensagem createMensagem(final CanalNotificacao canalNotificacao, final PersistentGroup[] gruposDestinatarios, final String assunto, final String textoCurto, final String textoLongo, @Nullable final DateTime dataEntrega, @Nullable final String callbackUrlEstadoEntrega, @Nullable final ArrayList<Attachment> attachments) {
+    public static Mensagem createMensagem(final CanalNotificacao canalNotificacao, final PersistentGroup[] gruposDestinatarios, final String assunto, final String textoCurto, final String textoLongo, @Nullable final DateTime dataEntrega, @Nullable final String callbackUrlEstadoEntrega /*, @Nullable final ArrayList<Attachment> attachments*/) {
         Mensagem mensagem = new Mensagem();
         mensagem.setCanalNotificacao(canalNotificacao);
 
@@ -38,11 +38,12 @@ public class Mensagem extends Mensagem_Base {
             mensagem.setCallbackUrlEstadoEntrega("none");
         }
 
+        /* ///
         if (attachments != null) {
             for (Attachment at : attachments) {
                 mensagem.addAttachments(at);
             }
-        }
+        }*/
 
         if (dataEntrega != null) {
             mensagem.setDataEntrega(dataEntrega);
@@ -53,6 +54,12 @@ public class Mensagem extends Mensagem_Base {
         }
 
         return mensagem;
+    }
+
+    //este nao deve ser necessário:
+    @Atomic
+    public void addAttachment(Attachment at) {
+        this.addAttachments(at);
     }
 
     @Atomic

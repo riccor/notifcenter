@@ -117,7 +117,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
                         //impedir que a mesma mensagem seja enviada duas vezes para o mesmo destinatário:
                         if (contacto.getEstadoDeEntregaDeMensagemEnviadaAContactoSet().stream().anyMatch(e -> e.getMensagem().getExternalId().equals(msg.getExternalId()))) {
-                            System.out.println("DEBUG: Prevented duplicated message to user " + user.getUsername());
+                            System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
                         }
                         else {
                             //responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));

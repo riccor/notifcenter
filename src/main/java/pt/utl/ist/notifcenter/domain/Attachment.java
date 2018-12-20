@@ -10,10 +10,10 @@ import java.io.InputStream;
 
 public class Attachment extends Attachment_Base {
 
-    public Attachment() {
+    public Attachment(Mensagem msg) {
         super();
-        this.setMensagem(null); //criado antes de mensagem existir.
-        ///this.setMensagem(msg); //TODO poderá ser necessário criar mensagem antes.
+        //this.setMensagem(null); //criado antes de mensagem existir.
+        this.setMensagem(msg); //TODO poderá ser necessário criar mensagem antes.
     }
 
     @Override
@@ -22,22 +22,22 @@ public class Attachment extends Attachment_Base {
     }
 
     @Atomic
-    public static Attachment createAttachment(String displayName, String filename, byte[] content) {
-        Attachment egf = new Attachment();
+    public static Attachment createAttachment(Mensagem msg, String displayName, String filename, byte[] content) {
+        Attachment egf = new Attachment(msg);
         egf.init(displayName, filename, content);
         return egf;
     }
 
     @Atomic
-    public static Attachment createAttachment(String displayName, String filename, File file) throws IOException {
-        Attachment egf = new Attachment();
+    public static Attachment createAttachment(Mensagem msg, String displayName, String filename, File file) throws IOException {
+        Attachment egf = new Attachment(msg);
         egf.init(displayName, filename, file);
         return egf;
     }
 
     @Atomic
-    public static Attachment createAttachment(String displayName, String filename, InputStream file) throws IOException {
-        Attachment egf = new Attachment();
+    public static Attachment createAttachment(Mensagem msg, String displayName, String filename, InputStream file) throws IOException {
+        Attachment egf = new Attachment(msg);
         egf.init(displayName, filename, file);
         return egf;
     }
