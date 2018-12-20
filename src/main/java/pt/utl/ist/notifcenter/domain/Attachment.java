@@ -12,8 +12,7 @@ public class Attachment extends Attachment_Base {
 
     public Attachment(Mensagem msg) {
         super();
-        //this.setMensagem(null); //criado antes de mensagem existir.
-        this.setMensagem(msg); //TODO poderá ser necessário criar mensagem antes.
+        this.setMensagem(msg);
     }
 
     @Override

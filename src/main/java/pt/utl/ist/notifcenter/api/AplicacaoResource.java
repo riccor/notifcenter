@@ -738,11 +738,34 @@ AplicacaoResource extends BennuRestResource {
         return view(msg, MensagemAdapter.class);
     }
 
+    //DEBUG
     @SkipCSRF
-    @RequestMapping(value = "/{app}/sendmensagem2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/esteaqui", method = RequestMethod.POST,
+            headers = {"content-type=multipart/mixed","content-type=multipart/form-data"})
+    public ResponseEntity<String> esteAqui(
+            @RequestHeader HttpHeaders headers,
+            @PathVariable String userId,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestPart(value = "scouting_activity", required = true) String scouting_activity_json) {
+
+        System.out.println("POST_v1_scouting_activities: headers.getContentType(): " + headers.getContentType());
+
+        System.out.println("POST_v1_scouting_activities: userId: " + userId);
+
+        System.out.println(String.format("POST_v1_scouting_activities: image.originalFilename: %s, image: %s",
+                (image!=null) ? image.getOriginalFilename() : null, image));
+
+        System.out.println(String.format("POST_v1_scouting_activities: scouting_activity_json.getType().getName(): %s, scouting_activity: %s",
+                scouting_activity_json.getClass().getName(), scouting_activity_json));
+
+        return new ResponseEntity<>("esteAQUI\n", HttpStatus.OK);
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/sendmensagem2", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
+                    headers = {"content-type=multipart/mixed","content-type=multipart/form-data"})
     public JsonElement sendMensagem2(@PathVariable("app") Aplicacao app,
-                                    @RequestBody JsonElement jsonElement,
-                                    @RequestParam(value = "anexos", required = false) MultipartFile[] anexos) {
+                                    @RequestBody JsonElement jsonElement, @RequestParam(value = "anexos", required = false) MultipartFile[] anexos) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -1011,6 +1034,11 @@ AplicacaoResource extends BennuRestResource {
     @SkipCSRF
     @RequestMapping(value = "/deletemensagens", method = RequestMethod.POST)
     public String deleteMnsagens(@RequestParam(value = "msg"/*, required = false FOR SAFETY*/) Mensagem msg) {
+
+        //FOR SAFETY
+        if (!FenixFramework.isDomainObjectValid(msg)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR);
+        }
 
         boolean flag = false;
 
