@@ -46,6 +46,7 @@ public class Attachment extends Attachment_Base {
     public void delete() {
         this.setMensagem(null);
         this.setStorage(null);
+        this.setFileSupport(null);
         this.deleteDomainObject();
     }
 
