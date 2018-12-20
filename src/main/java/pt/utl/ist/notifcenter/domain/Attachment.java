@@ -44,6 +44,7 @@ public class Attachment extends Attachment_Base {
     @Atomic
     public void delete() {
         this.setMensagem(null);
+        this.getStorage().delete(); //delete file
         this.setStorage(null);
         this.setFileSupport(null);
         this.deleteDomainObject();

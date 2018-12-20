@@ -752,7 +752,7 @@ AplicacaoResource extends BennuRestResource {
             jsonElement = parser.parse(message_json);
         }
         catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_JSON_ERROR, "Bad JSON received: " + message_json);
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_JSON_ERROR, "Bad parameter json: " + message_json);
         }
 
         if (!FenixFramework.isDomainObjectValid(app)) {
