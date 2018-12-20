@@ -1010,7 +1010,7 @@ AplicacaoResource extends BennuRestResource {
 
     @SkipCSRF
     @RequestMapping(value = "/deletemensagens", method = RequestMethod.POST)
-    public String deleteMnsagens(@RequestParam(value = "msg", required = false) Mensagem msg) {
+    public String deleteMnsagens(@RequestParam(value = "msg"/*, required = false FOR SAFETY*/) Mensagem msg) {
 
         boolean flag = false;
 
