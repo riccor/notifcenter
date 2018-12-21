@@ -93,7 +93,7 @@ public class NotifcenterController {
             }
         }
 
-        throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEWMESSAGE_ERROR);
+        throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_MESSAGE_ERROR);
         //return "mytest/messages";
     }
 }

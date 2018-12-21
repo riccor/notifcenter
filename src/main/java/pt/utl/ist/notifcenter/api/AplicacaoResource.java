@@ -2,6 +2,11 @@
 
 //curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"param1":"value1"}'
 
+//OK5:
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/attachments/{fileId} //attachment is downloaded if user belongs to gruposDestinatarios of its message
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/attachments/{fileId}
+//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/{msg}/listattachments
+
 
 //OK4:
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/listcanais
@@ -96,7 +101,6 @@
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listaplicacoes
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listgroups
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/attachments/list
-//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/attachments/{fileName}
 
 //"no" http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893059&group=281702609977345
 //"yes" http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893057&group=281702609977345
@@ -123,6 +127,7 @@ import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.io.domain.FileStorage;
 import org.fenixedu.bennu.io.domain.GenericFile;
@@ -189,6 +194,10 @@ AplicacaoResource extends BennuRestResource {
        /{app}/{remetente}/listcanaisnotificacao
        
        /{app}/sendmensagem
+
+       /{app}/{msg}/listattachments
+       /{app}/attachments/{fileId}
+       /attachments/{fileId}
 
 
        //API canal (/apicanais):
@@ -817,7 +826,7 @@ AplicacaoResource extends BennuRestResource {
 
             for (MultipartFile file: anexos) {
                 try {
-                    Attachment at =  Attachment.createAttachment(msg, file.getOriginalFilename(), "lowlevelname-" + canalNotificacao.getExternalId() + " " + file.getOriginalFilename(), file.getInputStream());
+                    Attachment at =  Attachment.createAttachment(msg, file.getOriginalFilename(), "lowlevelname-" + canalNotificacao.getExternalId() + "-" + file.getOriginalFilename(), file.getInputStream());
                     ///attachments.add(at);
                     //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
                     //debug:
@@ -902,24 +911,108 @@ AplicacaoResource extends BennuRestResource {
         return null;
     }
 
-    @RequestMapping(value = "/attachments/{fileName}", method = RequestMethod.GET)
-    public HttpEntity<byte[]> downloadAttachment(@PathVariable("fileName") GenericFile genericFile) {
 
-        if (!FenixFramework.isDomainObjectValid(genericFile)) {
+    //AGRUPAMENTO - attachments
+
+    private User getAuthenticatedUser() {
+        return Authenticate.getUser();
+    }
+
+    private boolean isUserLoggedIn() {
+        return Authenticate.isLogged();
+    }
+
+    @RequestMapping(value = "/attachments/{fileId}", method = RequestMethod.GET)
+    public HttpEntity<byte[]> downloadAttachment(@PathVariable("fileId") Attachment attachment) {
+
+        if (!isUserLoggedIn()) {
+            throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
+            ///return "redirect:/login?callback=" + request.getRequestURL();
+        }
+
+        User user = getAuthenticatedUser();
+
+        if (user == null || !FenixFramework.isDomainObjectValid(user)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(attachment)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_ATTACHMENT_ERROR);
         }
 
-        byte[] fileContent = genericFile.getContent();
+        if (!attachment.isAccessible(user)) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_ATTACHMENT_ERROR);
+        }
+
+        //debug
+        /*
+        System.out.println("#############content key: "+ attachment.getContentKey());
+        System.out.println("#############checksum algorithm: "+ attachment.getChecksumAlgorithm());
+        System.out.println("#############checksum: "+ attachment.getChecksum());
+        */
+
+        byte[] fileContent = attachment.getContent();
 
         HttpHeaders header = new HttpHeaders();
-        header.add("Content-Type", genericFile.getContentType());
-        header.add("Content-Disposition", "attachment; filename=" + genericFile.getDisplayName().replace(" ", "_"));
+        header.add("Content-Type", attachment.getContentType());
+        header.add("Content-Disposition", "attachment; filename=" + attachment.getDisplayName().replace(" ", "_"));
         header.add("Content-Length", String.valueOf(fileContent.length));
-        ///header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + genericFile.getDisplayName().replace(" ", "_"));
+        ///header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + attachment.getDisplayName().replace(" ", "_"));
         ///header.setContentLength(fileContent.length);
 
         return new HttpEntity<>(fileContent, header);
     }
+
+    @RequestMapping(value = "/{app}/attachments/{fileId}", method = RequestMethod.GET)
+    public HttpEntity<byte[]> downloadAttachmentApp(@PathVariable("app") Aplicacao app, @PathVariable("fileId") Attachment attachment) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(attachment)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ATTACHMENT_ERROR);
+        }
+
+        if (!attachment.isAccessibleByApp(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_ATTACHMENT_ERROR);
+        }
+
+        byte[] fileContent = attachment.getContent();
+
+        HttpHeaders header = new HttpHeaders();
+        header.add("Content-Type", attachment.getContentType());
+        header.add("Content-Disposition", "attachment; filename=" + attachment.getDisplayName().replace(" ", "_"));
+        header.add("Content-Length", String.valueOf(fileContent.length));
+        ///header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + attachment.getDisplayName().replace(" ", "_"));
+        ///header.setContentLength(fileContent.length);
+
+        return new HttpEntity<>(fileContent, header);
+    }
+
+    @RequestMapping(value = "/{app}/{msg}/listattachments", method = RequestMethod.GET)
+    public JsonElement listMessageAttachments(@PathVariable("app") Aplicacao app, @PathVariable("msg") Mensagem msg) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(msg) || !msg.getCanalNotificacao().getRemetente().getAplicacao().equals(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR);
+        }
+
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        for (Attachment atch : msg.getAttachmentsSet()) {
+            jArray.add(view(atch, AttachmentAdapter.class));
+        }
+
+        jObj.addProperty("messageId", msg.getExternalId());
+        jObj.add("attachments", jArray);
+        return jObj;
+    }
+
 
 
     //Called when NotifcenterException is thrown due to some error

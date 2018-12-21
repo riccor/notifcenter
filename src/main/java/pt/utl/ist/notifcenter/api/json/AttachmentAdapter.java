@@ -30,7 +30,7 @@ public class AttachmentAdapter implements JsonAdapter<Attachment> {
         jObj.addProperty("name", obj.getDisplayName());
         jObj.addProperty("filename", obj.getFilename());
         jObj.addProperty("externalId", obj.getExternalId());
-        jObj.addProperty("creationDate", obj.getCreationDate().toString());
+        jObj.addProperty("creationDate", obj.getCreationDate().toString("dd.MM.yyyy HH:mm:ss.SSS"));
         jObj.addProperty("contentType", obj.getContentType());
         jObj.addProperty("size", obj.getSize());
         jObj.addProperty("downloadUrl", NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + obj.getExternalId());

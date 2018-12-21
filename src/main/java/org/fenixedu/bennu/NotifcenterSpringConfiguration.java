@@ -13,7 +13,7 @@ import org.fenixedu.commons.configuration.ConfigurationProperty;
 
 //EnableAsync
 @BennuSpringModule(basePackages = "pt.utl.ist.notifcenter", bundles = {"NotifcenterResources", "MyTestResources"})
-public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport*/ {
+public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupnotifcenterUrlport*/ {
 
     // Email LC 3-10-2018:
     public static final String BUNDLE = "resources.NotifcenterResources";
@@ -43,7 +43,7 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport
         @ConfigurationProperty(key = "notifcenter.mensagem.textocurto.maxsize", defaultValue = "90")
         public String notifcenterMensagemTextoCurtoMaxSize();
 
-        @ConfigurationProperty(key = "notifcenter.filestorage.name", defaultValue = "notistore-0")
+        @ConfigurationProperty(key = "notifcenter.filestorage.name", defaultValue = "notistore-1")
         public String notifcenterFileStorageName();
 
         //@ConfigurationProperty(key = "access.token.required", defaultValue = "true")
