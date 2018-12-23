@@ -60,6 +60,12 @@ public class Attachment extends Attachment_Base {
 
         //TODO how to delete file from filesystem ???
         ///Files.deleteIfExists("awd");
+        /*
+        final File existingFile = new File(getFilePath());
+        if (!existingFile.exists() || existingFile.delete()) {
+            setFileSupport(null);
+            deleteDomainObject();
+        }*/
 
         this.setStorage(null);
         this.setFileSupport(null);
