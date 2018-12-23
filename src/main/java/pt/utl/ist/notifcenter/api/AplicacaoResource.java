@@ -1636,3 +1636,9 @@ System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).colle
             jArray.add(jO);
         });
         */
+
+           /*
+                   FenixFramework.atomic(() -> {
+                        FileSupport.getInstance().getDeleteSet().stream().forEach(FileDeleterThread::delete);
+                    });
+            */
