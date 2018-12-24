@@ -22,6 +22,7 @@ public enum ErrorsAndWarnings {
     INVALID_MESSAGE_ERROR ("invalidMessage", "Invalid message.", HttpStatus.PRECONDITION_FAILED),
     NOTALLOWED_CANALNOTIFICACAO_ERROR ("notAllowedCanalNotificacao", "No permissions to use such notification channel.", HttpStatus.FORBIDDEN),
     NOTALLOWED_GROUP_ERROR ("notAllowedGroup", "No permissions to send messages to group.", HttpStatus.FORBIDDEN),
+    NOTALLOWED_TO_ADD_GROUP_ERROR ("notAllowedToAddGroup", "No permissions to add message receiving groups.", HttpStatus.FORBIDDEN),
     COULD_NOT_DELIVER_MESSAGE ("couldNotDeliverMessage", "Could not deliver message.", HttpStatus.REQUEST_TIMEOUT),
     INVALID_ATTACHMENT_ERROR ("attachmentNotFound", "No such attachment was found.", HttpStatus.NOT_FOUND),
     INVALID_ENTITY_ERROR ("cannotCreateEntity", "Invalid entity parameters.", HttpStatus.PRECONDITION_FAILED),
@@ -31,7 +32,7 @@ public enum ErrorsAndWarnings {
     MISSING_PARAMETER_ERROR ("missingParameter", "Missing parameter.", HttpStatus.PRECONDITION_FAILED),
     UNKNOWN_MESSAGE_SID ("unknownMessageSid", "Unknown message SID.", HttpStatus.NOT_FOUND),
     ALREADY_EXISTING_RESOURCE ("resourceAlreadyExists", "Resource already exists.", HttpStatus.CONFLICT),
-    ALREADY_EXISTING_RELATION ("relationAlreadyExists", "Such relation already exists.", HttpStatus.CONFLICT),
+    ALREADY_EXISTING_RELATION_ERROR ("relationAlreadyExists", "Such relation already exists.", HttpStatus.CONFLICT),
     NON_EXISTING_RELATION ("nonExistingRelation", "Such relation does not exist.", HttpStatus.CONFLICT);
 
 

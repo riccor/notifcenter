@@ -67,7 +67,7 @@ public class UtilizadoresResource extends BennuRestResource {
             if (c.getCanal().equals(canal) && c.getDadosContacto().equals(dadosContacto)) {
                 String a = "Contact data " + dadosContacto + " already exists for channel " + canal.getExternalId() + " and user " + utilizador.getExternalId() + "!";
                 System.out.println(a);
-                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION, a);
+                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION_ERROR, a);
             }
         }
 

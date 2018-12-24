@@ -409,7 +409,11 @@ AplicacaoResource extends BennuRestResource {
         }
 
         if (remetente.getGruposSet().contains(group)) {
-            throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION, "Remetente " + remetente.getExternalId() + " already contains group " + group.getExternalId() + "!");
+            throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION_ERROR, "Remetente " + remetente.getExternalId() + " already contains group " + group.getExternalId() + "!");
+        }
+
+        if(!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL) ) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
         }
 
         remetente.addGroupToSendMesssages(group);
@@ -522,7 +526,14 @@ AplicacaoResource extends BennuRestResource {
             }
         }
 
-        CanalNotificacao pedidoCriacaoCanalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente, true);
+        CanalNotificacao pedidoCriacaoCanalNotificacao;
+
+        if(app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL) ) {
+            pedidoCriacaoCanalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente, false);
+        }
+        else {
+            pedidoCriacaoCanalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente, true);
+        }
 
         return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
     }
