@@ -16,11 +16,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
 import pt.ist.fenixframework.FenixFramework;
+import pt.utl.ist.notifcenter.domain.Attachment;
 import pt.utl.ist.notifcenter.domain.Mensagem;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequestMapping("/notifcenter")
 @SpringApplication(group = "anyone", path = "notifcenter", title = "title.Notifcenter")
@@ -50,6 +53,7 @@ public class NotifcenterController {
         return Authenticate.isLogged();
     }
 
+    //TODO - redireccionar para pagina web com interface grafica
     @ResponseBody
     @ExceptionHandler({NotifcenterException.class})
     public ResponseEntity<JsonElement> errorHandler(NotifcenterException ex) {
@@ -88,6 +92,9 @@ public class NotifcenterController {
             if (g.isMember(user)) {
 
                 model.addAttribute("message", msg);
+
+                List<Attachment> atl = new ArrayList<>(msg.getAttachmentsSet());
+                model.addAttribute("anexos", atl);
 
                 return "notifcenter/messages";
             }
