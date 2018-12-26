@@ -1,7 +1,7 @@
 package pt.utl.ist.notifcenter.ui;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.security.Authenticate;
@@ -12,9 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.servlet.view.RedirectView;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.domain.Attachment;
 import pt.utl.ist.notifcenter.domain.Mensagem;
@@ -93,8 +90,16 @@ public class NotifcenterController {
 
                 model.addAttribute("message", msg);
 
-                List<Attachment> atl = new ArrayList<>(msg.getAttachmentsSet());
-                model.addAttribute("anexos", atl);
+                //tambem funciona mas não é necessario aqui (pois basta usar message.attachments):
+                //List<Attachment> atl = new ArrayList<>(msg.getAttachmentsSet());
+                //model.addAttribute("anexos", atl);
+
+                List<String> attachmentsLinks = new ArrayList<>();
+                for (Attachment at : msg.getAttachmentsSet()) {
+                    String link = NotifcenterSpringConfiguration.getConfiguration().notifcenterUrlForAttachments() + at.getExternalId();
+                    attachmentsLinks.add(link);
+                }
+                model.addAttribute("attachments_links", attachmentsLinks);
 
                 return "notifcenter/messages";
             }
