@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorsAndWarnings {
 
+    NOTALLOWED_VIEW_PAGE_ERROR ("notAllowedPage", "No permissions to view this page.", HttpStatus.FORBIDDEN),
     INVALID_JSON_ERROR ("invalidJson", "Invalid JSON data.", HttpStatus.PRECONDITION_FAILED),
     INVALID_DATETIME_ERROR ("invalidDatetime", "Invalid datetime. Valid pattern is dd.MM.yyyy HH:mm:ss.SSS", HttpStatus.PRECONDITION_FAILED),
     INTERNAL_SERVER_ERROR ("internalServerError", "Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR),
@@ -74,6 +75,21 @@ public enum ErrorsAndWarnings {
         jObj.addProperty("error_description", this.errorDescription);
         jObj.addProperty("details", details);
         return jObj;
+    }
+
+    public String toHTML() {
+        String str = "<br><b>HTTP Status " + this.httpStatus + "</b></br>";
+        str = str + "<br>code: " + this.codeId + "</br>";
+        str = str + "<br>description: " + this.errorDescription + "</br>";
+        return str;
+    }
+
+    public String toHTMLWithDetails(String details) {
+        String str = "<br><b>HTTP Status " + this.httpStatus + "</b></br>";
+        str = str + "<br>code: " + this.codeId + "</br>";
+        str = str + "<br>description: " + this.errorDescription + "</br>";
+        str = str + "<br>details: " + details + "</br>";
+        return str;
     }
 
 }

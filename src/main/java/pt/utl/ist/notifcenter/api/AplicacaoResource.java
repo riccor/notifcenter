@@ -99,7 +99,7 @@
 //http://{{DOMAIN}}:8080/notifcenter/apicanais/listcanais
 //http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/listutilizadores
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listaplicacoes
-//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listgroups
+//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listgrupos
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/attachments/list
 
 //"no" http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893059&group=281702609977345
@@ -125,6 +125,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
+import org.fenixedu.bennu.core.groups.DynamicGroup;
+import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
 import org.fenixedu.bennu.core.security.Authenticate;
@@ -135,6 +137,7 @@ import org.fenixedu.bennu.io.servlet.FileDownloadServlet;
 import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
+import org.fenixedu.bennu.spring.security.CSRFTokenRepository;
 import org.joda.time.DateTime;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -145,6 +148,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
+import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.*;
@@ -161,6 +165,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
@@ -1070,6 +1075,22 @@ AplicacaoResource extends BennuRestResource {
 
         return "All channels were deleted!";
     }*/
+
+    //Debug
+    @RequestMapping(value = "/groupdebug", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement groupDebug(@RequestParam("name") String name) {
+
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        DynamicGroup g = Group.dynamic(name);
+
+        jObj.addProperty("name", g.getName());
+        g.getMembers().forEach(e -> jArray.add(e.getUsername()));
+        jObj.add("membros", jArray);
+
+        return jObj;
+    }
 
     @RequestMapping(value = "/listgrupos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listGrupos() {

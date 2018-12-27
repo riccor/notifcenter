@@ -4,9 +4,12 @@ import com.google.gson.JsonElement;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
+import org.fenixedu.bennu.core.groups.DynamicGroup;
+import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringApplication;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.bennu.spring.security.CSRFTokenRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -50,18 +53,17 @@ public class NotifcenterController {
         return Authenticate.isLogged();
     }
 
-    //TODO - redireccionar para pagina web com interface grafica
     @ResponseBody
     @ExceptionHandler({NotifcenterException.class})
-    public ResponseEntity<JsonElement> errorHandler(NotifcenterException ex) {
+    public ResponseEntity<String> errorHandlerHTML(NotifcenterException ex) {
 
         HttpHeaders header = new HttpHeaders();
 
         if (ex.getMoreDetails() != null) {
-            return new ResponseEntity<>(ex.getErrorsAndWarnings().toJsonWithDetails(ex.getMoreDetails()), header, ex.getErrorsAndWarnings().getHttpStatus());
+            return new ResponseEntity<>(ex.getErrorsAndWarnings().toHTMLWithDetails(ex.getMoreDetails()), header, ex.getErrorsAndWarnings().getHttpStatus());
         }
         else {
-            return new ResponseEntity<>(ex.getErrorsAndWarnings().toJson(), header, ex.getErrorsAndWarnings().getHttpStatus());
+            return new ResponseEntity<>(ex.getErrorsAndWarnings().toHTML(), header, ex.getErrorsAndWarnings().getHttpStatus());
         }
     }
 
@@ -108,4 +110,38 @@ public class NotifcenterController {
         throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_MESSAGE_ERROR);
         //return "mytest/messages";
     }
+
+    @RequestMapping(value = "/canais")
+    public String canais(Model model, HttpServletRequest request) {
+
+        if (!isUserLoggedIn()) {
+            return "redirect:/login?callback=" + request.getRequestURL();
+        }
+
+        User user = getAuthenticatedUser();
+
+        if (user == null || !FenixFramework.isDomainObjectValid(user)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
+        }
+
+        DynamicGroup g = Group.managers();
+
+        //debug
+        //g.getMembers().forEach(e -> System.out.println("admin member: " + e.getUsername()));
+
+        if (!g.isMember(user)) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR, "You are not a system admin.");
+        }
+
+        //TODO AQUI
+
+
+
+        model.addAttribute("world", user.getUsername());
+        return "notifcenter/home";
+
+        //throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR);
+    }
+
 }
+

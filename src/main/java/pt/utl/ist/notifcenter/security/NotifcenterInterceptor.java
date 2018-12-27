@@ -8,6 +8,7 @@ import org.fenixedu.bennu.oauth.domain.ApplicationUserSession;
 import org.fenixedu.bennu.oauth.domain.ExternalApplication;
 import org.fenixedu.bennu.oauth.domain.ExternalApplicationScope;
 import org.fenixedu.bennu.oauth.util.OAuthUtils;
+import org.fenixedu.bennu.spring.security.CSRFTokenRepository;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -66,6 +67,21 @@ public class NotifcenterInterceptor implements HandlerInterceptor {
     //Adaptado de https://github.com/FenixEdu/bennu/blob/master/bennu-oauth/src/main/java/org/fenixedu/bennu/oauth/jaxrs/BennuOAuthAuthorizationFilter.java
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        /*
+        link: https://github.com/FenixEdu/bennu/tree/master/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security
+
+        CSRFTokenRepository ctr = new CSRFTokenRepository();
+        ctr.getToken(request);
+        (...)
+
+        //Debug:
+        CSRFTokenRepository ctr = new CSRFTokenRepository();
+        System.out.println("token: "+ ctr.getToken(request).getToken());
+        System.out.println("headername: "+ ctr.getToken(request).getHeaderName());
+        System.out.println("parametertoken: "+ ctr.getToken(request).getParameterName());
+
+        */
 
         if (isAccessTokenRequired && !doesHandlerHasAnnotation(handler, SkipAccessTokenValidation.class)) {
             String accessToken = findToken(OAuthUtils.ACCESS_TOKEN, request);
