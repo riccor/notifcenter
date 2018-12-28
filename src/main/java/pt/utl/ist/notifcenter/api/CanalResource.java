@@ -13,6 +13,8 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.CanalAdapter;
@@ -24,7 +26,10 @@ import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -45,9 +50,37 @@ public class CanalResource extends BennuRestResource {
 
     @RequestMapping(value = "/listclassescanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listClassesCanais() {
-
         JsonObject jObj = new JsonObject();
+        jObj.add("classes_canais", getAvailableChannelsNamesAndParamsAsJson());
+        return jObj;
+    }
+
+    public static JsonElement getAvailableChannelsNamesAndParamsAsJson() {
+        MultiValueMap<String, String> list = getAvailableChannelsNamesAndParams();
         JsonArray jArray = new JsonArray();
+
+        list.forEach((k, v) -> {
+            //System.out.println("class: " + k);
+
+            JsonArray jA = new JsonArray();
+            v.forEach(i -> {
+                //System.out.println("param: " + i);
+                jA.add(i);
+            });
+
+            JsonObject jO = new JsonObject();
+            jO.addProperty("name", k);
+            jO.add("params", jA);
+
+            jArray.add(jO);
+        });
+
+        return jArray;
+    }
+
+
+    public static MultiValueMap<String, String> getAvailableChannelsNamesAndParams() {
+        MultiValueMap<String, String> list = new LinkedMultiValueMap<>();
 
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(AnotacaoCanal.class));
@@ -58,27 +91,14 @@ public class CanalResource extends BennuRestResource {
                 AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
                 String name = clazz.getSimpleName(); //bd.getBeanClassName().substring(bd.getBeanClassName().lastIndexOf('.') + 1);
                 String[] params = annotation.classFields();
-
-                JsonObject jO = new JsonObject();
-                JsonArray jA = new JsonArray();
-
-                for (String s : params) {
-                    jA.add(s);
-                }
-
-                jO.addProperty("name", name);
-                jO.add("params", jA);
-
-                jArray.add(jO);
-
+                list.put(name, Arrays.asList(params));
             }
             catch (Exception e) {
                 System.out.println("error on getting a channel class params");
             }
         }
 
-        jObj.add("classes_canais", jArray);
-        return jObj;
+        return list;
     }
 
     @RequestMapping(value = "/{canal}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

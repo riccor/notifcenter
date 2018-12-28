@@ -14,16 +14,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import pt.ist.fenixframework.FenixFramework;
+import pt.utl.ist.notifcenter.api.CanalResource;
 import pt.utl.ist.notifcenter.domain.Attachment;
 import pt.utl.ist.notifcenter.domain.Mensagem;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RequestMapping("/notifcenter")
 @SpringApplication(group = "anyone", path = "notifcenter", title = "title.Notifcenter")
@@ -134,11 +136,26 @@ public class NotifcenterController {
         }
 
         //TODO AQUI
+        /*
+        * criar tabela
+        * converter funcoes de canaisresource em html
+        *
+        * */
 
+        model.addAttribute("classes_canais", CanalResource.getAvailableChannelsNamesAndParams());
 
+        /*
+        for (Map.Entry<String, List<String>> a : CanalResource.getAvailableChannelsNamesAndParams().entrySet()) {
+            System.out.println(a.getKey());
+
+            for (String c : a.getValue()) {
+                System.out.println(c);
+            }
+        }
+        */
 
         model.addAttribute("world", user.getUsername());
-        return "notifcenter/home";
+        return "notifcenter/canais";
 
         //throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR);
     }
