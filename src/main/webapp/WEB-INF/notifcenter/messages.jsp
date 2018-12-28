@@ -6,7 +6,7 @@
 <div class="view-message">
 
     Assunto: ${message.assunto}<br/>
-    Texto curto: ${message.textoCurto}<br/>
+    Texto curto: <c:url value="${message.textoCurto}"/><br/> <%-- tambem dá assim! -->
     Texto longo: ${message.textoLongo}<br/>
     Anexos:<br/> <%--  <${message.attachments}<br/> --%>
 
@@ -19,6 +19,17 @@
 </div>
 
 <%--
+    <c:set var="myVal" value="Hello"/>
+
+    <p id="demo0">Click the button to change the text in this paragraph</p>
+    <p id="demo1">Click the button to change the text in this paragraph</p>
+    <p id="demo2">Click the button to change the text in this paragraph</p>
+
+    inside <script>:
+    var key = "${entry.key}";
+    document.getElementById("demo0").innerHTML = key;
+
+
     <c:forEach var="entry" items="${multiMap}">
         <br/>-> Key: <c:out value="${entry.key}"/>
         <br/>-> Values for this key:
