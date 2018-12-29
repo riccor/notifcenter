@@ -13,7 +13,7 @@
     </select>
 
     <form id="form1" action="https://www.w3schools.com/action_page.php" method="get">
-
+        <table id="table1"></table>
     </form>
 
 </div>
@@ -32,6 +32,7 @@ function onSelect() {
 
     var temp = document.getElementById("form1");
 
+    //apagar elementos de form1:
   	while (temp.firstChild) {
    		temp.removeChild(temp.firstChild);
   	}
@@ -48,18 +49,34 @@ function onSelect() {
             h.setAttribute("value", key);
             temp.appendChild(h);
 
+            //criar tabela com campos de formulario para preencher
+            var table1 = document.createElement("TABLE");
+            table1.setAttribute("id", "table1");
+            temp.appendChild(table1);
+
             <c:forEach var="currentValue" items="${entry.value}">
 
-                var t = document.createTextNode(capitalizeFirstLetter("<c:out value="${currentValue}"/>: "));
-                temp.appendChild(t);
-                var x = document.createElement("INPUT");
-                x.setAttribute("type", "text");
-                x.setAttribute("name", "<c:out value="${currentValue}"/>"); //igual a usar "${currentValue}"!
-                //x.setAttribute("value", "${currentValue}"); //valor predefinido
-                temp.appendChild(x);
-                temp.appendChild(document.createElement("br"));
+                var tr = document.createElement("TR");
+                table1.appendChild(tr);
+
+                var td1 = document.createElement("TD");
+                tr.appendChild(td1);
+
+                var k = document.createTextNode(capitalizeFirstLetter("<c:out value="${currentValue}"/>: "));
+                td1.appendChild(k);
+
+                var td2 = document.createElement("TD");
+                tr.appendChild(td2);
+
+                var v = document.createElement("INPUT");
+                v.setAttribute("type", "text");
+                v.setAttribute("name", "<c:out value="${currentValue}"/>"); //igual a usar "${currentValue}"!
+                //v.setAttribute("value", "${currentValue}"); //valor predefinido
+                td2.appendChild(v);
+                //temp.appendChild(document.createElement("BR"));
 
             </c:forEach>
+
         }
 
     </c:forEach>

@@ -19,7 +19,15 @@
 </div>
 
 <%--
+    <c:set var="continueExecuting" value="false"/>
+
+
     <c:set var="myVal" value="Hello"/>
+
+    <c:if test="${continueExecuting}">
+
+    </c:if>
+
 
     <p id="demo0">Click the button to change the text in this paragraph</p>
     <p id="demo1">Click the button to change the text in this paragraph</p>
