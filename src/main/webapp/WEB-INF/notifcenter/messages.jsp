@@ -6,7 +6,7 @@
 <div class="view-message">
 
     Assunto: ${message.assunto}<br/>
-    Texto curto: <c:url value="${message.textoCurto}"/><br/> <%-- tambem dá assim! -->
+    Texto curto: ${message.textoCurto}<br/>
     Texto longo: ${message.textoLongo}<br/>
     Anexos:<br/> <%--  <${message.attachments}<br/> --%>
 

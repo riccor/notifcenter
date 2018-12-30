@@ -1,4 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+
+<head>
+    <title>Notifcenter - Canais</title>
+</head>
+
+
 <br><h2><b>Canais</b></h2><br/>
 
 <div class="create-canal" id="div1">
@@ -12,8 +19,10 @@
         </c:forEach>
     </select>
 
-    <form id="form1" action="https://www.w3schools.com/action_page.php" method="get">
+    <form id="form1" action="/notifcenter/notifcenter/postcanal" method="post">
+    <%-- <form:form action="https://www.w3schools.com/action_page.php" method="get"> --%>
         <table id="table1"></table>
+    <%-- </form:form> --%>
     </form>
 
 </div>
