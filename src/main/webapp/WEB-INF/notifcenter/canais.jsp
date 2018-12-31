@@ -3,25 +3,78 @@
 
 <head>
     <title>Notifcenter - Canais</title>
-</head>
 
+    <style>
+
+    #table1 {
+      font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    #table1 td, #table1 th {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    #table1 tr:nth-child(even){background-color: #f2f2f2;}
+
+    #table1 tr:hover {background-color: #ddd;}
+
+    #table1 th {
+      padding-top: 12px;
+      padding-bottom: 12px;
+      text-align: left;
+      background-color: #009FE3;
+      color: white;
+    }
+    </style>
+
+</head>
 
 <br><h2><b>Canais</b></h2><br/>
 
-<div class="create-canal" id="div1">
+
+<div class="list-canais" id="div1">
+
+    <br><h3>Canais</h3></br>
+
+    <table id="table1" style="width: 100%, box-sizing: border-box">
+        <tr>
+            <th>Type</th>
+            <th>Email</th>
+            <th colspan="5">Authentication parameters</th>
+        </tr>
+
+        <c:forEach var="canal" items="${canais}">
+            <tr>
+                <td><c:out value="${canal.getClass().simpleName}"/></td>
+                <td><c:out value="${canal.email}"/></td>
+
+                <c:forEach var="entry" items="${canal.getParams()}">
+                    <td><b><c:out value="${entry.key}"/>:</b> <c:out value="${entry.value}"/></td>
+                </c:forEach>
+            </tr>
+        </c:forEach>
+    </table>
+
+</div>
+
+
+<div class="create-canal" id="div2">
 
     <br><h3>Create channel</h3></br>
 
-    <select id="select1" onchange="onSelect()">
+    <select id="select2" onchange="onSelect()">
         <option value="" selected disabled hidden>Channel Type</option>
         <c:forEach var="entry" items="${classes_canais}"> <%-- same as ${classes_canais.entrySet()} --%>
             <option value="<c:out value="${entry.key}"/>"><c:out value="${entry.key}"/></option>
         </c:forEach>
     </select>
 
-    <form id="form1" action="/notifcenter/notifcenter/postcanal" method="post">
+    <form id="form2" action="/notifcenter/notifcenter/postcanal" method="post">
     <%-- <form:form action="https://www.w3schools.com/action_page.php" method="get"> --%>
-        <table id="table1"></table>
+        <table id="table2"></table>
     <%-- </form:form> --%>
     </form>
 
@@ -36,12 +89,12 @@ function capitalizeFirstLetter(string) {
 
 function onSelect() {
 
-    var sel = document.getElementById("select1");
+    var sel = document.getElementById("select2");
     var opt = sel.options[sel.selectedIndex].value;
 
-    var temp = document.getElementById("form1");
+    var temp = document.getElementById("form2");
 
-    //apagar elementos de form1:
+    //apagar elementos de form2:
   	while (temp.firstChild) {
    		temp.removeChild(temp.firstChild);
   	}
@@ -59,14 +112,14 @@ function onSelect() {
             temp.appendChild(h);
 
             //criar tabela com campos de formulario para preencher
-            var table1 = document.createElement("TABLE");
-            table1.setAttribute("id", "table1");
-            temp.appendChild(table1);
+            var table2 = document.createElement("TABLE");
+            table2.setAttribute("id", "table2");
+            temp.appendChild(table2);
 
             <c:forEach var="currentValue" items="${entry.value}">
 
                 var tr = document.createElement("TR");
-                table1.appendChild(tr);
+                table2.appendChild(tr);
 
                 var td1 = document.createElement("TD");
                 tr.appendChild(td1);

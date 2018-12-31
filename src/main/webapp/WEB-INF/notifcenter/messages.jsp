@@ -47,3 +47,21 @@
     </c:forEach>
 --%>
 
+
+<%--
+
+                <c:forEach var="entry" items="${classes_canais}">
+
+                    <c:if test="${item.getClass().simpleName == entry.key}" >
+
+                        <c:forEach var="currentValue" items="${entry.value}">
+
+                            <td><c:out value="${currentValue}"/></td>
+
+                        </c:forEach>
+
+                    </c:if>
+
+                </c:forEach>
+
+--%>

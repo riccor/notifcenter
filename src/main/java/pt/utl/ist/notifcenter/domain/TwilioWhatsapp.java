@@ -40,6 +40,16 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         return twilioWhatsapp;
     }
 
+    public HashMap<String, String> getParams() {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("AccountSID", getAccountSID());
+        map.put("AuthToken", getAuthToken());
+        map.put("FromPhoneNumber", getFromPhoneNumber());
+        map.put("Uri", getUri());
+        return map;
+        //return "AccountSID: " + getAccountSID() + " AuthToken: " + getAuthToken() + " FromPhoneNumber: " + getFromPhoneNumber() + " Uri: " + getUri();
+    }
+
     @Atomic
     public TwilioWhatsapp updateChannel(@Nullable final String accountSID, @Nullable final String authToken, @Nullable final String fromPhoneNumber, @Nullable final String uri) {
 

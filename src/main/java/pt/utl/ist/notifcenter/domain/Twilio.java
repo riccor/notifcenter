@@ -2,6 +2,8 @@ package pt.utl.ist.notifcenter.domain;
 
 import pt.ist.fenixframework.Atomic;
 
+import java.util.HashMap;
+
 public class Twilio extends Twilio_Base {
 
     public Twilio() {
@@ -24,6 +26,14 @@ public class Twilio extends Twilio_Base {
     @Override
     public void sendMessage(Mensagem msg) {
 
+    }
+
+    /*
+    public String toString() {
+        return "Twilio";
+    }*/
+    public HashMap<String, String> getParams() {
+        return new HashMap<String, String>();
     }
 
 }

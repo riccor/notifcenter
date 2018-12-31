@@ -3,6 +3,8 @@ package pt.utl.ist.notifcenter.domain;
 //import org.springframework.http.ResponseEntity;
 import pt.ist.fenixframework.Atomic;
 
+import java.util.HashMap;
+
 public abstract class Canal extends Canal_Base {
 
     public Canal() {
@@ -28,6 +30,10 @@ public abstract class Canal extends Canal_Base {
     */
 
     public abstract void sendMessage(Mensagem msg); //{ System.out.println("\n\nshould not see this"); }
+
+    //used to print information about an object of a channel class on a html page
+    //criei isto porque não consigo aceder a metodos através dos respectivos nomes em JSTL
+    public abstract HashMap<String, String> getParams();
 
     @Atomic
     public void delete() {

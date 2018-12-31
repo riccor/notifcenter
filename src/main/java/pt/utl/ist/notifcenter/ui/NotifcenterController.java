@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.CanalResource;
 import pt.utl.ist.notifcenter.domain.Attachment;
+import pt.utl.ist.notifcenter.domain.Canal;
 import pt.utl.ist.notifcenter.domain.Mensagem;
+import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
@@ -181,7 +183,14 @@ public class NotifcenterController {
         }
         */
 
+
+        List<Canal> canais = new ArrayList<>(SistemaNotificacoes.getInstance().getCanaisSet());
+        model.addAttribute("canais", canais);
+
+
         model.addAttribute("world", user.getUsername());
+
+
         return "notifcenter/canais";
 
         //throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR);
