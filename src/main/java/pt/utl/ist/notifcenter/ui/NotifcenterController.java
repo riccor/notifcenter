@@ -13,11 +13,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.CanalResource;
+import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.domain.Attachment;
 import pt.utl.ist.notifcenter.domain.Canal;
 import pt.utl.ist.notifcenter.domain.Mensagem;
@@ -70,7 +69,7 @@ public class NotifcenterController {
         }
     }
 
-    public void checkUser(User user) {
+    public void checkIsUserValid(User user) {
         if (user == null || !FenixFramework.isDomainObjectValid(user)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
         }
@@ -89,10 +88,9 @@ public class NotifcenterController {
         }
 
         User user = getAuthenticatedUser();
-        checkUser(user);
+        checkIsUserValid(user);
 
-
-        model.addAttribute("world", "World");
+        //model.addAttribute("world", "World");
 
         for (PersistentGroup g : msg.getGruposDestinatariosSet()) {
             if (g.isMember(user)) {
@@ -139,18 +137,19 @@ public class NotifcenterController {
         }
 
         User user = getAuthenticatedUser();
-        checkUser(user);
+        checkIsUserValid(user);
         checkAdminPermissions(user);
 
-        // this way you get value of the input you want
-        //String pathValue1 = request.getParameter("path1");
-        //String pathValue2 = request.getParameter("path2");
+        //System.out.println("tipo: " + request.getParameter("channelType"));
 
-        System.out.println("tipo: " + request.getParameter("classType"));
+        CanalResource.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
 
-        model.addAttribute("world", "cheguei!");
+        ///model.addAttribute("world", "cheguei!");
+        List<Canal> canais = new ArrayList<>(SistemaNotificacoes.getInstance().getCanaisSet());
+        model.addAttribute("canais", canais);
+        model.addAttribute("classes_canais", CanalResource.getAvailableChannelsNamesAndParams());
 
-        return "notifcenter/postcanal";
+        return "notifcenter/canais";
     }
 
     @RequestMapping(value = "/canais")
@@ -161,17 +160,19 @@ public class NotifcenterController {
         }
 
         User user = getAuthenticatedUser();
-        checkUser(user);
+        checkIsUserValid(user);
         checkAdminPermissions(user);
 
-        //TODO AQUI
-        /*
-        * criar tabela
-        * converter funcoes de canaisresource em html
-        *
-        * */
-
+        List<Canal> canais = new ArrayList<>(SistemaNotificacoes.getInstance().getCanaisSet());
+        model.addAttribute("canais", canais);
         model.addAttribute("classes_canais", CanalResource.getAvailableChannelsNamesAndParams());
+
+
+        return "notifcenter/canais";
+    }
+
+}
+
 
         /*
         for (Map.Entry<String, List<String>> a : CanalResource.getAvailableChannelsNamesAndParams().entrySet()) {
@@ -182,19 +183,3 @@ public class NotifcenterController {
             }
         }
         */
-
-
-        List<Canal> canais = new ArrayList<>(SistemaNotificacoes.getInstance().getCanaisSet());
-        model.addAttribute("canais", canais);
-
-
-        model.addAttribute("world", user.getUsername());
-
-
-        return "notifcenter/canais";
-
-        //throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR);
-    }
-
-}
-

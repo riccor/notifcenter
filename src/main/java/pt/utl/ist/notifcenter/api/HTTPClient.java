@@ -1,6 +1,9 @@
 package pt.utl.ist.notifcenter.api;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.apache.avro.data.Json;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -132,30 +135,44 @@ public class HTTPClient {
         System.out.println(" ");
     }
 
-
-    public static JsonObject getHttpServletRequestParams(HttpServletRequest request) {
-
+    public static JsonObject getHttpServletRequestParamsAsJson(HttpServletRequest request) {
+        MultiValueMap<String, String> list = getHttpServletRequestParams(request);
         JsonObject jObj = new JsonObject();
 
-        JsonObject jHeaders = new JsonObject();
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            jHeaders.addProperty(headerName, request.getHeader(headerName));
-        }
+        list.forEach((k, v) -> {
+            JsonArray jA = new JsonArray();
+            v.forEach(i -> {
+                jA.add(i);
+            });
 
-        jObj.add("headers", jHeaders);
-
-        JsonObject jParams = new JsonObject();
-        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
-        for (String name : parameterNames) {
-            jParams.addProperty(name, request.getParameter(name));
-        }
-
-        jObj.add("body", jParams);
+            jObj.add(k, jA);
+        });
 
         return jObj;
     }
+
+
+    public static MultiValueMap<String, String> getHttpServletRequestParams(HttpServletRequest request) {
+
+        MultiValueMap<String, String> list = new LinkedMultiValueMap<>();
+
+        //header
+        Enumeration<String> headerParams = request.getHeaderNames();
+        while (headerParams.hasMoreElements()) {
+            String headerParam = headerParams.nextElement();
+            list.add(headerParam, request.getHeader(headerParam));
+        }
+
+        //body
+        Enumeration<String> bodyParams = request.getParameterNames();
+        while (bodyParams.hasMoreElements()) {
+            String bodyParam = bodyParams.nextElement();
+            list.add(bodyParam, request.getParameter(bodyParam));
+        }
+
+        return list;
+    }
+
 
 }
 
@@ -225,4 +242,23 @@ public class AsyncResponseHandler {
     }
 }
 
+*/
+
+/*
+        JsonObject jHeaders = new JsonObject();
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            jHeaders.addProperty(headerName, request.getHeader(headerName));
+        }
+
+        jObj.add("headers", jHeaders);
+
+        JsonObject jParams = new JsonObject();
+        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
+        for (String name : parameterNames) {
+            jParams.addProperty(name, request.getParameter(name));
+        }
+
+        jObj.add("body", jParams);
 */

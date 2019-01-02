@@ -171,8 +171,8 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         HTTPClient.printResponseEntity(responseEntity);
 
         JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
-        String idExterno = getRequiredValue(jObj.getAsJsonObject(), "sid");
-        String estadoEntrega = getRequiredValue(jObj.getAsJsonObject(), "status");
+        String idExterno = getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "sid");
+        String estadoEntrega = getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "status");
 
         //EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(canal, msg, contacto, idExterno, estadoEntrega);
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
@@ -185,9 +185,11 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         }
     }
 
-    private static String getRequiredValue(JsonObject obj, String property) {
+    private static String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
         if (obj.has(property)) {
-            return obj.get(property).getAsString();
+            if (!obj.get(property).getAsString().isEmpty()) {
+                return obj.get(property).getAsString();
+            }
         }
         return null;
     }

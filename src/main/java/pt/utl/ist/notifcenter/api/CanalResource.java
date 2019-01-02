@@ -26,11 +26,7 @@ import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
 
 @RestController
 @RequestMapping("/apicanais")
@@ -69,7 +65,7 @@ public class CanalResource extends BennuRestResource {
             });
 
             JsonObject jO = new JsonObject();
-            jO.addProperty("name", k);
+            jO.addProperty("channelType", k);
             jO.add("params", jA);
 
             jArray.add(jO);
@@ -168,13 +164,13 @@ public class CanalResource extends BennuRestResource {
 
 
     //As seguintes funções não estão no ficheiro CanalAdapter.java porque se estivessem precisaria de adicionar nele a anotação @DefaultJsonAdapter cada vez que se adiciona uma nova classe de canal ao sistema
-    public Canal create2(JsonElement jsonElement /*, JsonBuilder ctx*/) {
-        String name = getRequiredValue(jsonElement.getAsJsonObject(), "name");
+    public static Canal create2(JsonElement jsonElement /*, JsonBuilder ctx*/) {
+        String channelType = getRequiredValue(jsonElement.getAsJsonObject(), "channelType");
         Class<?> clazz;
         String[] params;
 
         try {
-            clazz = Class.forName(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain() + "." + name);
+            clazz = Class.forName(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain() + "." + channelType);
             AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
             params = annotation.classFields();
         }
@@ -218,7 +214,7 @@ public class CanalResource extends BennuRestResource {
 
         Object[] methodArgs = new Object[params.length];
         for (int i = 0; i < params.length; i++) {
-            methodArgs[i] = tryTogetRequiredValue(jsonElement.getAsJsonObject(), params[i]);
+            methodArgs[i] = getRequiredValueOrReturnNullInstead(jsonElement.getAsJsonObject(), params[i]);
         }
 
         try {
@@ -232,16 +228,20 @@ public class CanalResource extends BennuRestResource {
         }
     }
 
-    private String getRequiredValue(JsonObject obj, String property) {
+    private static String getRequiredValue(JsonObject obj, String property) {
         if (obj.has(property)) {
-            return obj.get(property).getAsString();
+            if (!obj.get(property).getAsString().isEmpty()) {
+                return obj.get(property).getAsString();
+            }
         }
         throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!"); //"HTTP Status 412 - Não foi possível criar a entidade"
     }
 
-    private String tryTogetRequiredValue(JsonObject obj, String property) {
+    private String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
         if (obj.has(property)) {
-            return obj.get(property).getAsString();
+            if (!obj.get(property).getAsString().isEmpty()) {
+                return obj.get(property).getAsString();
+            }
         }
         return null;
     }

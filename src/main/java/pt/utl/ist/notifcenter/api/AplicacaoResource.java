@@ -12,7 +12,7 @@
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/listcanais
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/listclassescanais
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/281835753963522 (show canal)
-//POST {"name": "Messenger", "accountSID":"accountSID1", "authToken":"authToken1", "fromPhoneNumber":"fromPhoneNumber1", "uriaa":"uri2"} -> http://{{DOMAIN}}:8080/notifcenter/apicanais/addcanal
+//POST {"channelType": "Messenger", "accountSID":"accountSID1", "authToken":"authToken1", "fromPhoneNumber":"fromPhoneNumber1", "uriaa":"uri2"} -> http://{{DOMAIN}}:8080/notifcenter/apicanais/addcanal
 
 
 //OK3:
@@ -629,7 +629,7 @@ AplicacaoResource extends BennuRestResource {
     @RequestMapping(value = "/notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement notifcenterCallback(HttpServletRequest request) {
 
-        JsonObject jObj = HTTPClient.getHttpServletRequestParams(request);
+        JsonObject jObj = HTTPClient.getHttpServletRequestParamsAsJson(request);///.getAsJsonObject();
 
         System.out.println("####### got new notifcentercallback message!!");
 
@@ -649,17 +649,17 @@ AplicacaoResource extends BennuRestResource {
         }
 
         //PROBLEMA: Nao pode levar "@RequestBody JsonElement body"!
-        JsonObject jObj = HTTPClient.getHttpServletRequestParams(request);
+        MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);///.getAsJsonObject();
 
         System.out.println("####### got new messagedeliverystatus message!!");
-        System.out.println(jObj.toString());
+        System.out.println(HTTPClient.getHttpServletRequestParamsAsJson(request).toString());
 
         //TODO - NAO É PRECISO FAZER ESTA DISTINCAO, POIS ESTE RECURSO ESTARÀ DENTRO DE TWILIOWHATSAPPRESOURCE.java!
         ///TwilioWhatsapp
         //"MessageStatus":"delivered","MessageSid":"SM9f705525cc4143ef8dece27557549a5f"
         //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
-        String idExterno = getRequiredValue(jObj.getAsJsonObject("body").getAsJsonObject(), "MessageSid");
-        String estadoEntrega = getRequiredValue(jObj.getAsJsonObject("body").getAsJsonObject(), "MessageStatus");
+        String idExterno = getRequiredValueFromMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageSid");
+        String estadoEntrega = getRequiredValueFromMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageStatus");
         ///}
 
         for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
@@ -694,9 +694,21 @@ AplicacaoResource extends BennuRestResource {
 
     private String getRequiredValue(JsonObject obj, String property) {
         if (obj.has(property)) {
-            return obj.get(property).getAsString();
+            if (!obj.get(property).getAsString().isEmpty()) {
+                return obj.get(property).getAsString();
+            }
         }
         throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + property + "!");
+    }
+
+    private String getRequiredValueFromMap(MultiValueMap<String, String> map, String key) {
+        List<String> value = map.get(key);
+        if (value != null) {
+            if (!value.get(0).isEmpty()) { //here we only return the first parameter found
+                return value.get(0);
+            }
+        }
+        throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + key + "!");
     }
 
     private String[] getRequiredArrayValue(JsonObject obj, String property) {
@@ -795,10 +807,10 @@ AplicacaoResource extends BennuRestResource {
         String textoCurto = getRequiredValue(jsonElement.getAsJsonObject(), "textocurto");
         String textoLongo = getRequiredValue(jsonElement.getAsJsonObject(), "textolongo");
 
-        String de = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "dataentrega");
+        String de = getRequiredValueOrReturnNullInstead(jsonElement.getAsJsonObject(), "dataentrega");
         DateTime dataEntrega = getDatetime(de);
 
-        String callbackUrlEstadoEntrega = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "callbackurl");
+        String callbackUrlEstadoEntrega = getRequiredValueOrReturnNullInstead(jsonElement.getAsJsonObject(), "callbackurl");
 
         //try to create and send message
         Mensagem msg = verifyParamsAndCreateAMessage(app, canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, anexos);
@@ -920,9 +932,11 @@ AplicacaoResource extends BennuRestResource {
         }
     }
 
-    private String tryTogetRequiredValue(JsonObject obj, String property) {
+    private String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
         if (obj.has(property)) {
-            return obj.get(property).getAsString();
+            if (!obj.get(property).getAsString().isEmpty()) {
+                return obj.get(property).getAsString();
+            }
         }
         return null;
     }

@@ -27,10 +27,10 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
     public Aplicacao update(JsonElement jsonElement, Aplicacao app, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String name = getRequiredValue(jObj, "name");
-        String redirectUrl = tryTogetRequiredValue(jObj, "redirect_uri");
-        String description = tryTogetRequiredValue(jObj, "description");
-        String authorName = tryTogetRequiredValue(jObj, "author");
-        String siteUrl = tryTogetRequiredValue(jObj, "site_url");
+        String redirectUrl = getRequiredValueOrReturnNullInstead(jObj, "redirect_uri");
+        String description = getRequiredValueOrReturnNullInstead(jObj, "description");
+        String authorName = getRequiredValueOrReturnNullInstead(jObj, "author");
+        String siteUrl = getRequiredValueOrReturnNullInstead(jObj, "site_url");
         return app.updateAplicacao(name, redirectUrl, description, authorName, siteUrl);
     }
 
@@ -50,14 +50,18 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
 
     private String getRequiredValue(JsonObject obj, String property) {
         if (obj.has(property)) {
-            return obj.get(property).getAsString();
+            if (!obj.get(property).getAsString().isEmpty()) {
+                return obj.get(property).getAsString();
+            }
         }
         throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
     }
 
-    private String tryTogetRequiredValue(JsonObject obj, String property) {
+    private String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
         if (obj.has(property)) {
-            return obj.get(property).getAsString();
+            if (!obj.get(property).getAsString().isEmpty()) {
+                return obj.get(property).getAsString();
+            }
         }
         return null;
     }

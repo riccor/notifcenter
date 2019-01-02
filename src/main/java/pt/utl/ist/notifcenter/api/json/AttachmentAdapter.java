@@ -41,7 +41,9 @@ public class AttachmentAdapter implements JsonAdapter<Attachment> {
 
     private String getRequiredValue(JsonObject obj, String property) {
         if (obj.has(property)) {
-            return obj.get(property).getAsString();
+            if (!obj.get(property).getAsString().isEmpty()) {
+                return obj.get(property).getAsString();
+            }
         }
         throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!"); //"HTTP Status 412 - Não foi possível criar a entidade"
     }

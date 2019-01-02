@@ -32,12 +32,12 @@
 
 </head>
 
-<br><h2><b>Canais</b></h2><br/>
+<br><h2><b>Gestor de Canais</b></h2><br/>
 
 
 <div class="list-canais" id="div1">
 
-    <br><h3>Canais</h3></br>
+    <br><h3>Canais existentes</h3></br>
 
     <table id="table1" style="width: 100%, box-sizing: border-box">
         <tr>
@@ -63,7 +63,7 @@
 
 <div class="create-canal" id="div2">
 
-    <br><h3>Create channel</h3></br>
+    <br><h3>Adicionar novo canal</h3></br>
 
     <select id="select2" onchange="onSelect()">
         <option value="" selected disabled hidden>Channel Type</option>
@@ -107,7 +107,7 @@ function onSelect() {
 
             var h = document.createElement("INPUT");
             h.setAttribute("type", "HIDDEN");
-            h.setAttribute("name", "classType");
+            h.setAttribute("name", "channelType");
             h.setAttribute("value", key);
             temp.appendChild(h);
 
