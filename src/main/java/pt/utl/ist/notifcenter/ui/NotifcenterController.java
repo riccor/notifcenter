@@ -1,5 +1,6 @@
 package pt.utl.ist.notifcenter.ui;
 
+import com.google.common.base.Strings;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
@@ -129,7 +130,7 @@ public class NotifcenterController {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/postcanal", method = RequestMethod.POST)
+    @RequestMapping(value = "/canais") //, method = RequestMethod.POST)
     public String postCanal(Model model, HttpServletRequest request){
 
         if (!isUserLoggedIn()) {
@@ -140,9 +141,11 @@ public class NotifcenterController {
         checkIsUserValid(user);
         checkAdminPermissions(user);
 
-        //System.out.println("tipo: " + request.getParameter("channelType"));
+        //System.out.println("tipo: " + request.getParameter());
 
-        CanalResource.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
+        if (!Strings.isNullOrEmpty(request.getParameter("channelType"))) {
+            CanalResource.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
+        }
 
         ///model.addAttribute("world", "cheguei!");
         List<Canal> canais = new ArrayList<>(SistemaNotificacoes.getInstance().getCanaisSet());
@@ -152,6 +155,12 @@ public class NotifcenterController {
         return "notifcenter/canais";
     }
 
+
+    //TODO CRIAR EDIT CHANNEL!
+
+
+
+    /*
     @RequestMapping(value = "/canais")
     public String canais(Model model, HttpServletRequest request) {
 
@@ -170,6 +179,7 @@ public class NotifcenterController {
 
         return "notifcenter/canais";
     }
+    */
 
 }
 

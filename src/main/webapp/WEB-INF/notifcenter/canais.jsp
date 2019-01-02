@@ -72,7 +72,7 @@
         </c:forEach>
     </select>
 
-    <form id="form2" action="/notifcenter/notifcenter/postcanal" method="post">
+    <form id="form2" action="/notifcenter/notifcenter/canais" method="post">
     <%-- <form:form action="https://www.w3schools.com/action_page.php" method="get"> --%>
         <table id="table2"></table>
     <%-- </form:form> --%>
