@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.CanalResource;
 import pt.utl.ist.notifcenter.api.HTTPClient;
-import pt.utl.ist.notifcenter.domain.Attachment;
-import pt.utl.ist.notifcenter.domain.Canal;
-import pt.utl.ist.notifcenter.domain.Mensagem;
-import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
+import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
@@ -147,49 +144,61 @@ public class NotifcenterController {
             CanalResource.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
         }
 
-        ///model.addAttribute("world", "cheguei!");
-        List<Canal> canais = new ArrayList<>(SistemaNotificacoes.getInstance().getCanaisSet());
-        model.addAttribute("canais", canais);
+        model.addAttribute("canais", getChannelsParams());
         model.addAttribute("classes_canais", CanalResource.getAvailableChannelsNamesAndParams());
 
         return "notifcenter/canais";
     }
+
+    public String capitalizeFirstLetter(String input) {
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
+    }
+
+    public List<HashMap<String, String>> getChannelsParams() {
+
+        List<HashMap<String, String>> list = new ArrayList<>();
+
+        for (Canal c : SistemaNotificacoes.getInstance().getCanaisSet()) {
+
+            HashMap<String, String> map = new LinkedHashMap<>();
+            map.put("Type", c.getClass().getSimpleName());
+            map.put("Id", c.getExternalId());
+            map.put("Email", c.getEmail());
+
+            try {
+                AnotacaoCanal annotation = c.getClass().getAnnotation(AnotacaoCanal.class);
+
+                for (String key : annotation.classFields()) {
+                    String methodName = "get" + capitalizeFirstLetter(key);
+                    String value = (String) c.getClass().getMethod(methodName).invoke(c); //são sempre strings
+                    map.put(capitalizeFirstLetter(key), value);
+                }
+            }
+            catch (Exception e) {
+                System.out.println("error on getting a channel class param");
+            }
+
+            list.add(map);
+        }
+
+        return list;
+    }
+
 
 
     //TODO CRIAR EDIT CHANNEL!
 
 
 
-    /*
-    @RequestMapping(value = "/canais")
-    public String canais(Model model, HttpServletRequest request) {
-
-        if (!isUserLoggedIn()) {
-            return "redirect:/login?callback=" + request.getRequestURL();
-        }
-
-        User user = getAuthenticatedUser();
-        checkIsUserValid(user);
-        checkAdminPermissions(user);
-
-        List<Canal> canais = new ArrayList<>(SistemaNotificacoes.getInstance().getCanaisSet());
-        model.addAttribute("canais", canais);
-        model.addAttribute("classes_canais", CanalResource.getAvailableChannelsNamesAndParams());
-
-
-        return "notifcenter/canais";
-    }
-    */
-
 }
 
 
-        /*
-        for (Map.Entry<String, List<String>> a : CanalResource.getAvailableChannelsNamesAndParams().entrySet()) {
-            System.out.println(a.getKey());
+/*
+for (Map.Entry<String, List<String>> a : CanalResource.getAvailableChannelsNamesAndParams().entrySet()) {
+    System.out.println(a.getKey());
 
-            for (String c : a.getValue()) {
-                System.out.println(c);
-            }
-        }
-        */
+    for (String c : a.getValue()) {
+        System.out.println(c);
+    }
+}
+*/

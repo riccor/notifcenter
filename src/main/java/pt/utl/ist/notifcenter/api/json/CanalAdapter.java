@@ -7,6 +7,7 @@ import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.domain.Canal;
+import pt.utl.ist.notifcenter.utils.Utils;
 
 @DefaultJsonAdapter(Canal.class)
 public class CanalAdapter implements JsonAdapter<Canal> {
@@ -53,13 +54,13 @@ public class CanalAdapter implements JsonAdapter<Canal> {
             AnotacaoCanal annotation = obj.getClass().getAnnotation(AnotacaoCanal.class);
 
             for (String str : annotation.classFields()) {
-                String methodName = "get" + str.substring(0, 1).toUpperCase() + str.substring(1);
+                String methodName = "get" + Utils.capitalizeFirstLetter(str);
                 String value = (String) obj.getClass().getMethod(methodName).invoke(obj); //são sempre strings
                 jObj.addProperty(str, value);
             }
         }
         catch (Exception e) {
-            System.out.println("error on getting a channel class params");
+            System.out.println("error on getting a channel class param");
         }
 
         return jObj;

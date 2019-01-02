@@ -42,17 +42,22 @@
     <table id="table1" style="width: 100%, box-sizing: border-box">
         <tr>
             <th>Type</th>
+            <th>Id</th>
             <th>Email</th>
             <th colspan="5">Authentication parameters</th>
         </tr>
 
         <c:forEach var="canal" items="${canais}">
             <tr>
-                <td><c:out value="${canal.getClass().simpleName}"/></td>
-                <td><c:out value="${canal.email}"/></td>
-
-                <c:forEach var="entry" items="${canal.getParams()}">
-                    <td><b><c:out value="${entry.key}"/>:</b> <c:out value="${entry.value}"/></td>
+                <c:forEach var="entry" items="${canal}">
+                    <c:choose>
+                        <c:when test="${entry.key == 'Type' || entry.key == 'Email' || entry.key == 'Id'}">
+                            <td><c:out value="${entry.value}"/></td>
+                        </c:when>
+                        <c:otherwise>
+                            <td><b><c:out value="${entry.key}"/>:</b> <c:out value="${entry.value}"/></td>
+                        </c:otherwise>
+                    </c:choose>
                 </c:forEach>
             </tr>
         </c:forEach>
@@ -72,11 +77,9 @@
         </c:forEach>
     </select>
 
-    <form id="form2" action="/notifcenter/notifcenter/canais" method="post">
-    <%-- <form:form action="https://www.w3schools.com/action_page.php" method="get"> --%>
+    <form:form id="form2" action="/notifcenter/notifcenter/canais" method="post">
         <table id="table2"></table>
-    <%-- </form:form> --%>
-    </form>
+    </form:form>
 
 </div>
 

@@ -39,6 +39,9 @@ public class Utils {
         }
     }
 
+    public static String capitalizeFirstLetter(String input) {
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
+    }
 
     public static boolean isMapFilled(Map<String, String> propertiesMap) {
 

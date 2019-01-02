@@ -1,7 +1,5 @@
 package pt.utl.ist.notifcenter.domain;
 
-import java.util.HashMap;
-
 public class Mattermost extends Mattermost_Base {
     
     public Mattermost() {
@@ -13,8 +11,5 @@ public class Mattermost extends Mattermost_Base {
 
     }
 
-    public HashMap<String, String> getParams() {
-        return new HashMap<String, String>();
-    }
 
 }
