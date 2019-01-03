@@ -873,7 +873,7 @@ AplicacaoResource extends BennuRestResource {
         return msg;
     }
 
-    private <T> T getDomainObject(Class<T> clazz, String id) {
+    private static <T> T getDomainObject(Class<T> clazz, String id) {
         try {
             DomainObject dObj = FenixFramework.getDomainObject(id);
             T t = (T) dObj;

@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.CanalAdapter;
 import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
@@ -88,8 +89,7 @@ public class CanalResource extends BennuRestResource {
                 String name = clazz.getSimpleName(); //bd.getBeanClassName().substring(bd.getBeanClassName().lastIndexOf('.') + 1);
                 String[] params = annotation.classFields();
                 list.put(name, Arrays.asList(params));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.out.println("error on getting a channel class params");
             }
         }
@@ -113,7 +113,7 @@ public class CanalResource extends BennuRestResource {
         JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
-        for (Canal c: SistemaNotificacoes.getInstance().getCanaisSet()) {
+        for (Canal c : SistemaNotificacoes.getInstance().getCanaisSet()) {
             jArray.add(view(c, CanalAdapter.class));
         }
 

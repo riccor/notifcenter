@@ -2,10 +2,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <head>
-    <title>Notifcenter - Canais</title>
+    <title>Notifcenter - Channels</title>
 
     <style>
-
     #table1 {
       font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
       border-collapse: collapse;
@@ -32,12 +31,12 @@
 
 </head>
 
-<br><h2><b>Gestor de Canais</b></h2><br/>
+<body>
+<br><h2><b>Channel manager</b></h2><br/>
 
+<div class="list-channels" id="div1">
 
-<div class="list-canais" id="div1">
-
-    <br><h3>Canais existentes</h3></br>
+    <br><h3>Existing channels</h3></br>
 
     <table id="table1" style="width: 100%, box-sizing: border-box">
         <tr>
@@ -53,12 +52,23 @@
                     <c:choose>
                         <c:when test="${entry.key == 'Type' || entry.key == 'Email' || entry.key == 'Id'}">
                             <td><c:out value="${entry.value}"/></td>
+                            <c:if test="${entry.key == 'Id'}">
+                                <c:set var="id" value="${entry.value}"/>
+                            </c:if>
                         </c:when>
                         <c:otherwise>
                             <td><b><c:out value="${entry.key}"/>:</b> <c:out value="${entry.value}"/></td>
                         </c:otherwise>
                     </c:choose>
                 </c:forEach>
+                <td>
+                    <c:if test="${id != null}">
+                        <form action="/notifcenter/notifcenter/canais" onsubmit="return confirm('Do you really want to delete this channel?');" method="post">
+                            <input type="hidden" name="deleteChannel" value="<c:out value="${id}"/>">
+                            <input type="submit" value="Delete">
+                        </form>
+                    </c:if>
+                </td>
             </tr>
         </c:forEach>
     </table>
@@ -68,7 +78,7 @@
 
 <div class="create-canal" id="div2">
 
-    <br><h3>Adicionar novo canal</h3></br>
+    <br><h3>Add new channel</h3></br>
 
     <select id="select2" onchange="onSelect()">
         <option value="" selected disabled hidden>Channel Type</option>
@@ -77,7 +87,7 @@
         </c:forEach>
     </select>
 
-    <form:form id="form2" action="/notifcenter/notifcenter/canais" method="post">
+    <form:form id="form2" action="/notifcenter/notifcenter/canais" method="post" >
         <table id="table2"></table>
     </form:form>
 
@@ -153,3 +163,4 @@ function onSelect() {
 }
 
 </script>
+</body>

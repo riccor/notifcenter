@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.CanalResource;
 import pt.utl.ist.notifcenter.api.HTTPClient;
@@ -126,6 +127,17 @@ public class NotifcenterController {
         }
     }
 
+    private <T> T getDomainObject(Class<T> clazz, String id) {
+        try {
+            DomainObject dObj = FenixFramework.getDomainObject(id);
+            T t = (T) dObj;
+            return t;
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + id + " !");
+        }
+    }
+
     @SkipCSRF
     @RequestMapping(value = "/canais") //, method = RequestMethod.POST)
     public String postCanal(Model model, HttpServletRequest request){
@@ -142,6 +154,12 @@ public class NotifcenterController {
 
         if (!Strings.isNullOrEmpty(request.getParameter("channelType"))) {
             CanalResource.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
+        }
+        else if (!Strings.isNullOrEmpty(request.getParameter("deleteChannel"))) {
+            String id = request.getParameter("deleteChannel");
+            if (FenixFramework.isDomainObjectValid(getDomainObject(Canal.class, id))) {
+                getDomainObject(Canal.class, id).delete();
+            }
         }
 
         model.addAttribute("canais", getChannelsParams());
