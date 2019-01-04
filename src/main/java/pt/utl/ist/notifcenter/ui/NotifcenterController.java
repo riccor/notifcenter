@@ -161,6 +161,12 @@ public class NotifcenterController {
                 getDomainObject(Canal.class, id).delete();
             }
         }
+        else if (!Strings.isNullOrEmpty(request.getParameter("editChannel"))) {
+            String id = request.getParameter("editChannel");
+            if (FenixFramework.isDomainObjectValid(getDomainObject(Canal.class, id))) {
+                CanalResource.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), getDomainObject(Canal.class, id));
+            }
+        }
 
         model.addAttribute("canais", getChannelsParams());
         model.addAttribute("classes_canais", CanalResource.getAvailableChannelsNamesAndParams());
@@ -179,9 +185,9 @@ public class NotifcenterController {
         for (Canal c : SistemaNotificacoes.getInstance().getCanaisSet()) {
 
             HashMap<String, String> map = new LinkedHashMap<>();
-            map.put("Type", c.getClass().getSimpleName());
-            map.put("Id", c.getExternalId());
-            map.put("Email", c.getEmail());
+            map.put("type", c.getClass().getSimpleName());
+            map.put("id", c.getExternalId());
+            map.put("email", c.getEmail());
 
             try {
                 AnotacaoCanal annotation = c.getClass().getAnnotation(AnotacaoCanal.class);
@@ -189,7 +195,7 @@ public class NotifcenterController {
                 for (String key : annotation.classFields()) {
                     String methodName = "get" + capitalizeFirstLetter(key);
                     String value = (String) c.getClass().getMethod(methodName).invoke(c); //são sempre strings
-                    map.put(capitalizeFirstLetter(key), value);
+                    map.put(key, value);
                 }
             }
             catch (Exception e) {
@@ -201,11 +207,6 @@ public class NotifcenterController {
 
         return list;
     }
-
-
-
-    //TODO CRIAR EDIT CHANNEL!
-
 
 
 }

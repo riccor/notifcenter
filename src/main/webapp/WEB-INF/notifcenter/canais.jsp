@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
     <title>Notifcenter - Channels</title>
@@ -32,7 +33,7 @@
 </head>
 
 <body>
-<br><h2><b>Channel manager</b></h2><br/>
+<br><h2><b>Channels manager</b></h2><br/>
 
 <div class="list-channels" id="div1">
 
@@ -46,18 +47,34 @@
             <th colspan="5">Authentication parameters</th>
         </tr>
 
+        <c:set var="formPrefix" value="form-"/>
         <c:forEach var="canal" items="${canais}">
+
+            <c:if test="${id != null}">
+                 <c:remove var="id"/>
+            </c:if>
+
             <tr>
                 <c:forEach var="entry" items="${canal}">
                     <c:choose>
-                        <c:when test="${entry.key == 'Type' || entry.key == 'Email' || entry.key == 'Id'}">
+                        <c:when test="${entry.key == 'type' || entry.key == 'email' || entry.key == 'id'}">
                             <td><c:out value="${entry.value}"/></td>
-                            <c:if test="${entry.key == 'Id'}">
+                            <c:if test="${entry.key == 'id'}"> <%-- field id must come first --%>
                                 <c:set var="id" value="${entry.value}"/>
+                                <form id="<c:out value="${formPrefix}${entry.value}"/>" action="/notifcenter/notifcenter/canais" onsubmit="return confirm('Do you really want to edit this channel?');" method="post">
+                                    <input type="hidden" name="editChannel" value="<c:out value="${entry.value}"/>">
+                                </form>
                             </c:if>
                         </c:when>
                         <c:otherwise>
-                            <td><b><c:out value="${entry.key}"/>:</b> <c:out value="${entry.value}"/></td>
+                            <c:choose>
+                                <c:when test="${id != null}">
+                                    <td><b><c:out value="${entry.key}"/>:</b> <input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
+                                </c:when>
+                                <c:otherwise>
+                                    <td><b><c:out value="${entry.key}"/>:</b> <c:out value="${entry.value}"/></td>
+                                </c:otherwise>
+                            </c:choose>
                         </c:otherwise>
                     </c:choose>
                 </c:forEach>
@@ -67,6 +84,8 @@
                             <input type="hidden" name="deleteChannel" value="<c:out value="${id}"/>">
                             <input type="submit" value="Delete">
                         </form>
+
+                        <input type="submit" value="Update" form="<c:out value="${formPrefix}${id}"/>">
                     </c:if>
                 </td>
             </tr>

@@ -197,7 +197,7 @@ public class CanalResource extends BennuRestResource {
         }
     }
 
-    public Canal update2(JsonElement jsonElement, Canal canal /*, JsonBuilder ctx*/) {
+    public static Canal update2(JsonElement jsonElement, Canal canal /*, JsonBuilder ctx*/) {
         Class<?> clazz = canal.getClass();
         String[] params;
 
@@ -237,7 +237,7 @@ public class CanalResource extends BennuRestResource {
         throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!"); //"HTTP Status 412 - Não foi possível criar a entidade"
     }
 
-    private String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
+    private static String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
         if (obj.has(property)) {
             if (!obj.get(property).getAsString().isEmpty()) {
                 return obj.get(property).getAsString();
