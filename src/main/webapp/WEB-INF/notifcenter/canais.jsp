@@ -33,11 +33,11 @@
 </head>
 
 <body>
-<br><h2><b>Channels manager</b></h2><br/>
+<br><h2><b>Channels manager</b></h2>
 
 <div class="list-channels" id="div1">
 
-    <br><h3>Existing channels</h3></br>
+    <br><h3>Existing channels</h3>
 
     <table id="table1" style="width: 100%, box-sizing: border-box">
         <tr>
@@ -97,7 +97,7 @@
 
 <div class="create-canal" id="div2">
 
-    <br><h3>Add new channel</h3></br>
+    <br><h3>Add new channel</h3>
 
     <select id="select2" onchange="onSelect()">
         <option value="" selected disabled hidden>Channel Type</option>

@@ -6,8 +6,6 @@ import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
-import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
-import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 @DefaultJsonAdapter(User.class)
 public class UserAdapter implements JsonAdapter<User> {
@@ -35,13 +33,5 @@ public class UserAdapter implements JsonAdapter<User> {
         return jObj;
     }
 
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
-    }
 
 }

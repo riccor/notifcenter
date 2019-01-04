@@ -31,7 +31,7 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupnoti
         @ConfigurationProperty(key = "notifcenter.url", defaultValue = "localhost:8080/notifcenter")
         public String notifcenterUrl();
 
-        @ConfigurationProperty(key = "notifcenter.url.attachments", defaultValue = "localhost:8080/notifcenter/apiaplicacoes/attachments/")
+        @ConfigurationProperty(key = "notifcenter.url.attachments", defaultValue = "localhost:8080/notifcenter/mensagens/attachments/")
         public String notifcenterUrlForAttachments();
 
         //@ConfigurationProperty(key = "notifcenter.group.admin.name", defaultValue = "managers")

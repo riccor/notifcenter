@@ -5,9 +5,8 @@ import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
+import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.domain.Contacto;
-import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
-import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 @DefaultJsonAdapter(Contacto.class)
 public class ContactoAdapter implements JsonAdapter<Contacto> {
@@ -21,7 +20,7 @@ public class ContactoAdapter implements JsonAdapter<Contacto> {
     @Override
     public Contacto update(JsonElement jsonElement, Contacto contacto, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        String dadosContacto = getRequiredValue(jObj, "data");
+        String dadosContacto = UtilsResource.getRequiredValue(jObj, "data");
         return contacto.update(dadosContacto);
     }
 
@@ -35,13 +34,5 @@ public class ContactoAdapter implements JsonAdapter<Contacto> {
         return jObj;
     }
 
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
-    }
 
 }

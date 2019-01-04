@@ -1,18 +1,67 @@
 package pt.utl.ist.notifcenter.api;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.Authenticate;
+import org.springframework.util.MultiValueMap;
 import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class UtilsResource {
+
+    public static String getRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            if (!obj.get(property).getAsString().isEmpty()) {
+                return obj.get(property).getAsString();
+            }
+        }
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
+    }
+
+    public static String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            if (!obj.get(property).getAsString().isEmpty()) {
+                return obj.get(property).getAsString();
+            }
+        }
+        return null;
+    }
+
+    public static String getRequiredValueFromMultiValueMap(MultiValueMap<String, String> map, String key) {
+        List<String> value = map.get(key);
+        if (value != null) {
+            if (!value.get(0).isEmpty()) { //here we only return the first parameter found
+                return value.get(0);
+            }
+        }
+        throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + key + "!");
+    }
+
+    public static String[] getRequiredArrayValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            //Gson googleJson = new Gson();
+            //ArrayList<String> arrayList = googleJson.fromJson(obj.get(property).getAsJsonArray(), ArrayList.class);
+            ArrayList<String> arrayList = new ArrayList<>();
+            Iterator<JsonElement> i = obj.get(property).getAsJsonArray().iterator();
+
+            while (i.hasNext()) {
+                arrayList.add(i.next().getAsString());
+            }
+
+            return arrayList.toArray(new String[0]);
+        }
+        throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + property + "!");
+    }
+
 
     public static User getAuthenticatedUser() {
         return Authenticate.getUser();

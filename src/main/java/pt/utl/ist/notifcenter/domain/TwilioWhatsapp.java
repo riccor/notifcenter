@@ -14,6 +14,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.Atomic;
 import pt.utl.ist.notifcenter.api.HTTPClient;
+import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.utils.Utils;
 
 import java.util.*;
@@ -161,8 +162,8 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         HTTPClient.printResponseEntity(responseEntity);
 
         JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
-        String idExterno = getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "sid");
-        String estadoEntrega = getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "status");
+        String idExterno = UtilsResource.getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "sid");
+        String estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "status");
 
         //EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(canal, msg, contacto, idExterno, estadoEntrega);
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
@@ -173,15 +174,6 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         else {
             System.out.println("Success on sending message to " + edm.getContacto().getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
-    }
-
-    private static String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        return null;
     }
 
     /*OLD

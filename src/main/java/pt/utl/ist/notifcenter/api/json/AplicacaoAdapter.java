@@ -5,9 +5,8 @@ import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
+import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.domain.Aplicacao;
-import pt.utl.ist.notifcenter.utils.NotifcenterException;
-import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 
 @DefaultJsonAdapter(Aplicacao.class)
 public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
@@ -15,22 +14,22 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
     @Override
     public Aplicacao create(JsonElement jsonElement, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        String name = getRequiredValue(jObj, "name");
-        String redirectUrl = getRequiredValue(jObj, "redirect_uri");
-        String description = getRequiredValue(jObj, "description");
-        String authorName = getRequiredValue(jObj, "author");
-        String siteUrl = getRequiredValue(jObj, "site_url");
+        String name = UtilsResource.getRequiredValue(jObj, "name");
+        String redirectUrl = UtilsResource.getRequiredValue(jObj, "redirect_uri");
+        String description = UtilsResource.getRequiredValue(jObj, "description");
+        String authorName = UtilsResource.getRequiredValue(jObj, "author");
+        String siteUrl = UtilsResource.getRequiredValue(jObj, "site_url");
         return Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
     }
 
     @Override
     public Aplicacao update(JsonElement jsonElement, Aplicacao app, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        String name = getRequiredValue(jObj, "name");
-        String redirectUrl = getRequiredValueOrReturnNullInstead(jObj, "redirect_uri");
-        String description = getRequiredValueOrReturnNullInstead(jObj, "description");
-        String authorName = getRequiredValueOrReturnNullInstead(jObj, "author");
-        String siteUrl = getRequiredValueOrReturnNullInstead(jObj, "site_url");
+        String name = UtilsResource.getRequiredValue(jObj, "name");
+        String redirectUrl = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "redirect_uri");
+        String description = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "description");
+        String authorName = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "author");
+        String siteUrl = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "site_url");
         return app.updateAplicacao(name, redirectUrl, description, authorName, siteUrl);
     }
 
@@ -48,29 +47,12 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         return jObj;
     }
 
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
-    }
-
-    private String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        return null;
-    }
 
 }
 
 /*
-    ///not needed: app.setPermissoesAplicacao(getRequiredValue_AppPermissions(jObj));
-    protected AppPermissions getRequiredValue_AppPermissions(JsonObject obj) {
+    ///not needed: app.setPermissoesAplicacao(UtilsResource.getRequiredValue_AppPermissions(jObj));
+    protected AppPermissions UtilsResource.getRequiredValue_AppPermissions(JsonObject obj) {
         if (obj.has("permissions")) {
             String permissionsString = obj.get("permissions").getAsString();
 

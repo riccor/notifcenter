@@ -165,7 +165,7 @@ public class CanalResource extends BennuRestResource {
 
     //As seguintes funções não estão no ficheiro CanalAdapter.java porque se estivessem precisaria de adicionar nele a anotação @DefaultJsonAdapter cada vez que se adiciona uma nova classe de canal ao sistema
     public static Canal create2(JsonElement jsonElement /*, JsonBuilder ctx*/) {
-        String channelType = getRequiredValue(jsonElement.getAsJsonObject(), "channelType");
+        String channelType = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "channelType");
         Class<?> clazz;
         String[] params;
 
@@ -183,7 +183,7 @@ public class CanalResource extends BennuRestResource {
 
         Object[] methodArgs = new Object[params.length];
         for (int i = 0; i < params.length; i++) {
-            methodArgs[i] = getRequiredValue(jsonElement.getAsJsonObject(), params[i]);
+            methodArgs[i] = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), params[i]);
         }
 
         try {
@@ -214,7 +214,7 @@ public class CanalResource extends BennuRestResource {
 
         Object[] methodArgs = new Object[params.length];
         for (int i = 0; i < params.length; i++) {
-            methodArgs[i] = getRequiredValueOrReturnNullInstead(jsonElement.getAsJsonObject(), params[i]);
+            methodArgs[i] = UtilsResource.getRequiredValueOrReturnNullInstead(jsonElement.getAsJsonObject(), params[i]);
         }
 
         try {
@@ -226,24 +226,6 @@ public class CanalResource extends BennuRestResource {
             ///e.printStackTrace();
             throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Server could not update channel.");
         }
-    }
-
-    private static String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!"); //"HTTP Status 412 - Não foi possível criar a entidade"
-    }
-
-    private static String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        return null;
     }
 
 }

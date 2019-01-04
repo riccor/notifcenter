@@ -3,7 +3,7 @@
 //curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"param1":"value1"}'
 
 //OK5:
-//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/attachments/{fileId} //attachment is downloaded if user belongs to gruposDestinatarios of its message
+//GET http://{{DOMAIN}}:8080/notifcenter/mensagens/attachments/{fileId} //attachment is downloaded if user belongs to gruposDestinatarios of its message
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/attachments/{fileId}
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/{msg}/listattachments
 
@@ -656,8 +656,8 @@ public class AplicacaoResource extends BennuRestResource {
         ///TwilioWhatsapp
         //"MessageStatus":"delivered","MessageSid":"SM9f705525cc4143ef8dece27557549a5f"
         //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
-        String idExterno = getRequiredValueFromMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageSid");
-        String estadoEntrega = getRequiredValueFromMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageStatus");
+        String idExterno = UtilsResource.getRequiredValueFromMultiValueMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageSid");
+        String estadoEntrega = UtilsResource.getRequiredValueFromMultiValueMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageStatus");
         ///}
 
         for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
@@ -690,40 +690,8 @@ public class AplicacaoResource extends BennuRestResource {
         throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
     }
 
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + property + "!");
-    }
 
-    private String getRequiredValueFromMap(MultiValueMap<String, String> map, String key) {
-        List<String> value = map.get(key);
-        if (value != null) {
-            if (!value.get(0).isEmpty()) { //here we only return the first parameter found
-                return value.get(0);
-            }
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + key + "!");
-    }
 
-    private String[] getRequiredArrayValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            //Gson googleJson = new Gson();
-            //ArrayList<String> arrayList = googleJson.fromJson(obj.get(property).getAsJsonArray(), ArrayList.class);
-            ArrayList<String> arrayList = new ArrayList<>();
-            Iterator<JsonElement> i = obj.get(property).getAsJsonArray().iterator();
-
-            while (i.hasNext()) {
-                arrayList.add(i.next().getAsString());
-            }
-
-            return arrayList.toArray(new String[0]);
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + property + "!");
-    }
 
     @RequestMapping(value = "/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement getMessageStatus(/*@PathVariable("app") Aplicacao app,*/ @PathVariable("msg") Mensagem msg) {
@@ -795,20 +763,20 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         //extract message params from JsonElement:
-        String cn = getRequiredValue(jsonElement.getAsJsonObject(), "canalnotificacao");
+        String cn = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "canalnotificacao");
         CanalNotificacao canalNotificacao = UtilsResource.getDomainObject(CanalNotificacao.class, cn);
 
-        String[] gd = getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
+        String[] gd = UtilsResource.getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
         PersistentGroup[] gruposDestinatarios = UtilsResource.getDomainObjectsArray(PersistentGroup.class, gd).toArray(new PersistentGroup[0]);
 
-        String assunto = getRequiredValue(jsonElement.getAsJsonObject(), "assunto");
-        String textoCurto = getRequiredValue(jsonElement.getAsJsonObject(), "textocurto");
-        String textoLongo = getRequiredValue(jsonElement.getAsJsonObject(), "textolongo");
+        String assunto = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "assunto");
+        String textoCurto = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "textocurto");
+        String textoLongo = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "textolongo");
 
-        String de = getRequiredValueOrReturnNullInstead(jsonElement.getAsJsonObject(), "dataentrega");
+        String de = UtilsResource.getRequiredValueOrReturnNullInstead(jsonElement.getAsJsonObject(), "dataentrega");
         DateTime dataEntrega = getDatetime(de);
 
-        String callbackUrlEstadoEntrega = getRequiredValueOrReturnNullInstead(jsonElement.getAsJsonObject(), "callbackurl");
+        String callbackUrlEstadoEntrega = UtilsResource.getRequiredValueOrReturnNullInstead(jsonElement.getAsJsonObject(), "callbackurl");
 
         //try to create and send message
         Mensagem msg = verifyParamsAndCreateAMessage(app, canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, anexos);
@@ -902,66 +870,8 @@ public class AplicacaoResource extends BennuRestResource {
         }
     }
 
-    private String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        return null;
-    }
-
 
     //AGRUPAMENTO - attachments
-
-    private User getAuthenticatedUser() {
-        return Authenticate.getUser();
-    }
-
-    private boolean isUserLoggedIn() {
-        return Authenticate.isLogged();
-    }
-
-    @RequestMapping(value = "/attachments/{fileId}", method = RequestMethod.GET)
-    public HttpEntity<byte[]> downloadAttachment(@PathVariable("fileId") Attachment attachment) {
-
-        if (!isUserLoggedIn()) {
-            throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
-            ///return "redirect:/login?callback=" + request.getRequestURL();
-        }
-
-        User user = getAuthenticatedUser();
-
-        if (user == null || !FenixFramework.isDomainObjectValid(user)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
-        }
-
-        if (!FenixFramework.isDomainObjectValid(attachment)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ATTACHMENT_ERROR);
-        }
-
-        if (!attachment.isAccessible(user)) {
-            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_ATTACHMENT_ERROR);
-        }
-
-        //debug
-        /*
-        System.out.println("#############content key: "+ attachment.getContentKey());
-        System.out.println("#############checksum algorithm: "+ attachment.getChecksumAlgorithm());
-        System.out.println("#############checksum: "+ attachment.getChecksum());
-        */
-
-        byte[] fileContent = attachment.getContent();
-
-        HttpHeaders header = new HttpHeaders();
-        header.add("Content-Type", attachment.getContentType());
-        header.add("Content-Disposition", "attachment; filename=" + attachment.getDisplayName().replace(" ", "_"));
-        header.add("Content-Length", String.valueOf(fileContent.length));
-        ///header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + attachment.getDisplayName().replace(" ", "_"));
-        ///header.setContentLength(fileContent.length);
-
-        return new HttpEntity<>(fileContent, header);
-    }
 
     @RequestMapping(value = "/{app}/attachments/{fileId}", method = RequestMethod.GET)
     public HttpEntity<byte[]> downloadAttachmentApp(@PathVariable("app") Aplicacao app, @PathVariable("fileId") Attachment attachment) {
@@ -1604,8 +1514,8 @@ System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).colle
         System.out.println("####### got new notifcentercallback message!!");
         System.out.println(jObj.toString());
 
-        if((sid = getRequiredValue(jObj, "sid")) != null && (status = getRequiredValue(jObj, "MessageStatus")) != null) {
-            System.out.println("sid: " + sid + ", messsagestatus: " + status + ", MessageSid: " + getRequiredValue(jObj, "MessageSid") + ", AccountSid: " + getRequiredValue(jObj, "AccountSid"));
+        if((sid = UtilsResource.getRequiredValue(jObj, "sid")) != null && (status = UtilsResource.getRequiredValue(jObj, "MessageStatus")) != null) {
+            System.out.println("sid: " + sid + ", messsagestatus: " + status + ", MessageSid: " + UtilsResource.getRequiredValue(jObj, "MessageSid") + ", AccountSid: " + UtilsResource.getRequiredValue(jObj, "AccountSid"));
         }
         else {
             System.out.println("no sid and status");

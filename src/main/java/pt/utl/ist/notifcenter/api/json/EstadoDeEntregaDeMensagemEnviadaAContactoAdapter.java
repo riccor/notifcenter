@@ -6,8 +6,6 @@ import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import pt.utl.ist.notifcenter.domain.EstadoDeEntregaDeMensagemEnviadaAContacto;
-import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
-import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 @DefaultJsonAdapter(EstadoDeEntregaDeMensagemEnviadaAContacto.class)
 public class EstadoDeEntregaDeMensagemEnviadaAContactoAdapter implements JsonAdapter<EstadoDeEntregaDeMensagemEnviadaAContacto> {
@@ -33,15 +31,6 @@ public class EstadoDeEntregaDeMensagemEnviadaAContactoAdapter implements JsonAda
         jObj.addProperty("idExterno", obj.getIdExterno());
         jObj.addProperty("estadoEntrega", obj.getEstadoEntrega());
         return jObj;
-    }
-
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
     }
 
 }
