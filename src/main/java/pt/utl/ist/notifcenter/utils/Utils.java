@@ -1,6 +1,12 @@
 package pt.utl.ist.notifcenter.utils;
 
+import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.groups.DynamicGroup;
+import org.fenixedu.bennu.core.groups.Group;
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.springframework.util.CollectionUtils;
+import pt.ist.fenixframework.DomainObject;
+import pt.ist.fenixframework.FenixFramework;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +28,8 @@ public class Utils {
         return null;
     }
     */
+
+
 
     //might be useful ...or not:
     public static <E> void removeElementFromSet(java.util.Set<E> set, E element) {
@@ -108,3 +116,14 @@ public class Utils {
 
 
 }
+
+/*
+for (Map.Entry<String, List<String>> a : CanalResource.getAvailableChannelsNamesAndParams().entrySet()) {
+        System.out.println(a.getKey());
+
+        for (String c : a.getValue()) {
+        System.out.println(c);
+        }
+        }
+*/
+

@@ -165,13 +165,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api.aplicacoes")
-public class
-AplicacaoResource extends BennuRestResource {
+public class AplicacaoResource extends BennuRestResource {
 
     /*
     Numa API REST, neste caso o resource é aplicação, e queremos adicionar
@@ -798,10 +796,10 @@ AplicacaoResource extends BennuRestResource {
 
         //extract message params from JsonElement:
         String cn = getRequiredValue(jsonElement.getAsJsonObject(), "canalnotificacao");
-        CanalNotificacao canalNotificacao = getDomainObject(CanalNotificacao.class, cn);
+        CanalNotificacao canalNotificacao = UtilsResource.getDomainObject(CanalNotificacao.class, cn);
 
         String[] gd = getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
-        PersistentGroup[] gruposDestinatarios = getDomainObjectsArray(PersistentGroup.class, gd).toArray(new PersistentGroup[0]);
+        PersistentGroup[] gruposDestinatarios = UtilsResource.getDomainObjectsArray(PersistentGroup.class, gd).toArray(new PersistentGroup[0]);
 
         String assunto = getRequiredValue(jsonElement.getAsJsonObject(), "assunto");
         String textoCurto = getRequiredValue(jsonElement.getAsJsonObject(), "textocurto");
@@ -873,17 +871,6 @@ AplicacaoResource extends BennuRestResource {
         return msg;
     }
 
-    private static <T> T getDomainObject(Class<T> clazz, String id) {
-        try {
-            DomainObject dObj = FenixFramework.getDomainObject(id);
-            T t = (T) dObj;
-            return t;
-        }
-        catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + id + " !");
-        }
-    }
-
     /*
     private <T> List<T> getDomainObjectsArray(Class<T> clazz, String[] id) {
         int i = 0;
@@ -904,23 +891,6 @@ AplicacaoResource extends BennuRestResource {
         }
     }
     */
-
-    private <T> List<T> getDomainObjectsArray(Class<T> clazz, String[] id) {
-        ArrayList<T> al = new ArrayList<>();
-
-        for (String i : id) {
-            try {
-                DomainObject dObj = FenixFramework.getDomainObject(i);
-                T t = (T) dObj;
-                al.add(t);
-            }
-            catch (Exception e) {
-                throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + i + " !");
-            }
-        }
-
-        return al;
-    }
 
     private DateTime getDatetime(String dt) {
         try {

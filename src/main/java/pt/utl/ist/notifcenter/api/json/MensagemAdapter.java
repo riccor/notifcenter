@@ -54,7 +54,7 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         jObj.addProperty("dataEntrega", obj.getDataEntrega().toString("dd.MM.yyyy HH:mm:ss.SSS"));
         jObj.addProperty("callbackUrlEstadoEntrega", obj.getCallbackUrlEstadoEntrega());
         jObj.add("attachments", jArrayAttachments);
-        jObj.addProperty("link",NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/notifcenter/" + obj.getExternalId() + "/view");
+        jObj.addProperty("link",NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + obj.getExternalId());
 
         return jObj;
     }
