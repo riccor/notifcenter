@@ -1,21 +1,86 @@
 package pt.utl.ist.notifcenter.ui;
 
+import com.google.common.base.Strings;
+import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
+import pt.ist.fenixframework.FenixFramework;
+import pt.utl.ist.notifcenter.api.AplicacaoResource;
+import pt.utl.ist.notifcenter.api.HTTPClient;
+import pt.utl.ist.notifcenter.api.UtilsResource;
+import pt.utl.ist.notifcenter.domain.Aplicacao;
+import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 @RequestMapping("/aplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.ui.aplicacoes")
 public class AplicacoesController {
 
+    @SkipCSRF
     @RequestMapping
-    public String home(Model model) {
-        model.addAttribute("world", "aplicacoes");
-        return "notifcenter/home";
+    public String aplicacoes(Model model, HttpServletRequest request) {
+
+        if (!UtilsResource.isUserLoggedIn()) {
+            return "redirect:/login?callback=" + request.getRequestURL();
+        }
+
+        User user = UtilsResource.getAuthenticatedUser();
+        UtilsResource.checkIsUserValid(user);
+        UtilsResource.checkAdminPermissions(user);
+
+        if (!Strings.isNullOrEmpty(request.getParameter("createApp"))) {
+            AplicacaoResource.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
+        }
+        else if (!Strings.isNullOrEmpty(request.getParameter("deleteApp"))) {
+            String id = request.getParameter("deleteApp");
+            if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Aplicacao.class, id))) {
+                UtilsResource.getDomainObject(Aplicacao.class, id).delete();
+            }
+        }
+        else if (!Strings.isNullOrEmpty(request.getParameter("editApp"))) {
+            String id = request.getParameter("editApp");
+            if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Aplicacao.class, id))) {
+                AplicacaoResource.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Aplicacao.class, id));
+            }
+        }
+
+        model.addAttribute("aplicacoes", getExistingApps());
+        model.addAttribute("parametros_app", getApplicationParams());
+
+        return "notifcenter/aplicacoes";
+    }
+
+    public List<String> getApplicationParams() {
+        String[] params = {"name", "redirect_uri", "description", "author", "site_url"};
+        return Arrays.asList(params);
+    }
+
+    public List<HashMap<String, String>> getExistingApps() {
+
+        List<HashMap<String, String>> list = new ArrayList<>();
+
+        for (Aplicacao a : SistemaNotificacoes.getInstance().getAplicacoesSet()) {
+            HashMap<String, String> map = new LinkedHashMap<>();
+            map.put("name", a.getName());
+            map.put("id", a.getExternalId());
+            map.put("author", a.getAuthorName());
+            map.put("permissoes", a.getPermissoesAplicacao().name());
+            map.put("description", a.getDescription());
+            map.put("site_url", a.getSiteUrl());
+            map.put("redirect_uri", a.getRedirectUrl());
+            map.put("client_secret", a.getSecret());
+            list.add(map);
+        }
+
+        return list;
     }
 
     @ExceptionHandler({NotifcenterException.class})

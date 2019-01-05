@@ -6,6 +6,7 @@ import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
+import pt.utl.ist.notifcenter.utils.Utils;
 
 import java.util.List;
 import java.util.Map;
@@ -39,11 +40,6 @@ public class Aplicacao extends Aplicacao_Base {
 
     @Atomic
     public static Aplicacao createAplicacao(final String name, final String redirectUrl, final String description, final String authorName, final String siteUrl) {
-
-        if (findByAplicacaoName(name) != null) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR);
-        }
-
         Aplicacao app = new Aplicacao();
         app.setName(name);
         app.setRedirectUrl(redirectUrl);
@@ -58,52 +54,31 @@ public class Aplicacao extends Aplicacao_Base {
     }
 
     @Atomic
-    public Aplicacao setAppName(final String nome) {
-        this.setName(nome);
-        return this;
-    }
-
-    @Atomic
     public Aplicacao updateAplicacao(@Nullable final String name, @Nullable final String redirectUrl, @Nullable final String description, @Nullable final String authorName, @Nullable final String siteUrl) {
 
-        Aplicacao foundApp;
-
-        if (isValidString(name)) {
-            if ((foundApp = findByAplicacaoName(name)) != null) {
-                if (foundApp.equals(this)) {
-                    this.setName(name);
-                }
-                else{
-                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
-                }
-            }
-            else {
-                this.setName(name);
-            }
+        if (Utils.isValidString(name)) {
+            this.setName(name);
         }
 
-        if (isValidString(redirectUrl)) {
+        if (Utils.isValidString(redirectUrl)) {
             this.setRedirectUrl(redirectUrl);
         }
 
-        if (isValidString(description)) {
+        if (Utils.isValidString(description)) {
             this.setDescription(description);
         }
 
-        if (isValidString(authorName)) {
+        if (Utils.isValidString(authorName)) {
             this.setAuthorName(authorName);
         }
 
-        if (isValidString(siteUrl)) {
+        if (Utils.isValidString(siteUrl)) {
             this.setSiteUrl(siteUrl);
         }
 
         return this;
     }
 
-    public boolean isValidString(@Nullable String str) {
-        return (str != null && !str.isEmpty());
-    }
 
     @Atomic
     public Aplicacao setAppPermissions(final AppPermissions appPermissions) {

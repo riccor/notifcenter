@@ -1,5 +1,6 @@
 package pt.utl.ist.notifcenter.utils;
 
+import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.bennu.core.groups.Group;
@@ -29,7 +30,9 @@ public class Utils {
     }
     */
 
-
+    public static boolean isValidString(@Nullable String str) {
+        return (str != null && !str.isEmpty());
+    }
 
     //might be useful ...or not:
     public static <E> void removeElementFromSet(java.util.Set<E> set, E element) {

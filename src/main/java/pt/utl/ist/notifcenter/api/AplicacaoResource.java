@@ -12,14 +12,17 @@
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/listcanais
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/listclassescanais
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/281835753963522 (show canal)
-//POST {"channelType": "Messenger", "accountSID":"accountSID1", "authToken":"authToken1", "fromPhoneNumber":"fromPhoneNumber1", "uriaa":"uri2"} -> http://{{DOMAIN}}:8080/notifcenter/apicanais/addcanal
+//POST {"createChannel": "Messenger", "accountSID":"accountSID1", "authToken":"authToken1", "fromPhoneNumber":"fromPhoneNumber1", "uriaa":"uri2"} -> http://{{DOMAIN}}:8080/notifcenter/apicanais/addcanal
 
-
+//TODO
 //OK3:
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/addaplicacao?name=app_99&redirect_uri=http://app99_site.com/code&description=descricao_app99
+//POST {"name":"app_55", "description":"d5", "redirect_uri":"http://app55_site.com/code&description=descricao_app55", "author":"author1", "site_url": "siteurl1"} http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/addaplicacao2
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listaplicacoes
+
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715716/update?description=d1&name=n1&redirect_uri=r1&author=a1&site_urlTONULL=s1
 //POST {"description":"d2", "name":"n2", "redirect_uri":"r2", "author":"a2", "site_url": "s2"} http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715716/update2
+
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715716/delete
 
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714 (view app)
@@ -159,6 +162,7 @@ import pt.utl.ist.notifcenter.ui.NotifcenterController;
 import org.fenixedu.bennu.core.domain.User;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
+import pt.utl.ist.notifcenter.utils.Utils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -230,6 +234,40 @@ public class AplicacaoResource extends BennuRestResource {
 
     //AGRUPAMENTO: APLICACOES
 
+    //I can't access create() nor update() from AplicacoesController.java, so:
+    public static Aplicacao create2(JsonElement jsonElement) {
+        final JsonObject jObj = jsonElement.getAsJsonObject();
+        String name = UtilsResource.getRequiredValue(jObj, "name");
+
+        if (Aplicacao.findByAplicacaoName(name) != null) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
+        }
+
+        String redirectUrl = UtilsResource.getRequiredValue(jObj, "redirect_uri");
+        String description = UtilsResource.getRequiredValue(jObj, "description");
+        String authorName = UtilsResource.getRequiredValue(jObj, "author");
+        String siteUrl = UtilsResource.getRequiredValue(jObj, "site_url");
+        return Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
+    }
+
+    public static Aplicacao update2(JsonElement jsonElement, Aplicacao app) {
+        final JsonObject jObj = jsonElement.getAsJsonObject();
+        String name = UtilsResource.getRequiredValue(jObj, "name");
+
+        Aplicacao foundApp;
+        if ((foundApp = Aplicacao.findByAplicacaoName(name)) != null) {
+            if (!app.equals(foundApp)) {
+                throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
+            }
+        }
+
+        String redirectUrl = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "redirect_uri");
+        String description = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "description");
+        String authorName = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "author");
+        String siteUrl = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "site_url");
+        return app.updateAplicacao(name, redirectUrl, description, authorName, siteUrl);
+    }
+
     //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security
     //@SkipAccessTokenValidation //diz ao método preHandler em "NotifcenterInterceptor.java" para aceitar pedidos sem access_token
     @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
@@ -237,8 +275,8 @@ public class AplicacaoResource extends BennuRestResource {
     public JsonElement addAplicacao(@RequestParam(value = "description") String description,
                                @RequestParam(value = "name") String name,
                                @RequestParam(value = "redirect_uri") String redirectUrl,
-                               @RequestParam(value = "author", defaultValue = "none") String authorName,
-                               @RequestParam(value = "site_url", defaultValue = "none") String siteUrl) {
+                               @RequestParam(value = "author") String authorName,
+                               @RequestParam(value = "site_url") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
@@ -246,6 +284,13 @@ public class AplicacaoResource extends BennuRestResource {
 
         Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
         return view(app, AplicacaoAdapter.class);
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/addaplicacao2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addAplicacao2(@RequestBody JsonElement body) {
+
+        return view(create(body, Aplicacao.class), AplicacaoAdapter.class);
     }
 
     @RequestMapping(value = "/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -269,6 +314,13 @@ public class AplicacaoResource extends BennuRestResource {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        Aplicacao foundApp;
+        if ((foundApp = Aplicacao.findByAplicacaoName(name)) != null) {
+            if (!app.equals(foundApp)) {
+                throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
+            }
         }
 
         return view(app.updateAplicacao(name, redirectUrl, description, authorName, siteUrl), AplicacaoAdapter.class);

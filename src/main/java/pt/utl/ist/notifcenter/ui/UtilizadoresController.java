@@ -13,7 +13,7 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 public class UtilizadoresController {
 
     @RequestMapping
-    public String home(Model model) {
+    public String utilizadores(Model model) {
         model.addAttribute("world", "utilizadores");
         return "notifcenter/home";
     }

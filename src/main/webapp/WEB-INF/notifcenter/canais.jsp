@@ -59,7 +59,7 @@
                     <c:choose>
                         <c:when test="${entry.key == 'type' || entry.key == 'email' || entry.key == 'id'}">
                             <td><c:out value="${entry.value}"/></td>
-                            <c:if test="${entry.key == 'id'}"> <%-- field id must come first --%>
+                            <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingChannels() --%>
                                 <c:set var="id" value="${entry.value}"/>
                                 <form id="<c:out value="${formPrefix}${entry.value}"/>" action="/notifcenter/notifcenter/canais" onsubmit="return confirm('Do you really want to edit this channel?');" method="post">
                                     <input type="hidden" name="editChannel" value="<c:out value="${entry.value}"/>">
@@ -68,7 +68,7 @@
                         </c:when>
                         <c:otherwise>
                             <c:choose>
-                                <c:when test="${id != null}">
+                                <c:when test="${id != null}"> <%-- robustness --%>
                                     <td><b><c:out value="${entry.key}"/>:</b> <input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
                                 </c:when>
                                 <c:otherwise>
@@ -79,7 +79,7 @@
                     </c:choose>
                 </c:forEach>
                 <td>
-                    <c:if test="${id != null}">
+                    <c:if test="${id != null}"> <%-- robustness --%>
                         <form action="/notifcenter/notifcenter/canais" onsubmit="return confirm('Do you really want to delete this channel?');" method="post">
                             <input type="hidden" name="deleteChannel" value="<c:out value="${id}"/>">
                             <input type="submit" value="Delete">
@@ -139,7 +139,7 @@ function onSelect() {
 
             var h = document.createElement("INPUT");
             h.setAttribute("type", "HIDDEN");
-            h.setAttribute("name", "channelType");
+            h.setAttribute("name", "createChannel");
             h.setAttribute("value", key);
             temp.appendChild(h);
 

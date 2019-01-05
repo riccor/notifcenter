@@ -29,7 +29,7 @@ import java.util.List;
 public class MensagensController {
 
     @RequestMapping
-    public String home(Model model) {
+    public String mensagens(Model model) {
         model.addAttribute("world", "mensagens");
         return "notifcenter/home";
     }

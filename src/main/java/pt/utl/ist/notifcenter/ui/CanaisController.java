@@ -43,7 +43,7 @@ public class CanaisController {
 
         //System.out.println("tipo: " + request.getParameter());
 
-        if (!Strings.isNullOrEmpty(request.getParameter("channelType"))) {
+        if (!Strings.isNullOrEmpty(request.getParameter("createChannel"))) {
             CanalResource.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
         }
         else if (!Strings.isNullOrEmpty(request.getParameter("deleteChannel"))) {
@@ -59,7 +59,7 @@ public class CanaisController {
             }
         }
 
-        model.addAttribute("canais", getChannelsParams());
+        model.addAttribute("canais", getExistingChannels());
         model.addAttribute("classes_canais", CanalResource.getAvailableChannelsNamesAndParams());
 
         return "notifcenter/canais";
@@ -78,8 +78,8 @@ public class CanaisController {
         }
     }
 
-    //lists params needed to create a new channel
-    public List<HashMap<String, String>> getChannelsParams() {
+    //returns a list of hashmaps with channels names and respective params
+    public List<HashMap<String, String>> getExistingChannels() {
 
         List<HashMap<String, String>> list = new ArrayList<>();
 

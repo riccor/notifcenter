@@ -7,7 +7,6 @@ import pt.ist.fenixframework.Atomic;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 
 public class Attachment extends Attachment_Base {
 

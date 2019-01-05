@@ -66,7 +66,7 @@ public class CanalResource extends BennuRestResource {
             });
 
             JsonObject jO = new JsonObject();
-            jO.addProperty("channelType", k);
+            jO.addProperty("createChannel", k);
             jO.add("params", jA);
 
             jArray.add(jO);
@@ -165,7 +165,7 @@ public class CanalResource extends BennuRestResource {
 
     //As seguintes funções não estão no ficheiro CanalAdapter.java porque se estivessem precisaria de adicionar nele a anotação @DefaultJsonAdapter cada vez que se adiciona uma nova classe de canal ao sistema
     public static Canal create2(JsonElement jsonElement /*, JsonBuilder ctx*/) {
-        String channelType = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "channelType");
+        String channelType = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "createChannel");
         Class<?> clazz;
         String[] params;
 
