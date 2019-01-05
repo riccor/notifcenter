@@ -252,7 +252,7 @@ public class AplicacaoResource extends BennuRestResource {
 
     public static Aplicacao update2(JsonElement jsonElement, Aplicacao app) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        String name = UtilsResource.getRequiredValue(jObj, "name");
+        String name = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "name");
 
         Aplicacao foundApp;
         if ((foundApp = Aplicacao.findByAplicacaoName(name)) != null) {

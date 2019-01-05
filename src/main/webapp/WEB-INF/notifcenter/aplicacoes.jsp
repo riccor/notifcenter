@@ -48,6 +48,7 @@
             <th>Site_url</th>
             <th>Redirect_uri</th>
             <th>Client_secret</th>
+            <th>Actions</th>
         </tr>
 
         <c:set var="formPrefix" value="form-"/>
@@ -68,7 +69,7 @@
                     </c:if>
 
                     <c:choose>
-                        <c:when test="${id != null}"> <%-- robustness --%>
+                        <c:when test="${id != null && entry.key != 'id' && entry.key != 'client_secret'}"> <%-- robustness AND disallow edit clientId and client_secret edition  --%>
                             <td><input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
                         </c:when>
                         <c:otherwise>
@@ -96,6 +97,10 @@
 
 <div class="create-app" id="div2">
     <br><h3>Add new application</h3>
+
+<c:forEach var="param" items="${parametros_app}">
+    <br><c:out value="${param}"/>
+ </c:forEach>
 
     <form:form id="form2" action="/notifcenter/notifcenter/aplicacoes" method="post" >
         <table id="table2">

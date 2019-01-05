@@ -34,7 +34,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
     @Override
     public Aplicacao update(JsonElement jsonElement, Aplicacao app, JsonBuilder ctx) {
         /*final JsonObject jObj = jsonElement.getAsJsonObject();
-        String name = UtilsResource.getRequiredValue(jObj, "name");
+        String name = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "name");
 
         Aplicacao foundApp;
         if ((foundApp = Aplicacao.findByAplicacaoName(name)) != null) {

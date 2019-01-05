@@ -14,6 +14,7 @@ import pt.utl.ist.notifcenter.api.AplicacaoResource;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.domain.Aplicacao;
+import pt.utl.ist.notifcenter.domain.AppPermissions;
 import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
@@ -49,6 +50,15 @@ public class AplicacoesController {
             String id = request.getParameter("editApp");
             if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Aplicacao.class, id))) {
                 AplicacaoResource.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Aplicacao.class, id));
+
+                //app permissions can only be changed here (not in update2())
+                if (!Strings.isNullOrEmpty(request.getParameter("permissoes"))) {
+                    String permissions = request.getParameter("permissoes");
+
+                    if (AppPermissions.getAppPermissionsFromString(permissions) != null) {
+                        UtilsResource.getDomainObject(Aplicacao.class, id).setAppPermissions(AppPermissions.getAppPermissionsFromString(permissions));
+                    }
+                }
             }
         }
 
