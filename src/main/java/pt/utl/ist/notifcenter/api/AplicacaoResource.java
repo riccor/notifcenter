@@ -345,6 +345,11 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
+        //TODO: what to do with RREQUIRES_APPROVAL case?
+        if(!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL) ) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
+        }
+
         JsonObject jObj = new JsonObject();
         jObj.add("deleted_app", view(app, AplicacaoAdapter.class));
 
@@ -467,6 +472,7 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION_ERROR, "Remetente " + remetente.getExternalId() + " already contains group " + group.getExternalId() + "!");
         }
 
+        //TODO: what to do with RREQUIRES_APPROVAL case?
         if(!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL) ) {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
         }
@@ -497,6 +503,11 @@ public class AplicacaoResource extends BennuRestResource {
 
         if (!remetente.getGruposSet().contains(group)) {
             throw new NotifcenterException(ErrorsAndWarnings.NON_EXISTING_RELATION, "Remetente " + remetente.getExternalId() + " does not have group id " + group.getExternalId() + " permissions!");
+        }
+
+        //TODO: what to do with RREQUIRES_APPROVAL case?
+        if(!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL) ) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
         }
 
         remetente.removeGroupToSendMesssages(group);

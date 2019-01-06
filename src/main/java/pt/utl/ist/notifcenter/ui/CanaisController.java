@@ -86,8 +86,8 @@ public class CanaisController {
         for (Canal c : SistemaNotificacoes.getInstance().getCanaisSet()) {
 
             HashMap<String, String> map = new LinkedHashMap<>();
-            map.put("type", c.getClass().getSimpleName());
             map.put("id", c.getExternalId());
+            map.put("type", c.getClass().getSimpleName());
             map.put("email", c.getEmail());
 
             try {

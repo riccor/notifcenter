@@ -38,7 +38,16 @@ public class AplicacoesController {
         UtilsResource.checkAdminPermissions(user);
 
         if (!Strings.isNullOrEmpty(request.getParameter("createApp"))) {
-            AplicacaoResource.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
+            Aplicacao newApp = AplicacaoResource.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
+
+            //app permissions can only be changed here (not in create2())
+            if (!Strings.isNullOrEmpty(request.getParameter("permissoes"))) {
+                String permissions = request.getParameter("permissoes");
+
+                if (AppPermissions.getAppPermissionsFromString(permissions) != null) {
+                    newApp.setAppPermissions(AppPermissions.getAppPermissionsFromString(permissions));
+                }
+            }
         }
         else if (!Strings.isNullOrEmpty(request.getParameter("deleteApp"))) {
             String id = request.getParameter("deleteApp");
@@ -63,14 +72,10 @@ public class AplicacoesController {
         }
 
         model.addAttribute("aplicacoes", getExistingApps());
-        model.addAttribute("parametros_app", getApplicationParams());
+        model.addAttribute("parametros_app", new String[]{"name", "redirect_uri", "description", "author", "site_url"});
+        model.addAttribute("app_permissions_values", AppPermissions.values());
 
         return "notifcenter/aplicacoes";
-    }
-
-    public List<String> getApplicationParams() {
-        String[] params = {"name", "redirect_uri", "description", "author", "site_url"};
-        return Arrays.asList(params);
     }
 
     public List<HashMap<String, String>> getExistingApps() {
@@ -79,8 +84,8 @@ public class AplicacoesController {
 
         for (Aplicacao a : SistemaNotificacoes.getInstance().getAplicacoesSet()) {
             HashMap<String, String> map = new LinkedHashMap<>();
-            map.put("name", a.getName());
             map.put("id", a.getExternalId());
+            map.put("name", a.getName());
             map.put("author", a.getAuthorName());
             map.put("permissoes", a.getPermissoesAplicacao().name());
             map.put("description", a.getDescription());

@@ -41,10 +41,11 @@
 
     <table id="table1" style="width: 100%, box-sizing: border-box">
         <tr>
-            <th>Type</th>
             <th>Id</th>
+            <th>Type</th>
             <th>Email</th>
-            <th colspan="5">Authentication parameters</th>
+            <th colspan="4">Authentication parameters</th>
+            <th>Actions</th>
         </tr>
 
         <c:set var="formPrefix" value="form-"/>

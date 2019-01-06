@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
     <title>Notifcenter - Applications</title>
@@ -40,8 +41,8 @@
 
     <table id="table1" style="width: 100%, box-sizing: border-box">
         <tr>
-            <th>Name</th>
             <th>ClientId</th>
+            <th>Name</th>
             <th>Author</th>
             <th>Permissions</th>
             <th>Description</th>
@@ -70,7 +71,27 @@
 
                     <c:choose>
                         <c:when test="${id != null && entry.key != 'id' && entry.key != 'client_secret'}"> <%-- robustness AND disallow edit clientId and client_secret edition  --%>
-                            <td><input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
+                            <c:choose>
+                                <c:when test="${entry.key == 'permissoes'}">
+                                    <td>
+                                        <select name="permissoes" form="<c:out value="${formPrefix}${id}"/>">
+                                            <c:forEach var="app_permissions_value" items="${app_permissions_values}">
+                                                <c:choose>
+                                                    <c:when test="${app_permissions_value == entry.value}">
+                                                        <option selected="selected" value="<c:out value="${app_permissions_value}"/>"><c:out value="${app_permissions_value}"/></option>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <option value="<c:out value="${app_permissions_value}"/>"><c:out value="${app_permissions_value}"/></option>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:forEach>
+                                        </select>
+                                    </td>
+                                </c:when>
+                                <c:otherwise>
+                                    <td><input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
+                                </c:otherwise>
+                            </c:choose>
                         </c:when>
                         <c:otherwise>
                             <td><c:out value="${entry.value}"/></td>
@@ -98,18 +119,22 @@
 <div class="create-app" id="div2">
     <br><h3>Add new application</h3>
 
-<c:forEach var="param" items="${parametros_app}">
-    <br><c:out value="${param}"/>
- </c:forEach>
-
     <form:form id="form2" action="/notifcenter/notifcenter/aplicacoes" method="post" >
         <table id="table2">
-            <c:forEach var="param" items="${parametros_app}">
+            <c:forEach var="parapp" items="${parametros_app}">
                 <tr>
-                    <td><c:out value="${param}"/></td>
-                    <td><input type="text" name="<c:out value="${param}"/>" value=""></td>
+                    <td><c:out value="${fn:toUpperCase(fn:substring(parapp, 0, 1))}${fn:substring(parapp, 1, fn:length(parapp))}"/>:</td>
+                    <td><input type="text" name="<c:out value="${parapp}"/>" value=""></td>
                 </tr>
             </c:forEach>
+            <td>Permissions:</td>
+            <td>
+                <select name="permissoes">
+                    <c:forEach var="app_permissions_value" items="${app_permissions_values}">
+                        <option value="<c:out value="${app_permissions_value}"/>"><c:out value="${app_permissions_value}"/></option>
+                    </c:forEach>
+                </select>
+            </td>
         </table>
         <input type="hidden" name="createApp" value="does_not_matter">
         <input type="submit" value="Create">
