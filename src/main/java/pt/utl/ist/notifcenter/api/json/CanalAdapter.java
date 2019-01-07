@@ -8,39 +8,20 @@ import org.fenixedu.bennu.core.json.JsonBuilder;
 import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.domain.Canal;
 import pt.utl.ist.notifcenter.utils.Utils;
+import pt.utl.ist.notifcenter.api.CanalResource;
 
 @DefaultJsonAdapter(Canal.class)
 public class CanalAdapter implements JsonAdapter<Canal> {
 
     @Override
     public Canal create(JsonElement jsonElement, JsonBuilder ctx) {
-        return null;
+        return CanalResource.create2(jsonElement);
     }
 
     @Override
     public Canal update(JsonElement jsonElement, Canal canal, JsonBuilder ctx) {
-        return null;
+        return CanalResource.update2(jsonElement, canal);
     }
-
-    /* ///JsonObject jO = getJsonFromPa(obj.getClass());
-    public JsonObject getJsonFromPa(Class<? extends Canal> clazz) {
-        AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
-        //String name = annotation.name();
-        String name = clazz.getSimpleName(); //bd.getBeanClassName().substring(bd.getBeanClassName().lastIndexOf('.') + 1);
-        String[] params = annotation.creatingParams();
-
-        JsonObject jO = new JsonObject();
-        JsonArray jA = new JsonArray();
-
-        for (String s : params) {
-            jA.add(s);
-        }
-
-        jO.addProperty("name", name);
-        jO.add("params", jA);
-
-        return jO;
-    }*/
 
     @Override
     public JsonElement view(Canal obj, JsonBuilder ctx) {
@@ -55,7 +36,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
 
             for (String str : annotation.classFields()) {
                 String methodName = "get" + Utils.capitalizeFirstLetter(str);
-                String value = (String) obj.getClass().getMethod(methodName).invoke(obj); //são sempre strings
+                String value = (String) obj.getClass().getMethod(methodName).invoke(obj); //always strings
                 jObj.addProperty(str, value);
             }
         }
@@ -66,10 +47,5 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         return jObj;
     }
 
-}
 
-/*
-    private <T> T castToSpecificChannel(Class<T> clazz, Canal canal) {
-        return (T) canal;
-    }
-*/
+}

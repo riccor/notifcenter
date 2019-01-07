@@ -6,6 +6,7 @@ import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import pt.utl.ist.notifcenter.api.UtilsResource;
+import pt.utl.ist.notifcenter.domain.Aplicacao;
 import pt.utl.ist.notifcenter.domain.Remetente;
 
 @DefaultJsonAdapter(Remetente.class)
@@ -13,13 +14,10 @@ public class RemetenteAdapter implements JsonAdapter<Remetente> {
 
     @Override
     public Remetente create(JsonElement jsonElement, JsonBuilder ctx) {
-        /*
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        Aplicacao app = getRequiredValue(jObj, "app");
-        String name = getRequiredValue(jObj, "name");
+        Aplicacao app = UtilsResource.getDomainObject(Aplicacao.class, UtilsResource.getRequiredValue(jObj, "app"));
+        String name = UtilsResource.getRequiredValue(jObj, "name");
         return Remetente.createRemetente(app, name);
-        */
-        return null;
     }
 
     @Override

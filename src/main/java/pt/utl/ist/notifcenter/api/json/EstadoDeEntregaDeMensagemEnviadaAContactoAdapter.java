@@ -12,13 +12,11 @@ public class EstadoDeEntregaDeMensagemEnviadaAContactoAdapter implements JsonAda
 
     @Override
     public EstadoDeEntregaDeMensagemEnviadaAContacto create(JsonElement jsonElement, JsonBuilder ctx) {
-
         return null;
     }
 
     @Override
     public EstadoDeEntregaDeMensagemEnviadaAContacto update(JsonElement jsonElement, EstadoDeEntregaDeMensagemEnviadaAContacto EstadoDeEntregaDeMensagemEnviadaAContacto, JsonBuilder ctx) {
-
         return null;
     }
 
@@ -32,5 +30,6 @@ public class EstadoDeEntregaDeMensagemEnviadaAContactoAdapter implements JsonAda
         jObj.addProperty("estadoEntrega", obj.getEstadoEntrega());
         return jObj;
     }
+
 
 }

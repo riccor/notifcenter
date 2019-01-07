@@ -44,27 +44,23 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
     @Atomic
     public TwilioWhatsapp updateChannel(@Nullable final String accountSID, @Nullable final String authToken, @Nullable final String fromPhoneNumber, @Nullable final String uri) {
 
-        if (isValidString(accountSID)) {
+        if (Utils.isValidString(accountSID)) {
             this.setAccountSID(accountSID);
         }
 
-        if (isValidString(authToken)) {
+        if (Utils.isValidString(authToken)) {
             this.setAuthToken(authToken);
         }
 
-        if (isValidString(fromPhoneNumber)) {
+        if (Utils.isValidString(fromPhoneNumber)) {
             this.setFromPhoneNumber(fromPhoneNumber);
         }
 
-        if (isValidString(uri)) {
+        if (Utils.isValidString(uri)) {
             this.setUri(uri);
         }
 
         return this;
-    }
-
-    public boolean isValidString(@Nullable String str) {
-        return (str != null && !str.isEmpty());
     }
 
     public static TwilioWhatsapp createTwilioWhatsappFromPropertiesFile(final String file) {

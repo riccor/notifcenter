@@ -162,9 +162,7 @@ public class CanalResource extends BennuRestResource {
         }
     }
 
-
-    //As seguintes funções não estão no ficheiro CanalAdapter.java porque se estivessem precisaria de adicionar nele a anotação @DefaultJsonAdapter cada vez que se adiciona uma nova classe de canal ao sistema
-    public static Canal create2(JsonElement jsonElement /*, JsonBuilder ctx*/) {
+    public static Canal create2(JsonElement jsonElement) {
         String channelType = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "createChannel");
         Class<?> clazz;
         String[] params;
@@ -178,7 +176,7 @@ public class CanalResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_NAME_ERROR);
         }
 
-        Class[] args = new Class[params.length]; //sempre strings
+        Class[] args = new Class[params.length]; //always strings
         Arrays.fill(args, String.class);
 
         Object[] methodArgs = new Object[params.length];
@@ -197,7 +195,7 @@ public class CanalResource extends BennuRestResource {
         }
     }
 
-    public static Canal update2(JsonElement jsonElement, Canal canal /*, JsonBuilder ctx*/) {
+    public static Canal update2(JsonElement jsonElement, Canal canal) {
         Class<?> clazz = canal.getClass();
         String[] params;
 
@@ -209,7 +207,7 @@ public class CanalResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Such class is not identified as a channel.");
         }
 
-        Class[] args = new Class[params.length]; //sempre strings
+        Class[] args = new Class[params.length]; //always strings
         Arrays.fill(args, String.class);
 
         Object[] methodArgs = new Object[params.length];
@@ -227,5 +225,6 @@ public class CanalResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Server could not update channel.");
         }
     }
+
 
 }

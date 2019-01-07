@@ -60,7 +60,7 @@
 //GET http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879236 ///{utilizador}/{contacto}
 //POST http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879234/delete
 //POST http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879236/update
-//POST {"data":"novos_dados"} http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879236/update2
+//POST {"dados":"novos_dados"} http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879236/update2
 
 
 
@@ -414,9 +414,7 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
-        remetente.update(name);
-
-        return view(remetente, RemetenteAdapter.class);
+        return view(remetente.update(name), RemetenteAdapter.class);
     }
 
     @SkipCSRF

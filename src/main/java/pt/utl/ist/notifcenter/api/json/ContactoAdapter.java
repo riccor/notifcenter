@@ -3,6 +3,7 @@ package pt.utl.ist.notifcenter.api.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import pt.utl.ist.notifcenter.api.UtilsResource;
@@ -13,14 +14,16 @@ public class ContactoAdapter implements JsonAdapter<Contacto> {
 
     @Override
     public Contacto create(JsonElement jsonElement, JsonBuilder ctx) {
-
-        return null;
+        final JsonObject jObj = jsonElement.getAsJsonObject();
+        User utilizador = UtilsResource.getDomainObject(User.class, UtilsResource.getRequiredValue(jObj, "app"));
+        String dadosContacto = UtilsResource.getRequiredValue(jObj, "dados");
+        return Contacto.createContacto(utilizador, dadosContacto);
     }
 
     @Override
     public Contacto update(JsonElement jsonElement, Contacto contacto, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        String dadosContacto = UtilsResource.getRequiredValue(jObj, "data");
+        String dadosContacto = UtilsResource.getRequiredValue(jObj, "dados");
         return contacto.update(dadosContacto);
     }
 

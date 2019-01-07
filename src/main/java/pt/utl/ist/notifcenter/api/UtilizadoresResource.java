@@ -97,8 +97,24 @@ public class UtilizadoresResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/{utilizador}/{contacto}/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement deleteContacto(@PathVariable("utilizador") User utilizador, @PathVariable(value = "contacto") Contacto contacto,
+    @RequestMapping(value = "/{utilizador}/{contacto}/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement updateContacto(@PathVariable("utilizador") User utilizador, @PathVariable(value = "contacto") Contacto contacto,
+                                       @RequestParam(value = "dados") String dados) {
+
+        if (!FenixFramework.isDomainObjectValid(utilizador)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(contacto) || !utilizador.getContactosSet().contains(contacto)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CONTACT_ERROR);
+        }
+
+        return view(contacto.update(dados), ContactoAdapter.class);
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{utilizador}/{contacto}/update2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement updateContacto2(@PathVariable("utilizador") User utilizador, @PathVariable(value = "contacto") Contacto contacto,
                                       @RequestBody JsonElement body) {
 
         if (!FenixFramework.isDomainObjectValid(utilizador)) {
@@ -110,24 +126,6 @@ public class UtilizadoresResource extends BennuRestResource {
         }
 
         return view(update(body, contacto, ContactoAdapter.class), ContactoAdapter.class);
-    }
-
-    @SkipCSRF
-    @RequestMapping(value = "/{utilizador}/{contacto}/update2", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement deleteContacto2(@PathVariable("utilizador") User utilizador, @PathVariable(value = "contacto") Contacto contacto,
-                                       @RequestParam(value = "data") String dados) {
-
-        if (!FenixFramework.isDomainObjectValid(utilizador)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
-        }
-
-        if (!FenixFramework.isDomainObjectValid(contacto) || !utilizador.getContactosSet().contains(contacto)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CONTACT_ERROR);
-        }
-
-        contacto.update(dados);
-
-        return view(contacto, ContactoAdapter.class);
     }
 
     @RequestMapping(value = "/{utilizador}/{contacto}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

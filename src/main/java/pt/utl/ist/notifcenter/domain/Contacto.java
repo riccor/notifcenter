@@ -56,4 +56,5 @@ public class Contacto extends Contacto_Base {
         this.deleteDomainObject();
     }
 
+
 }

@@ -18,7 +18,6 @@ public class AttachmentAdapter implements JsonAdapter<Attachment> {
 
     @Override
     public Attachment update(JsonElement jsonElement, Attachment Attachment, JsonBuilder ctx) {
-
         return null;
     }
 

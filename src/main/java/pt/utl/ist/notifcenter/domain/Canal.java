@@ -15,7 +15,7 @@ public abstract class Canal extends Canal_Base {
     ///
     /*
     @Atomic
-    public static Canal createCanal(final String email, final String password) {
+    public static Canal createChannel(final String email, final String password) {
         Canal canal = new Canal();
         canal.setEmail(email);
         canal.setPassword(password);

@@ -15,19 +15,16 @@ public class PersistentGroupAdapter implements JsonAdapter<PersistentGroup> {
 
     @Override
     public PersistentGroup create(JsonElement jsonElement, JsonBuilder ctx) {
-
         return null;
     }
 
     @Override
     public PersistentGroup update(JsonElement jsonElement, PersistentGroup Group, JsonBuilder ctx) {
-
         return null;
     }
 
     @Override
     public JsonElement view(PersistentGroup obj, JsonBuilder ctx) {
-
         JsonArray jArrayMembers = new JsonArray();
         obj.getMembers().forEach(m -> jArrayMembers.add(m.getExternalId()));
 
@@ -38,5 +35,6 @@ public class PersistentGroupAdapter implements JsonAdapter<PersistentGroup> {
 
         return jObj;
     }
+
 
 }

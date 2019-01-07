@@ -12,13 +12,11 @@ public class CanalNotificacaoAdapter implements JsonAdapter<CanalNotificacao> {
 
     @Override
     public CanalNotificacao create(JsonElement jsonElement, JsonBuilder ctx) {
-
         return null;
     }
 
     @Override
     public CanalNotificacao update(JsonElement jsonElement, CanalNotificacao canalNotificacao, JsonBuilder ctx) {
-
         return null;
     }
 

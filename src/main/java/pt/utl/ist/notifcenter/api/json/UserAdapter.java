@@ -12,13 +12,14 @@ public class UserAdapter implements JsonAdapter<User> {
 
     @Override
     public User create(JsonElement jsonElement, JsonBuilder ctx) {
-
         return null;
     }
 
     @Override
-    public User update(JsonElement jsonElement, User User, JsonBuilder ctx) {
-
+    public User update(JsonElement jsonElement, User user, JsonBuilder ctx) {
+        /*UserProfile up = user.getProfile();
+        up.setEmail("awd");
+        user.setProfile(up);*/
         return null;
     }
 
