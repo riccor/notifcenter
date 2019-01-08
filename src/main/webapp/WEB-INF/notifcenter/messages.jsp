@@ -1,22 +1,22 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<b>Mensagem:</b><br/> <%-- ${message} --%>
-
-<!-- <c:out value="${someVar}"/> -->
+<h3><b>Mensagem ${message.externalId}:</b></h3>
 
 <div class="view-message">
 
-    Assunto: ${message.assunto}<br/>
-    Texto curto: ${message.textoCurto}<br/>
-    Texto longo: ${message.textoLongo}<br/>
-    Anexos:<br/> <%--  <${message.attachments}<br/> --%>
+    <br><b>Assunto:</b> ${message.assunto}
+    <br><b>Texto curto:</b> ${message.textoCurto}
+    <br><b>Texto longo:</b> ${message.textoLongo}
+    <br><b>Anexos:</b> <%--  <${message.attachments} --%>
 
     <div class="attachments_links-list">
-      <c:forEach var="link" items="${attachments_links}">
-        <a href="<c:url value="${link}"/>"><c:out value="${link}"/></a><br/>
+      <c:forEach var="entry" items="${attachments_links}">
+        <a href="<c:url value="${entry.value}"/>"><c:out value="${entry.key}"/></a></br>
       </c:forEach>
     </div>
 
 </div>
+
+
 
 <%--
     <c:set var="continueExecuting" value="false"/>

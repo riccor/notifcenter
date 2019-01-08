@@ -33,7 +33,7 @@
 </head>
 
 <body>
-<br><h2><b>Channels manager</b></h2>
+<h2><b>Channels manager</b></h2>
 
 <div class="list-channels" id="div1">
 

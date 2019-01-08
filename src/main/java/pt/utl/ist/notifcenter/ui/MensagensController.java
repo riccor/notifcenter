@@ -22,6 +22,8 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @RequestMapping("/mensagens")
@@ -50,28 +52,27 @@ public class MensagensController {
         User user = UtilsResource.getAuthenticatedUser();
         UtilsResource.checkIsUserValid(user);
 
-        for (PersistentGroup g : msg.getGruposDestinatariosSet()) {
-            if (g.isMember(user)) {
-
-                model.addAttribute("message", msg);
-
-                //tambem funciona mas não é necessario aqui (pois basta usar message.attachments):
-                //List<Attachment> atl = new ArrayList<>(msg.getAttachmentsSet());
-                //model.addAttribute("anexos", atl);
-
-                List<String> attachmentsLinks = new ArrayList<>();
-                for (Attachment at : msg.getAttachmentsSet()) {
-                    String link = "http://" + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrlForAttachments() + at.getExternalId();
-                    attachmentsLinks.add(link);
-                }
-                model.addAttribute("attachments_links", attachmentsLinks);
-
-                return "notifcenter/messages";
-            }
+        if (!msg.isAccessible(user)) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_MESSAGE_ERROR);
         }
 
-        throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_MESSAGE_ERROR);
-        //return "mytest/messages";
+        model.addAttribute("message", msg);
+
+        //tambem funciona mas não é necessario aqui (pois basta usar message.attachments):
+        //List<Attachment> atl = new ArrayList<>(msg.getAttachmentsSet());
+        //model.addAttribute("anexos", atl);
+
+        model.addAttribute("attachments_links", getUserFriendlyMessageAttachments(msg));
+
+        return "notifcenter/messages";
+    }
+
+    private HashMap<String, String> getUserFriendlyMessageAttachments(Mensagem msg) {
+        HashMap<String, String> attachmentsLinks = new LinkedHashMap<>();
+        for (Attachment at : msg.getAttachmentsSet()) {
+            attachmentsLinks.put(at.getDisplayName(), "http://" + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrlForAttachments() + at.getExternalId());
+        }
+        return attachmentsLinks;
     }
 
     @RequestMapping(value = "/attachments/{fileId}", method = RequestMethod.GET)

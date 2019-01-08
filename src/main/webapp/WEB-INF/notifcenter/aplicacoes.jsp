@@ -33,7 +33,7 @@
 </head>
 
 <body>
-<br><h2><b>Applications manager</b></h2>
+<h2><b>Applications manager</b></h2>
 
 <div class="list-applications" id="div1">
 

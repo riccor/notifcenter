@@ -13,7 +13,7 @@ import pt.utl.ist.notifcenter.domain.Remetente;
 public class RemetenteAdapter implements JsonAdapter<Remetente> {
 
     @Override
-    public Remetente create(JsonElement jsonElement, JsonBuilder ctx) {
+    public Remetente create(JsonElement jsonElement, JsonBuilder ctx) { //not used yet.
         final JsonObject jObj = jsonElement.getAsJsonObject();
         Aplicacao app = UtilsResource.getDomainObject(Aplicacao.class, UtilsResource.getRequiredValue(jObj, "app"));
         String name = UtilsResource.getRequiredValue(jObj, "name");

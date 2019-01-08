@@ -1,6 +1,7 @@
 package pt.utl.ist.notifcenter.domain;
 
 import org.apache.avro.reflect.Nullable;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
@@ -15,6 +16,15 @@ public class Mensagem extends Mensagem_Base {
 
     public Mensagem() {
         super();
+    }
+
+    public boolean isAccessible(User user) {
+        for (PersistentGroup pg : this.getGruposDestinatariosSet()) {
+            if (pg.isMember(user)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Atomic
@@ -38,8 +48,7 @@ public class Mensagem extends Mensagem_Base {
             mensagem.setCallbackUrlEstadoEntrega("none");
         }
 
-        /* ///
-        if (attachments != null) {
+        /*if (attachments != null) {
             for (Attachment at : attachments) {
                 mensagem.addAttachments(at);
             }
@@ -84,18 +93,5 @@ public class Mensagem extends Mensagem_Base {
         this.deleteDomainObject();
     }
 
-    /*
-    public String send() {
-
-
-        //TOD usar AsyncHTTP aqui.
-
-        InterfaceDeCanal tw = this.getCanalNotificacao().getCanal();
-
-        tw.sendMessage()
-
-        return "ok";
-    }
-    */
 
 }

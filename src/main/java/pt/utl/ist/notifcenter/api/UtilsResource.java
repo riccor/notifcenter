@@ -2,10 +2,12 @@ package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.Authenticate;
+import org.joda.time.DateTime;
 import org.springframework.util.MultiValueMap;
 import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
@@ -17,6 +19,16 @@ import java.util.Iterator;
 import java.util.List;
 
 public class UtilsResource {
+
+    public static JsonObject stringToJson(String messageJson) {
+        try {
+            JsonParser parser = new JsonParser();
+            return parser.parse(messageJson).getAsJsonObject();
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_JSON_ERROR, "Bad parameter json: " + messageJson);
+        }
+    }
 
     public static String getRequiredValue(JsonObject obj, String property) {
         if (obj.has(property)) {
@@ -34,6 +46,12 @@ public class UtilsResource {
             }
         }
         return null;
+    }
+
+    public static void deletePropertyFromJsonObject(JsonObject obj, String property) {
+        while (obj.has(property)) {
+            obj.remove(property);
+        }
     }
 
     public static String getRequiredValueFromMultiValueMap(MultiValueMap<String, String> map, String key) {
@@ -97,6 +115,16 @@ public class UtilsResource {
         }
         catch (Exception e) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + id + " !");
+        }
+    }
+
+    public static DateTime getDatetime(String dt) {
+        try {
+            DateTime date = DateTime.parse(dt, org.joda.time.format.DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss.SSS"));
+            return date;
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_DATETIME_ERROR, "Invalid datetime " + dt + " !");
         }
     }
 
