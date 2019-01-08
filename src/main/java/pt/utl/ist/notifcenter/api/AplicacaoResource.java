@@ -784,7 +784,7 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         JsonObject jObj = UtilsResource.stringToJson(json);
-        UtilsResource.deletePropertyFromJsonObject(jObj, "app");
+        UtilsResource.deletePropertyFromJsonObject(jObj, "app"); //avoid hacks
         jObj.addProperty("app", app.getExternalId());
         Mensagem msg = create(jObj, Mensagem.class);
 
