@@ -118,6 +118,10 @@ public class UtilsResource {
         }
     }
 
+    public static <T> T getDomainObjectFromJsonProperty(JsonElement jsonElement, Class<T> clazz, String property) {
+        return getDomainObject(clazz, getRequiredValue(jsonElement.getAsJsonObject(), property));
+    }
+
     public static DateTime getDatetime(String dt) {
         try {
             DateTime date = DateTime.parse(dt, org.joda.time.format.DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss.SSS"));

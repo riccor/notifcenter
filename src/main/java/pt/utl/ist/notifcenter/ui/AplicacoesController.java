@@ -1,6 +1,7 @@
 package pt.utl.ist.notifcenter.ui;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -8,14 +9,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import pt.ist.fenixframework.FenixFramework;
-import pt.utl.ist.notifcenter.api.AplicacaoResource;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
+import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
+import pt.utl.ist.notifcenter.api.json.RemetenteAdapter;
 import pt.utl.ist.notifcenter.domain.Aplicacao;
 import pt.utl.ist.notifcenter.domain.AppPermissions;
+import pt.utl.ist.notifcenter.domain.Remetente;
 import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
+import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +29,47 @@ import java.util.*;
 @RequestMapping("/aplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.ui.aplicacoes")
 public class AplicacoesController {
+
+    @SkipCSRF
+    @RequestMapping("/{app}")
+    public String remetentes(Model model, HttpServletRequest request, @PathVariable("app") Aplicacao app) {
+
+        if (!UtilsResource.isUserLoggedIn()) {
+            return "redirect:/login?callback=" + request.getRequestURL();
+        }
+
+        User user = UtilsResource.getAuthenticatedUser();
+        UtilsResource.checkIsUserValid(user);
+        UtilsResource.checkAdminPermissions(user);
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (!Strings.isNullOrEmpty(request.getParameter("createRemetente"))) {
+            JsonObject jsonObject = HTTPClient.getHttpServletRequestParamsAsJson(request, "app"); //avoid hacks
+            jsonObject.addProperty("app", app.getExternalId());
+            RemetenteAdapter.create2(jsonObject);
+        }
+        else if (!Strings.isNullOrEmpty(request.getParameter("deleteRemetente"))) {
+            String id = request.getParameter("deleteRemetente");
+            if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Remetente.class, id))) {
+                UtilsResource.getDomainObject(Remetente.class, id).delete();
+            }
+        }
+        else if (!Strings.isNullOrEmpty(request.getParameter("editRemetente"))) {
+            String id = request.getParameter("editRemetente");
+            if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Remetente.class, id))) {
+                RemetenteAdapter.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Remetente.class, id));
+            }
+        }
+
+        model.addAttribute("remetentes", app.getRemetentesSet().toArray(new Remetente[0]));
+        model.addAttribute("parametros_remetente", new String[]{"name"});
+
+        return "notifcenter/remetentes";
+    }
+
 
     @SkipCSRF
     @RequestMapping
@@ -38,7 +84,7 @@ public class AplicacoesController {
         UtilsResource.checkAdminPermissions(user);
 
         if (!Strings.isNullOrEmpty(request.getParameter("createApp"))) {
-            Aplicacao newApp = AplicacaoResource.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
+            Aplicacao newApp = AplicacaoAdapter.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
 
             //app permissions can only be changed here (not in create2())
             if (!Strings.isNullOrEmpty(request.getParameter("permissoes"))) {
@@ -58,7 +104,7 @@ public class AplicacoesController {
         else if (!Strings.isNullOrEmpty(request.getParameter("editApp"))) {
             String id = request.getParameter("editApp");
             if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Aplicacao.class, id))) {
-                AplicacaoResource.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Aplicacao.class, id));
+                AplicacaoAdapter.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Aplicacao.class, id));
 
                 //app permissions can only be changed here (not in update2())
                 if (!Strings.isNullOrEmpty(request.getParameter("permissoes"))) {

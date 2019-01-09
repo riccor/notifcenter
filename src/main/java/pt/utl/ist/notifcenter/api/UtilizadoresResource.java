@@ -63,17 +63,12 @@ public class UtilizadoresResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
         }
 
-        for (Contacto c : utilizador.getContactosSet()) {
-            if (c.getCanal().equals(canal) && c.getDadosContacto().equals(dadosContacto)) {
-                String a = "Contact data " + dadosContacto + " already exists for channel " + canal.getExternalId() + " and user " + utilizador.getExternalId() + "!";
-                System.out.println(a);
-                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION_ERROR, a);
-            }
-        }
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("utilizador", utilizador.getExternalId());
+        jObj.addProperty("canal", canal.getExternalId());
+        jObj.addProperty("dados", dadosContacto);
 
-        Contacto contacto = Contacto.createContacto(utilizador, canal, dadosContacto);
-
-        return view(contacto, ContactoAdapter.class);
+        return view(create(jObj, Contacto.class), ContactoAdapter.class);
     }
 
     @SkipCSRF
@@ -99,7 +94,7 @@ public class UtilizadoresResource extends BennuRestResource {
     @SkipCSRF
     @RequestMapping(value = "/{utilizador}/{contacto}/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateContacto(@PathVariable("utilizador") User utilizador, @PathVariable(value = "contacto") Contacto contacto,
-                                       @RequestParam(value = "dados") String dados) {
+                                       @RequestParam(value = "dados") String dadosContacto) {
 
         if (!FenixFramework.isDomainObjectValid(utilizador)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
@@ -109,7 +104,10 @@ public class UtilizadoresResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CONTACT_ERROR);
         }
 
-        return view(contacto.update(dados), ContactoAdapter.class);
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("dados", dadosContacto);
+
+        return view(update(jObj, ContactoAdapter.class), ContactoAdapter.class);
     }
 
     @SkipCSRF

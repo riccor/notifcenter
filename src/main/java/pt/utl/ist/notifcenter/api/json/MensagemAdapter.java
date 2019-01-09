@@ -26,10 +26,8 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
     public Mensagem create(JsonElement jsonElement, JsonBuilder ctx) {
 
         //NOTE: jsonElement property 'app' must be inserted by the server
-        Aplicacao app = UtilsResource.getDomainObject(Aplicacao.class, UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "app"));
-
-        String cn = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "canalnotificacao");
-        CanalNotificacao canalNotificacao = UtilsResource.getDomainObject(CanalNotificacao.class, cn);
+        Aplicacao app = UtilsResource.getDomainObjectFromJsonProperty(jsonElement, Aplicacao.class, "app");
+        CanalNotificacao canalNotificacao = UtilsResource.getDomainObjectFromJsonProperty(jsonElement, CanalNotificacao.class, "canalnotificacao");
 
         String[] gd = UtilsResource.getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
         PersistentGroup[] gruposDestinatarios = UtilsResource.getDomainObjectsArray(PersistentGroup.class, gd).toArray(new PersistentGroup[0]);

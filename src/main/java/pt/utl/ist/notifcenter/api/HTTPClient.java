@@ -135,17 +135,21 @@ public class HTTPClient {
         System.out.println(" ");
     }
 
-    public static JsonObject getHttpServletRequestParamsAsJson(HttpServletRequest request) {
+    public static JsonObject getHttpServletRequestParamsAsJson(HttpServletRequest request, String... fieldsToIgnore) {
         MultiValueMap<String, String> list = getHttpServletRequestParams(request);
         JsonObject jObj = new JsonObject();
 
         list.forEach((k, v) -> {
-            JsonArray jA = new JsonArray();
-            v.forEach(i -> {
-                jA.add(i);
-            });
 
-            jObj.add(k, jA);
+            if (Arrays.stream(fieldsToIgnore).noneMatch(e -> e.equals(k))) {
+
+                JsonArray jA = new JsonArray();
+                v.forEach(i -> {
+                    jA.add(i);
+                });
+
+                jObj.add(k, jA);
+            }
         });
 
         return jObj;

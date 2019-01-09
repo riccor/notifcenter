@@ -12,19 +12,28 @@ import pt.utl.ist.notifcenter.domain.Remetente;
 @DefaultJsonAdapter(Remetente.class)
 public class RemetenteAdapter implements JsonAdapter<Remetente> {
 
-    @Override
-    public Remetente create(JsonElement jsonElement, JsonBuilder ctx) { //not used yet.
+    //used for admin panel
+    public static Remetente create2(JsonElement jsonElement) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        Aplicacao app = UtilsResource.getDomainObject(Aplicacao.class, UtilsResource.getRequiredValue(jObj, "app"));
+        Aplicacao app = UtilsResource.getDomainObjectFromJsonProperty(jsonElement, Aplicacao.class, "app");
         String name = UtilsResource.getRequiredValue(jObj, "name");
         return Remetente.createRemetente(app, name);
     }
 
-    @Override
-    public Remetente update(JsonElement jsonElement, Remetente remetente, JsonBuilder ctx) {
+    public static Remetente update2(JsonElement jsonElement, Remetente remetente) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String nome = UtilsResource.getRequiredValue(jObj, "name");
         return remetente.update(nome);
+    }
+
+    @Override
+    public Remetente create(JsonElement jsonElement, JsonBuilder ctx) {
+        return create2(jsonElement);
+    }
+
+    @Override
+    public Remetente update(JsonElement jsonElement, Remetente remetente, JsonBuilder ctx) {
+        return update2(jsonElement, remetente);
     }
 
     @Override
@@ -35,5 +44,6 @@ public class RemetenteAdapter implements JsonAdapter<Remetente> {
         jObj.addProperty("appId", obj.getAplicacao().getExternalId());
         return jObj;
     }
+
 
 }

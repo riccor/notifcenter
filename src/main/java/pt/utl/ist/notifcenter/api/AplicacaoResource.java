@@ -140,7 +140,6 @@ import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
 import org.fenixedu.bennu.spring.security.CSRFTokenRepository;
-import org.joda.time.DateTime;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -229,40 +228,6 @@ public class AplicacaoResource extends BennuRestResource {
 
 
     //AGRUPAMENTO: APLICACOES
-
-    //I can't access create() nor update() from AplicacoesController.java, so:
-    public static Aplicacao create2(JsonElement jsonElement) {
-        final JsonObject jObj = jsonElement.getAsJsonObject();
-        String name = UtilsResource.getRequiredValue(jObj, "name");
-
-        if (Aplicacao.findByAplicacaoName(name) != null) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
-        }
-
-        String redirectUrl = UtilsResource.getRequiredValue(jObj, "redirect_uri");
-        String description = UtilsResource.getRequiredValue(jObj, "description");
-        String authorName = UtilsResource.getRequiredValue(jObj, "author");
-        String siteUrl = UtilsResource.getRequiredValue(jObj, "site_url");
-        return Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
-    }
-
-    public static Aplicacao update2(JsonElement jsonElement, Aplicacao app) {
-        final JsonObject jObj = jsonElement.getAsJsonObject();
-        String name = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "name");
-
-        Aplicacao foundApp;
-        if ((foundApp = Aplicacao.findByAplicacaoName(name)) != null) {
-            if (!app.equals(foundApp)) {
-                throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
-            }
-        }
-
-        String redirectUrl = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "redirect_uri");
-        String description = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "description");
-        String authorName = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "author");
-        String siteUrl = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "site_url");
-        return app.updateAplicacao(name, redirectUrl, description, authorName, siteUrl);
-    }
 
     //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security
     //@SkipAccessTokenValidation //diz ao método preHandler em "NotifcenterInterceptor.java" para aceitar pedidos sem access_token
@@ -572,7 +537,7 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
-        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
+        if (!FenixFramework.isDomainObjectValid(remetente)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
@@ -580,18 +545,15 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
         }
 
-        for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
-            if (cn.getCanal().equals(canal)) {
-                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RESOURCE, "Notification channel id " + cn.getExternalId() + " for user " + remetente.getExternalId() + " and channel " + canal.getExternalId() + " was already created before.");
-            }
-        }
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("app", app.getExternalId());
+        jObj.addProperty("remetente", remetente.getExternalId());
+        jObj.addProperty("canal", canal.getExternalId());
 
-        CanalNotificacao pedidoCriacaoCanalNotificacao;
+        CanalNotificacao pedidoCriacaoCanalNotificacao = create(jObj, CanalNotificacao.class);
 
         if (app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
-            pedidoCriacaoCanalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente, false);
-        } else {
-            pedidoCriacaoCanalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente, true);
+            pedidoCriacaoCanalNotificacao.approveCanalNotificacao();
         }
 
         return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);

@@ -13,6 +13,7 @@ import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.CanalResource;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
+import pt.utl.ist.notifcenter.api.json.CanalAdapter;
 import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.domain.Canal;
 import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
@@ -44,7 +45,7 @@ public class CanaisController {
         //System.out.println("tipo: " + request.getParameter());
 
         if (!Strings.isNullOrEmpty(request.getParameter("createChannel"))) {
-            CanalResource.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
+            CanalAdapter.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
         }
         else if (!Strings.isNullOrEmpty(request.getParameter("deleteChannel"))) {
             String id = request.getParameter("deleteChannel");
@@ -55,7 +56,7 @@ public class CanaisController {
         else if (!Strings.isNullOrEmpty(request.getParameter("editChannel"))) {
             String id = request.getParameter("editChannel");
             if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Canal.class, id))) {
-                CanalResource.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Canal.class, id));
+                CanalAdapter.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Canal.class, id));
             }
         }
 
