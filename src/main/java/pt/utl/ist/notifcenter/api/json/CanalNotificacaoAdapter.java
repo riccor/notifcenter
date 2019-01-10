@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
-import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
@@ -26,7 +25,7 @@ public class CanalNotificacaoAdapter implements JsonAdapter<CanalNotificacao> {
 
         for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
             if (cn.getCanal().equals(canal)) {
-                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RESOURCE, "Notification channel id " + cn.getExternalId() + " for user " + remetente.getExternalId() + " and channel " + canal.getExternalId() + " was already created before.");
+                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RESOURCE, "Notification channel id " + cn.getExternalId() + " for sender " + remetente.getExternalId() + " and channel " + canal.getExternalId() + " was already created before.");
             }
         }
 

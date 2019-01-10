@@ -59,13 +59,36 @@ public class AplicacoesController {
         else if (!Strings.isNullOrEmpty(request.getParameter("deleteCanalNotificacao"))) {
             String id = request.getParameter("deleteCanalNotificacao");
             if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(CanalNotificacao.class, id))) {
-                UtilsResource.getDomainObject(CanalNotificacao.class, id).delete();
+                if (!remetente.getCanaisNotificacaoSet().contains(UtilsResource.getDomainObject(CanalNotificacao.class, id))) {
+                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
+                }
+                else {
+                    UtilsResource.getDomainObject(CanalNotificacao.class, id).delete();
+                }
+            }
+        }
+        else if (!Strings.isNullOrEmpty(request.getParameter("editCanalNotificacao"))) {
+            String id = request.getParameter("editCanalNotificacao");
+            if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(CanalNotificacao.class, id))) {
+                //approve/disapprove only here in admin panel
+                if (!Strings.isNullOrEmpty(request.getParameter("aguardandoAprovacao"))) {
+                    String aguardandoAprovacao = request.getParameter("aguardandoAprovacao");
+
+                    if (aguardandoAprovacao.equalsIgnoreCase("true")) {
+                        UtilsResource.getDomainObject(CanalNotificacao.class, id).approveCanalNotificacao();
+                    }
+                    else if (aguardandoAprovacao.equalsIgnoreCase("false")) {
+                        UtilsResource.getDomainObject(CanalNotificacao.class, id).disapproveCanalNotificacao();
+                    }
+                }
             }
         }
 
+        model.addAttribute("application", app);
         model.addAttribute("sender", remetente);
         model.addAttribute("canaisnotificacao", getExistingCanaisNotificacaoFromRemetente(remetente));
-        //model.addAttribute("parametros_canalnotificacao", new String[]{""});
+        model.addAttribute("parametros_canalnotificacao", new String[]{"canal"});
+        model.addAttribute("canais", CanaisController.getExistingChannels());
 
         return "notifcenter/canaisnotificacao";
     }
@@ -77,7 +100,8 @@ public class AplicacoesController {
         for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
             HashMap<String, String> map = new LinkedHashMap<>();
             map.put("id", cn.getExternalId());
-            map.put("channel", cn.getCanal().getExternalId());
+            map.put("channel", cn.getCanal().getClass().getSimpleName() + " (" + cn.getCanal().getExternalId() + ")");
+            map.put("approved", cn.isApproved() ? "true" : "false");
             list.add(map);
         }
 
@@ -108,7 +132,12 @@ public class AplicacoesController {
         else if (!Strings.isNullOrEmpty(request.getParameter("deleteRemetente"))) {
             String id = request.getParameter("deleteRemetente");
             if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Remetente.class, id))) {
-                UtilsResource.getDomainObject(Remetente.class, id).delete();
+                if (!app.getRemetentesSet().contains(UtilsResource.getDomainObject(Remetente.class, id))) {
+                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
+                }
+                else {
+                    UtilsResource.getDomainObject(Remetente.class, id).delete();
+                }
             }
         }
         else if (!Strings.isNullOrEmpty(request.getParameter("editRemetente"))) {

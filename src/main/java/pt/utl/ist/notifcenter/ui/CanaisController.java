@@ -80,7 +80,7 @@ public class CanaisController {
     }
 
     //returns a list of hashmaps with channels names and respective params
-    public List<HashMap<String, String>> getExistingChannels() {
+    public static List<HashMap<String, String>> getExistingChannels() {
 
         List<HashMap<String, String>> list = new ArrayList<>();
 
