@@ -111,6 +111,11 @@ public class UtilsResource {
         try {
             DomainObject dObj = FenixFramework.getDomainObject(id);
             T t = (T) dObj;
+
+            if (!FenixFramework.isDomainObjectValid((DomainObject) t)) {
+                throw new Exception("error");
+            }
+
             return t;
         }
         catch (Exception e) {
@@ -119,7 +124,9 @@ public class UtilsResource {
     }
 
     public static <T> T getDomainObjectFromJsonProperty(JsonElement jsonElement, Class<T> clazz, String property) {
-        return getDomainObject(clazz, getRequiredValue(jsonElement.getAsJsonObject(), property));
+        String id = getRequiredValue(jsonElement.getAsJsonObject(), property);
+        T dObj = getDomainObject(clazz, id);
+        return dObj;
     }
 
     public static DateTime getDatetime(String dt) {
@@ -139,6 +146,11 @@ public class UtilsResource {
             try {
                 DomainObject dObj = FenixFramework.getDomainObject(i);
                 T t = (T) dObj;
+
+                if (!FenixFramework.isDomainObjectValid((DomainObject) t)) {
+                    throw new Exception("error");
+                }
+
                 al.add(t);
             }
             catch (Exception e) {
