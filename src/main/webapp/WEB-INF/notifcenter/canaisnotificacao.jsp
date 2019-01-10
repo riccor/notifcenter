@@ -41,7 +41,7 @@
 
 <div class="list-applications-senders-notificationchannels" id="div1">
 
-    <br><h3>Existing notification channels for sender ${sender.nome} (${sender.externalId})</h3>
+    <br><h4>Existing notification channels for sender ${sender.nome} (${sender.externalId}) from application ${application.name} (${application.externalId})</h4>
 
     <table id="table1" style="width: 100%, box-sizing: border-box">
         <tr>
@@ -68,7 +68,7 @@
                     <c:choose>
                         <c:when test="${id != null && entry.key == 'approved'}"> <%-- robustness --%>
                             <td>
-                                <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}"/>" method="post" >
+                                <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}"/>" onsubmit="return confirm('Do you really want to edit this notification channel?');" method="post" >
                                     <select name="aguardandoAprovacao">
 
                                         <c:choose>
@@ -111,7 +111,7 @@
 </div>
 
 <div class="create-canalnotificacao" id="div2">
-    <br><h3>Add new sender</h3>
+    <br><h3>Add new notification channel</h3>
 
     <form id="form2" action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}"/>" method="post" >
         <table id="table2">
