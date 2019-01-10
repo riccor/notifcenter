@@ -1,9 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
     <title>Notifcenter - Applications</title>
+
+    <c:set var="urlPrefix" value="/notifcenter/aplicacoes"/>
 
     <style>
     #table1 {
@@ -64,7 +65,7 @@
 
                     <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingApps() --%>
                         <c:set var="id" value="${entry.value}"/>
-                        <form id="<c:out value="${formPrefix}${entry.value}"/>" action="/notifcenter/notifcenter/aplicacoes" onsubmit="return confirm('Do you really want to edit this application?');" method="post">
+                        <form id="<c:out value="${formPrefix}${entry.value}"/>" action="<c:out value="${urlPrefix}"/>" onsubmit="return confirm('Do you really want to edit this application?');" method="post">
                             <input type="hidden" name="editApp" value="<c:out value="${entry.value}"/>">
                         </form>
                     </c:if>
@@ -101,7 +102,7 @@
                 </c:forEach>
                 <td>
                     <c:if test="${id != null}"> <%-- robustness --%>
-                        <form action="/notifcenter/notifcenter/aplicacoes" onsubmit="return confirm('Do you really want to delete this application?');" method="post">
+                        <form action="<c:out value="${urlPrefix}"/>" onsubmit="return confirm('Do you really want to delete this application?');" method="post">
                             <input type="hidden" name="deleteApp" value="<c:out value="${id}"/>">
                             <input type="submit" value="Delete">
                         </form>
@@ -119,7 +120,7 @@
 <div class="create-app" id="div2">
     <br><h3>Add new application</h3>
 
-    <form:form id="form2" action="/notifcenter/notifcenter/aplicacoes" method="post" >
+    <form id="form2" action="<c:out value="${urlPrefix}"/>" method="post" >
         <table id="table2">
             <c:forEach var="parapp" items="${parametros_app}">
                 <tr>
@@ -138,7 +139,7 @@
         </table>
         <input type="hidden" name="createApp" value="does_not_matter">
         <input type="submit" value="Create">
-    </form:form>
+    </form>
 
 </div>
 

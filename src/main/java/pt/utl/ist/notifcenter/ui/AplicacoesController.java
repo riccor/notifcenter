@@ -15,11 +15,9 @@ import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
+import pt.utl.ist.notifcenter.api.json.CanalNotificacaoAdapter;
 import pt.utl.ist.notifcenter.api.json.RemetenteAdapter;
-import pt.utl.ist.notifcenter.domain.Aplicacao;
-import pt.utl.ist.notifcenter.domain.AppPermissions;
-import pt.utl.ist.notifcenter.domain.Remetente;
-import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
+import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
@@ -29,6 +27,62 @@ import java.util.*;
 @RequestMapping("/aplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.ui.aplicacoes")
 public class AplicacoesController {
+
+    @SkipCSRF
+    @RequestMapping("/{app}/{remetente}")
+    public String canaisNotificacao(Model model, HttpServletRequest request,
+                                    @PathVariable("app") Aplicacao app,
+                                    @PathVariable("remetente") Remetente remetente) {
+
+        if (!UtilsResource.isUserLoggedIn()) {
+            return "redirect:/login?callback=" + request.getRequestURL();
+        }
+
+        User user = UtilsResource.getAuthenticatedUser();
+        UtilsResource.checkIsUserValid(user);
+        UtilsResource.checkAdminPermissions(user);
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
+        }
+
+        if (!Strings.isNullOrEmpty(request.getParameter("createCanalNotificacao"))) {
+            JsonObject jsonObject = HTTPClient.getHttpServletRequestParamsAsJson(request, "app", "remetente"); //avoid hacks
+            jsonObject.addProperty("app", app.getExternalId());
+            jsonObject.addProperty("remetente", remetente.getExternalId());
+            CanalNotificacaoAdapter.create2(jsonObject);
+        }
+        else if (!Strings.isNullOrEmpty(request.getParameter("deleteCanalNotificacao"))) {
+            String id = request.getParameter("deleteCanalNotificacao");
+            if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(CanalNotificacao.class, id))) {
+                UtilsResource.getDomainObject(CanalNotificacao.class, id).delete();
+            }
+        }
+
+        model.addAttribute("sender", remetente);
+        model.addAttribute("canaisnotificacao", getExistingCanaisNotificacaoFromRemetente(remetente));
+        //model.addAttribute("parametros_canalnotificacao", new String[]{""});
+
+        return "notifcenter/canaisnotificacao";
+    }
+
+    public List<HashMap<String, String>> getExistingCanaisNotificacaoFromRemetente(Remetente remetente) {
+
+        List<HashMap<String, String>> list = new ArrayList<>();
+
+        for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
+            HashMap<String, String> map = new LinkedHashMap<>();
+            map.put("id", cn.getExternalId());
+            map.put("channel", cn.getCanal().getExternalId());
+            list.add(map);
+        }
+
+        return list;
+    }
 
     @SkipCSRF
     @RequestMapping("/{app}")
@@ -64,12 +118,26 @@ public class AplicacoesController {
             }
         }
 
-        model.addAttribute("remetentes", app.getRemetentesSet().toArray(new Remetente[0]));
+        model.addAttribute("application", app);
+        model.addAttribute("remetentes", getExistingAppRemetentes(app));
         model.addAttribute("parametros_remetente", new String[]{"name"});
 
         return "notifcenter/remetentes";
     }
 
+    public List<HashMap<String, String>> getExistingAppRemetentes(Aplicacao app) {
+
+        List<HashMap<String, String>> list = new ArrayList<>();
+
+        for (Remetente r : app.getRemetentesSet()) {
+            HashMap<String, String> map = new LinkedHashMap<>();
+            map.put("id", r.getExternalId());
+            map.put("name", r.getNome());
+            list.add(map);
+        }
+
+        return list;
+    }
 
     @SkipCSRF
     @RequestMapping

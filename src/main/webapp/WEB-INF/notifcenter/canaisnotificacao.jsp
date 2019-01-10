@@ -2,7 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
-    <title>Notifcenter - Applications/Senders</title>
+    <title>Notifcenter - Applications/Senders/Notification Channels</title>
 
     <c:set var="urlPrefix" value="/notifcenter/aplicacoes/"/>
     <c:set var="slash" value="/"/>
@@ -35,22 +35,21 @@
 </head>
 
 <body>
-<h2><b>Applications/Senders manager</b></h2>
+<h2><b>Applications/Senders/Notification channels manager</b></h2>
 
-<div class="list-applications-senders" id="div1">
+<div class="list-applications-senders-notificationchannels" id="div1">
 
-    <br><h3>Existing senders for application ${application.name} (${application.externalId})</h3>
+    <br><h3>Existing notification channels for sender ${sender.name} (${sender.externalId})</h3>
 
     <table id="table1" style="width: 100%, box-sizing: border-box">
         <tr>
             <th>Id</th>
-            <th>Name</th>
-            <th>Notification Channels</th>
+            <th>Channel</th>
             <th>Actions</th>
         </tr>
 
         <c:set var="formPrefix" value="form-"/>
-        <c:forEach var="rems" items="${remetentes}">
+        <c:forEach var="rems" items="${canaisnotificacao}">
 
             <c:if test="${id != null}">
                  <c:remove var="id"/>
@@ -59,7 +58,7 @@
             <tr>
                 <c:forEach var="entry" items="${rems}">
 
-                    <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingAppRemetentes() --%>
+                    <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingCanaisNotificacaoFromRemetente() --%>
                         <c:set var="id" value="${entry.value}"/>
                         <form id="<c:out value="${formPrefix}${entry.value}"/>" action="<c:out value="${urlPrefix}${application.externalId}"/>" onsubmit="return confirm('Do you really want to edit this sender?');" method="post">
                             <input type="hidden" name="editRemetente" value="<c:out value="${entry.value}"/>">
@@ -81,7 +80,7 @@
                     <c:choose>
                         <c:when test="${id != null}"> <%-- robustness --%>
                             <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${id}"/>" method="get">
-                                <input type="submit" value="Go">
+                                <input type="submit" value="List">
                             </form>
                         </c:when>
                         <c:otherwise>

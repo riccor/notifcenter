@@ -1,9 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
     <title>Notifcenter - Channels</title>
+
+    <c:set var="urlPrefix" value="/notifcenter/canais"/>
 
     <style>
     #table1 {
@@ -62,7 +62,7 @@
                             <td><c:out value="${entry.value}"/></td>
                             <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingChannels() --%>
                                 <c:set var="id" value="${entry.value}"/>
-                                <form id="<c:out value="${formPrefix}${entry.value}"/>" action="/notifcenter/notifcenter/canais" onsubmit="return confirm('Do you really want to edit this channel?');" method="post">
+                                <form id="<c:out value="${formPrefix}${entry.value}"/>" action="<c:out value="${urlPrefix}"/>" onsubmit="return confirm('Do you really want to edit this channel?');" method="post">
                                     <input type="hidden" name="editChannel" value="<c:out value="${entry.value}"/>">
                                 </form>
                             </c:if>
@@ -81,7 +81,7 @@
                 </c:forEach>
                 <td>
                     <c:if test="${id != null}"> <%-- robustness --%>
-                        <form action="/notifcenter/notifcenter/canais" onsubmit="return confirm('Do you really want to delete this channel?');" method="post">
+                        <form action="<c:out value="${urlPrefix}"/>" onsubmit="return confirm('Do you really want to delete this channel?');" method="post">
                             <input type="hidden" name="deleteChannel" value="<c:out value="${id}"/>">
                             <input type="submit" value="Delete">
                         </form>
@@ -107,9 +107,9 @@
         </c:forEach>
     </select>
 
-    <form:form id="form2" action="/notifcenter/notifcenter/canais" method="post" >
+    <form id="form2" action="<c:out value="${urlPrefix}"/>" method="post" >
         <table id="table2"></table>
-    </form:form>
+    </form>
 
 </div>
 
