@@ -40,13 +40,16 @@ public class UtilizadoresResource extends BennuRestResource {
     @RequestMapping(value = "/listutilizadores", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listUtilizadores() {
 
+        JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
         for (User u: FenixFramework.getDomainRoot().getBennu().getUserSet()) {
             jArray.add(view(u, UserAdapter.class));
         }
 
-        return jArray;
+        jObj.add("utilizadores", jArray);
+
+        return jObj;
     }
 
     @SkipCSRF

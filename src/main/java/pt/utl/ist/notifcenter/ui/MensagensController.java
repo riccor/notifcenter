@@ -1,9 +1,11 @@
 package pt.utl.ist.notifcenter.ui;
 
+import com.google.common.base.Strings;
+import com.google.gson.JsonObject;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
-import org.fenixedu.bennu.core.security.Authenticate;
+import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,9 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import pt.ist.fenixframework.FenixFramework;
+import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
-import pt.utl.ist.notifcenter.domain.Attachment;
-import pt.utl.ist.notifcenter.domain.Mensagem;
+import pt.utl.ist.notifcenter.api.json.MensagemAdapter;
+import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
@@ -25,20 +28,85 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequestMapping("/mensagens")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.ui.mensagens")
 public class MensagensController {
 
+    @SkipCSRF
     @RequestMapping
-    public String mensagens(Model model) {
-        model.addAttribute("world", "mensagens");
-        return "notifcenter/home";
+    public String mensagens(Model model, HttpServletRequest request) {
+
+        if (!UtilsResource.isUserLoggedIn()) {
+            ///throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
+            return "redirect:/login?callback=" + request.getRequestURL();
+        }
+
+        User user = UtilsResource.getAuthenticatedUser();
+        UtilsResource.checkIsUserValid(user);
+        UtilsResource.checkAdminPermissions(user);
+
+        //it would need a predefined system app + sender + notification channel:
+        /*if (!Strings.isNullOrEmpty(request.getParameter("createMensagem"))) {
+            JsonObject jsonObject = HTTPClient.getHttpServletRequestParamsAsJson(request, "app"); //avoid hacks
+            jsonObject.addProperty("app", app.getExternalId());
+            MensagemAdapter.create2(jsonObject);
+
+        }
+        else */
+        if (!Strings.isNullOrEmpty(request.getParameter("deleteMensagem"))) {
+            String id = request.getParameter("deleteMensagem");
+            if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Mensagem.class, id))) {
+                UtilsResource.getDomainObject(Mensagem.class, id).delete();
+            }
+        }
+        //messages get updated?
+        /*else if (!Strings.isNullOrEmpty(request.getParameter("editMensagem"))) {
+            String id = request.getParameter("editMensagem");
+            if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Mensagem.class, id))) {
+                MensagemAdapter.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Mensagem.class, id));
+            }
+        }*/
+
+        model.addAttribute("messages", getExistingMensagens());
+
+        return "notifcenter/messages";
     }
+
+
+    public List<HashMap<String, String>> getExistingMensagens() {
+
+        List<HashMap<String, String>> list = new ArrayList<>();
+
+        for (Canal c: SistemaNotificacoes.getInstance().getCanaisSet()) {
+            for (CanalNotificacao cn : c.getCanalNotificacaoSet()) {
+                for (Mensagem m : cn.getMensagemSet()) {
+                    HashMap<String, String> map = new LinkedHashMap<>();
+                    map.put("id", m.getExternalId());
+                    map.put("canalnotificacao", m.getCanalNotificacao().getExternalId());
+                    map.put("remetente", m.getCanalNotificacao().getRemetente().getExternalId());
+                    map.put("gruposDestinatarios", m.getGruposDestinatariosSet().stream().map(PersistentGroup::getExternalId).collect(Collectors.joining(",")));
+                    map.put("assunto", m.getAssunto());
+                    map.put("textoCurto", m.getTextoCurto());
+                    map.put("textoLongo", m.getTextoLongo());
+                    map.put("dataEntrega", m.getDataEntrega().toString("dd.MM.yyyy HH:mm:ss.SSS"));
+                    map.put("callbackUrlEstadoEntrega", m.getCallbackUrlEstadoEntrega());
+                    map.put("attachments", m.getAttachmentsSet().stream().map(Attachment::getExternalId).collect(Collectors.joining(",")));
+                    //map.put("link", NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + m.getExternalId());
+
+                    list.add(map);
+                }
+            }
+        }
+
+        return list;
+    }
+
 
     //View message:
     @RequestMapping("/{msg}")
-    public String messages(@PathVariable("msg") Mensagem msg, Model model, HttpServletRequest request) {
+    public String mensagem(@PathVariable("msg") Mensagem msg, Model model, HttpServletRequest request) {
 
         if (!UtilsResource.isUserLoggedIn()) {
             ///throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
@@ -64,7 +132,7 @@ public class MensagensController {
 
         model.addAttribute("attachments_links", getUserFriendlyMessageAttachments(msg));
 
-        return "notifcenter/messages";
+        return "notifcenter/view-message";
     }
 
     private HashMap<String, String> getUserFriendlyMessageAttachments(Mensagem msg) {
@@ -74,6 +142,8 @@ public class MensagensController {
         }
         return attachmentsLinks;
     }
+
+
 
     @RequestMapping(value = "/attachments/{fileId}", method = RequestMethod.GET)
     public HttpEntity<byte[]> downloadAttachment(@PathVariable("fileId") Attachment attachment) {

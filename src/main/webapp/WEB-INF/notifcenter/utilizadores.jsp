@@ -1,10 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
-    <title>Notifcenter - Messages</title>
+    <title>Notifcenter - Users</title>
 
-    <c:set var="urlPrefix" value="/notifcenter/mensagens"/>
+    <c:set var="urlPrefix" value="/notifcenter/utilizadores/"/>
     <c:set var="slash" value="/"/>
 
     <style>
@@ -35,57 +34,40 @@
 </head>
 
 <body>
-    <h2><b>Messages manager</b></h2>
+    <h2><b>Users</b></h2>
 
-    <div class="list-users-contacts" id="div1">
+    <div class="list-users" id="div1">
 
-        <br><h3>Existing messages for all applications</h3>
+        <br><h3>Existing users</h3>
 
         <table id="table1" style="width: 100%, box-sizing: border-box">
             <tr>
                 <th>Id</th>
-                <th>Notification Channel</th>
-                <th>Sender</th>
-                <th>Receiver Group(s)</th>
-                <th>Subject</th>
-                <th>Short text</th>
-                <th>Long text</th>
-                <th>Delivery date</th>
-                <th>Delivery status callback</th>
-                <th>Attachments</th>
-                <th>Actions</th>
+                <th>Username</th>
+                <th>Display Name</th>
+                <th>Contacts</th>
             </tr>
 
             <c:set var="formPrefix" value="form-"/>
-            <c:forEach var="mgs" items="${messages}">
+            <c:forEach var="user" items="${users}">
 
                 <c:if test="${id != null}">
                      <c:remove var="id"/>
                 </c:if>
 
                 <tr>
-                    <c:forEach var="entry" items="${mgs}">
-
-                        <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingMensagens() --%>
+                    <c:forEach var="entry" items="${user}">
+                        <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingUtilizadores() --%>
                             <c:set var="id" value="${entry.value}"/>
                         </c:if>
 
                         <td><c:out value="${entry.value}"/></td>
-
                     </c:forEach>
 
                     <td>
-                        <c:if test="${id != null}"> <%-- robustness --%>
-                            <form action="<c:out value="${urlPrefix}"/>" onsubmit="return confirm('Do you really want to delete this message?');" method="post">
-                                <input type="hidden" name="deleteMensagem" value="<c:out value="${id}"/>">
-                                <input type="submit" value="Delete">
-                            </form>
-
-                        </c:if>
-
                         <c:choose>
                             <c:when test="${id != null}"> <%-- robustness --%>
-                                <form action="<c:out value="${urlPrefix}${slash}${id}"/>" method="get">
+                                <form action="<c:out value="${urlPrefix}${id}"/>" method="get">
                                     <input type="submit" value="Go">
                                 </form>
                             </c:when>
@@ -94,7 +76,6 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
-
                 </tr>
             </c:forEach>
         </table>

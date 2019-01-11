@@ -22,8 +22,8 @@ public class ContactoAdapter implements JsonAdapter<Contacto> {
         String dadosContacto = UtilsResource.getRequiredValue(jObj, "dados");
 
         for (Contacto c : utilizador.getContactosSet()) {
-            if (c.getCanal().equals(canal) && c.getDadosContacto().equals(dadosContacto)) {
-                String a = "Contact data " + dadosContacto + " already exists for channel " + canal.getExternalId() + " and user " + utilizador.getExternalId() + "!";
+            if (c.getCanal().equals(canal) /*&& c.getDadosContacto().equals(dadosContacto)*/) {
+                String a = "Contact data " + c.getDadosContacto() + " already exists for channel " + canal.getExternalId() + " and user " + utilizador.getExternalId() + "!";
                 //debug
                 //System.out.println(a);
                 throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION_ERROR, a);

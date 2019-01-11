@@ -6,113 +6,115 @@
     <c:set var="urlPrefix" value="/notifcenter/canais"/>
 
     <style>
-    #table1 {
-      font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-      border-collapse: collapse;
-      width: 100%;
-    }
+        #table1 {
+          font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+        }
 
-    #table1 td, #table1 th {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
+        #table1 td, #table1 th {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
 
-    #table1 tr:nth-child(even){background-color: #f2f2f2;}
+        #table1 tr:nth-child(even){background-color: #f2f2f2;}
 
-    #table1 tr:hover {background-color: #ddd;}
+        #table1 tr:hover {background-color: #ddd;}
 
-    #table1 th {
-      padding-top: 12px;
-      padding-bottom: 12px;
-      text-align: left;
-      background-color: #009FE3;
-      color: white;
-    }
+        #table1 th {
+          padding-top: 12px;
+          padding-bottom: 12px;
+          text-align: left;
+          background-color: #009FE3;
+          color: white;
+        }
     </style>
 
 </head>
 
 <body>
-<h2><b>Channels manager</b></h2>
+    <h2><b>Channels manager</b></h2>
 
-<div class="list-channels" id="div1">
+    <div class="list-channels" id="div1">
 
-    <br><h3>Existing channels</h3>
+        <br><h3>Existing channels</h3>
 
-    <table id="table1" style="width: 100%, box-sizing: border-box">
-        <tr>
-            <th>Id</th>
-            <th>Type</th>
-            <th>Email</th>
-            <th colspan="4">Authentication parameters</th>
-            <th>Actions</th>
-        </tr>
-
-        <c:set var="formPrefix" value="form-"/>
-        <c:forEach var="canal" items="${canais}">
-
-            <c:if test="${id != null}">
-                 <c:remove var="id"/>
-            </c:if>
-
+        <table id="table1" style="width: 100%, box-sizing: border-box">
             <tr>
-                <c:forEach var="entry" items="${canal}">
-                    <c:choose>
-                        <c:when test="${entry.key == 'type' || entry.key == 'email' || entry.key == 'id'}">
-                            <td><c:out value="${entry.value}"/></td>
-                            <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingChannels() --%>
-                                <c:set var="id" value="${entry.value}"/>
-                                <form id="<c:out value="${formPrefix}${entry.value}"/>" action="<c:out value="${urlPrefix}"/>" onsubmit="return confirm('Do you really want to edit this channel?');" method="post">
-                                    <input type="hidden" name="editChannel" value="<c:out value="${entry.value}"/>">
-                                </form>
-                            </c:if>
-                        </c:when>
-                        <c:otherwise>
-                            <c:choose>
-                                <c:when test="${id != null}"> <%-- robustness --%>
-                                    <td><b><c:out value="${entry.key}"/>:</b> <input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
-                                </c:when>
-                                <c:otherwise>
-                                    <td><b><c:out value="${entry.key}"/>:</b> <c:out value="${entry.value}"/></td>
-                                </c:otherwise>
-                            </c:choose>
-                        </c:otherwise>
-                    </c:choose>
-                </c:forEach>
-                <td>
-                    <c:if test="${id != null}"> <%-- robustness --%>
-                        <form action="<c:out value="${urlPrefix}"/>" onsubmit="return confirm('Do you really want to delete this channel?');" method="post">
-                            <input type="hidden" name="deleteChannel" value="<c:out value="${id}"/>">
-                            <input type="submit" value="Delete">
-                        </form>
-
-                        <input type="submit" value="Update" form="<c:out value="${formPrefix}${id}"/>">
-                    </c:if>
-                </td>
+                <th>Id</th>
+                <th>Type</th>
+                <th>Email</th>
+                <th colspan="4">Authentication parameters</th>
+                <th>Actions</th>
             </tr>
-        </c:forEach>
-    </table>
 
-</div>
+            <c:set var="formPrefix" value="form-"/>
+            <c:forEach var="canal" items="${canais}">
+
+                <c:if test="${id != null}">
+                     <c:remove var="id"/>
+                </c:if>
+
+                <tr>
+                    <c:forEach var="entry" items="${canal}">
+                        <c:choose>
+                            <c:when test="${entry.key == 'type' || entry.key == 'email' || entry.key == 'id'}">
+                                <td><c:out value="${entry.value}"/></td>
+                                <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingChannels() --%>
+                                    <c:set var="id" value="${entry.value}"/>
+                                    <form id="<c:out value="${formPrefix}${entry.value}"/>" action="<c:out value="${urlPrefix}"/>" onsubmit="return confirm('Do you really want to edit this channel?');" method="post">
+                                        <input type="hidden" name="editChannel" value="<c:out value="${entry.value}"/>">
+                                    </form>
+                                </c:if>
+                            </c:when>
+                            <c:otherwise>
+                                <c:choose>
+                                    <c:when test="${id != null}"> <%-- robustness --%>
+                                        <td><b><c:out value="${entry.key}"/>:</b> <input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td><b><c:out value="${entry.key}"/>:</b> <c:out value="${entry.value}"/></td>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+                    <td>
+                        <c:if test="${id != null}"> <%-- robustness --%>
+                            <form action="<c:out value="${urlPrefix}"/>" onsubmit="return confirm('Do you really want to delete this channel?');" method="post">
+                                <input type="hidden" name="deleteChannel" value="<c:out value="${id}"/>">
+                                <input type="submit" value="Delete">
+                            </form>
+
+                            <input type="submit" value="Update" form="<c:out value="${formPrefix}${id}"/>">
+                        </c:if>
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+
+    </div>
 
 
-<div class="create-canal" id="div2">
+    <div class="create-canal" id="div2">
 
-    <br><h3>Add new channel</h3>
+        <br><h3>Add new channel</h3>
 
-    <select id="select2" onchange="onSelect()">
-        <option value="" selected disabled hidden>Channel Type</option>
-        <c:forEach var="entry" items="${classes_canais}"> <%-- same as ${classes_canais.entrySet()} --%>
-            <option value="<c:out value="${entry.key}"/>"><c:out value="${entry.key}"/></option>
-        </c:forEach>
-    </select>
+        <select id="select2" onchange="onSelect()">
+            <option value="" selected disabled hidden>Channel Type</option>
+            <c:forEach var="entry" items="${classes_canais}"> <%-- same as ${classes_canais.entrySet()} --%>
+                <option value="<c:out value="${entry.key}"/>"><c:out value="${entry.key}"/></option>
+            </c:forEach>
+        </select>
 
-    <form id="form2" action="<c:out value="${urlPrefix}"/>" method="post" >
-        <table id="table2"></table>
-    </form>
+        <form id="form2" action="<c:out value="${urlPrefix}"/>" method="post" >
+            <table id="table2"></table>
+        </form>
 
-</div>
+    </div>
 
+
+</body>
 
 <script>
 
@@ -183,4 +185,3 @@ function onSelect() {
 }
 
 </script>
-</body>

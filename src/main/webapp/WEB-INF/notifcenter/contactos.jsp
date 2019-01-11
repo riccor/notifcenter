@@ -2,9 +2,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
-    <title>Notifcenter - Applications/Senders/Notification Channels</title>
+    <title>Notifcenter - Users/Contacts</title>
 
-    <c:set var="urlPrefix" value="/notifcenter/aplicacoes/"/>
+    <c:set var="urlPrefix" value="/notifcenter/utilizadores/"/>
     <c:set var="slash" value="/"/>
     <c:set var="paropen" value="("/>
     <c:set var="parclose" value=")"/>
@@ -37,56 +37,40 @@
 </head>
 
 <body>
-    <h2><b>Applications/Senders/Notification channels manager</b></h2>
+    <h2><b>Users/Contacts manager</b></h2>
 
-    <div class="list-applications-senders-notificationchannels" id="div1">
+    <div class="list-users-contacts" id="div1">
 
-        <br><h4>Existing notification channels for sender ${sender.nome} (${sender.externalId}) from application ${application.name} (${application.externalId})</h4>
+        <br><h3>Existing contacts for user ${user.username} (${user.externalId})</h3>
 
         <table id="table1" style="width: 100%, box-sizing: border-box">
             <tr>
                 <th>Id</th>
                 <th>Channel</th>
-                <th>Approved</th>
+                <th>Data</th>
                 <th>Actions</th>
             </tr>
 
             <c:set var="formPrefix" value="form-"/>
-            <c:forEach var="cno" items="${canaisnotificacao}">
+            <c:forEach var="conts" items="${contacts}">
 
                 <c:if test="${id != null}">
                      <c:remove var="id"/>
                 </c:if>
 
                 <tr>
-                    <c:forEach var="entry" items="${cno}">
+                    <c:forEach var="entry" items="${conts}">
 
-                        <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingCanaisNotificacaoFromRemetente() --%>
+                        <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingUserContactos() --%>
                             <c:set var="id" value="${entry.value}"/>
+                            <form id="<c:out value="${formPrefix}${entry.value}"/>" action="<c:out value="${urlPrefix}${user.externalId}"/>" onsubmit="return confirm('Do you really want to edit this contact?');" method="post">
+                                <input type="hidden" name="editContacto" value="<c:out value="${entry.value}"/>">
+                            </form>
                         </c:if>
 
                         <c:choose>
-                            <c:when test="${id != null && entry.key == 'approved'}"> <%-- robustness --%>
-                                <td>
-                                    <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}"/>" onsubmit="return confirm('Do you really want to edit this notification channel?');" method="post" >
-                                        <select name="aguardandoAprovacao">
-
-                                            <c:choose>
-                                                <c:when test="${entry.value == 'true'}">
-                                                    <option selected="selected" value="true">True</option>
-                                                    <option value="false">False</option>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <option selected="selected" value="false">False</option>
-                                                    <option value="true">True</option>
-                                                </c:otherwise>
-                                            </c:choose>
-
-                                        </select>
-                                        <input type="hidden" name="editCanalNotificacao" value="<c:out value="${id}"/>">
-                                        <input type="submit" value="Edit">
-                                    </form>
-                                </td>
+                            <c:when test="${id != null && entry.key != 'id' && entry.key != 'canal'}"> <%-- robustness AND disallow edit id and channel --%>
+                                <td><input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
                             </c:when>
                             <c:otherwise>
                                 <td><c:out value="${entry.value}"/></td>
@@ -97,11 +81,12 @@
 
                     <td>
                         <c:if test="${id != null}"> <%-- robustness --%>
-                            <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}"/>" onsubmit="return confirm('Do you really want to delete this notification channel?');" method="post">
-                                <input type="hidden" name="deleteCanalNotificacao" value="<c:out value="${id}"/>">
+                            <form action="<c:out value="${urlPrefix}${user.externalId}"/>" onsubmit="return confirm('Do you really want to delete this contact?');" method="post">
+                                <input type="hidden" name="deleteContacto" value="<c:out value="${id}"/>">
                                 <input type="submit" value="Delete">
                             </form>
 
+                            <input type="submit" value="Update" form="<c:out value="${formPrefix}${id}"/>">
                         </c:if>
                     </td>
                 </tr>
@@ -110,11 +95,19 @@
 
     </div>
 
-    <div class="create-canalnotificacao" id="div2">
-        <br><h3>Add new notification channel</h3>
+    <div class="create-contact" id="div2">
+        <br><h3>Add new contact</h3>
 
-        <form id="form2" action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}"/>" method="post" >
+        <form id="form2" action="<c:out value="${urlPrefix}${user.externalId}"/>" method="post" >
             <table id="table2">
+
+                <c:forEach var="parcont" items="${parametros_contacto}">
+                    <tr>
+                        <td><c:out value="${fn:toUpperCase(fn:substring(parcont, 0, 1))}${fn:substring(parcont, 1, fn:length(parcont))}"/>:</td>
+                        <td><input type="text" name="<c:out value="${parcont}"/>" value=""></td>
+                    </tr>
+                </c:forEach>
+
                 <tr>
                     <td>Select channel:</td>
                     <td>
@@ -138,10 +131,10 @@
                             </c:forEach>
                         </select>
                     </td>
-
                 </tr>
+
             </table>
-            <input type="hidden" name="createCanalNotificacao" value="does_not_matter">
+            <input type="hidden" name="createContacto" value="does_not_matter">
             <input type="submit" value="Create">
         </form>
 

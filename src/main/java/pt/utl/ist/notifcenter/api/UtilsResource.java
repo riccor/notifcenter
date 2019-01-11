@@ -116,6 +116,10 @@ public class UtilsResource {
                 throw new Exception("error");
             }
 
+            if (!clazz.isInstance(t)) {
+                throw new Exception("error");
+            }
+
             return t;
         }
         catch (Exception e) {
@@ -148,6 +152,10 @@ public class UtilsResource {
                 T t = (T) dObj;
 
                 if (!FenixFramework.isDomainObjectValid((DomainObject) t)) {
+                    throw new Exception("error");
+                }
+
+                if (!clazz.isInstance(t)) {
                     throw new Exception("error");
                 }
 
