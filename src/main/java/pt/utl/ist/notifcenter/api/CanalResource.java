@@ -25,6 +25,7 @@ import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
+import pt.utl.ist.notifcenter.utils.Utils;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -85,9 +86,10 @@ public class CanalResource extends BennuRestResource {
         for (BeanDefinition bd : scanner.findCandidateComponents(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain())) {
             try {
                 Class<?> clazz = Class.forName(bd.getBeanClassName());
-                AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
+                //AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
                 String name = clazz.getSimpleName(); //bd.getBeanClassName().substring(bd.getBeanClassName().lastIndexOf('.') + 1);
-                String[] params = annotation.classFields();
+                //String[] params = annotation.classFields();
+                String[] params = Utils.getDomainClassSlots(clazz);
                 list.put(name, Arrays.asList(params));
             } catch (Exception e) {
                 System.out.println("error on getting a channel class params");

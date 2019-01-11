@@ -13,19 +13,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import pt.ist.fenixframework.FenixFramework;
 import pt.ist.fenixframework.dml.DomainClass;
+import pt.ist.fenixframework.dml.DomainEntity;
 import pt.ist.fenixframework.dml.Slot;
+import pt.ist.fenixframework.dml.ValueType;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.api.json.ContactoAdapter;
+import pt.utl.ist.notifcenter.domain.Canal;
 import pt.utl.ist.notifcenter.domain.Contacto;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
+import pt.utl.ist.notifcenter.utils.Utils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequestMapping("/utilizadores")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.ui.utilizadores")
@@ -107,12 +109,16 @@ public class UtilizadoresController {
 
         model.addAttribute("users", getExistingUtilizadores());
 
-        //HMMMM! TODO
+        //HMMMM!
+        /*
         for (DomainClass u : FenixFramework.getDomainModel().getDomainClasses()) {
+            //if (u.getClass().getSuperclass().equals(Canal.class)) { //always DomainObject
             for (Slot s : u.getSlotsList()) {
-                System.out.println("Class " + s.getSlotType() + ": " + s.getName() + " " + s.getName() + ";");
+                System.out.println("Class: " + u.getName() + ": " + Utils.splitAndGetLastIndex(s.getTypeName(), "\\.") + " " + s.getName() + ";");
             }
+            //}
         }
+        */
 
         return "notifcenter/utilizadores";
     }

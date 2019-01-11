@@ -1,6 +1,6 @@
 package pt.utl.ist.notifcenter.domain;
 
-@AnotacaoCanal(classFields = {"id", "numeroTelemovel", "tokenAutorizacao"})
+@AnotacaoCanal//(classFields = {"id", "numeroTelemovel", "tokenAutorizacao"})
 public class Telegram extends Telegram_Base {
     
     public Telegram() {

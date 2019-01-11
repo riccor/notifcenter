@@ -92,9 +92,9 @@ public class CanaisController {
             map.put("email", c.getEmail());
 
             try {
-                AnotacaoCanal annotation = c.getClass().getAnnotation(AnotacaoCanal.class);
-
-                for (String key : annotation.classFields()) {
+                //AnotacaoCanal annotation = c.getClass().getAnnotation(AnotacaoCanal.class);
+                //for (String key : annotation.classFields()) {
+                for (String key : Utils.getDomainClassSlots(c.getClass())) {
                     String methodName = "get" + Utils.capitalizeFirstLetter(key);
                     String value = (String) c.getClass().getMethod(methodName).invoke(c); //são sempre strings
                     map.put(key, value);

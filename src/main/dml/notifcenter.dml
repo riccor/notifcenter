@@ -131,10 +131,12 @@ class Canal {
         String authToken;
     }
 
-        class TwilioWhatsapp extends Twilio {
-            String fromPhoneNumber;
-            String uri;
-        }
+    class TwilioWhatsapp extends Canal {
+        String accountSID;
+        String authToken;
+        String fromPhoneNumber;
+        String uri;
+    }
 
 
 class CanalNotificacao { /*o mesmo que "Configuracao Canal Remetente"*/

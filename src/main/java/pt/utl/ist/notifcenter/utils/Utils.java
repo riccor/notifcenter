@@ -8,9 +8,14 @@ import org.fenixedu.bennu.core.security.Authenticate;
 import org.springframework.util.CollectionUtils;
 import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
+import pt.ist.fenixframework.dml.DomainClass;
+import pt.ist.fenixframework.dml.Slot;
+import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
+import pt.utl.ist.notifcenter.domain.Canal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -29,6 +34,37 @@ public class Utils {
         return null;
     }
     */
+
+    public static String splitAndGetLastIndex(String str, String regex) {
+        String[] bits = str.split(regex);
+
+        if (bits.length > 0) {
+            return bits[bits.length-1];
+        }
+
+        return str;
+    }
+
+    public static <T> boolean isClassAChannel(Class<T> clazz) {
+        if (clazz.isAnnotationPresent(AnotacaoCanal.class)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static <T> String[] getDomainClassSlots(Class <T> clazz){
+        ArrayList<String> arrayList = new ArrayList<>();
+        for (DomainClass dc : FenixFramework.getDomainModel().getDomainClasses()) {
+            if (dc.getName().equals(clazz.getSimpleName())) {
+                for (Slot s : dc.getSlotsList()) {
+                    //debug
+                    //System.out.println("Class: " + dc.getName() + ": " + splitAndGetLastIndex(s.getTypeName(), "\\.") + " " + s.getName() + ";");
+                    arrayList.add(s.getName());
+                }
+            }
+        }
+        return arrayList.toArray(new String[0]);
+    }
 
     public static boolean isValidString(@Nullable String str) {
         return (str != null && !str.isEmpty());

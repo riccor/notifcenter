@@ -6,6 +6,9 @@ import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
+import pt.ist.fenixframework.FenixFramework;
+import pt.ist.fenixframework.dml.DomainClass;
+import pt.ist.fenixframework.dml.Slot;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.domain.Canal;
@@ -13,6 +16,7 @@ import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import pt.utl.ist.notifcenter.utils.Utils;
 
+import javax.rmi.CORBA.Util;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -26,8 +30,14 @@ public class CanalAdapter implements JsonAdapter<Canal> {
 
         try {
             clazz = Class.forName(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain() + "." + channelType);
-            AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
-            params = annotation.classFields();
+
+            if(!Utils.isClassAChannel(clazz)) {
+                throw new Exception("error");
+            }
+
+            //AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
+            //params = annotation.classFields();
+            params = Utils.getDomainClassSlots(clazz);
         }
         catch (Exception e) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_NAME_ERROR);
@@ -57,8 +67,9 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         String[] params;
 
         try {
-            AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
-            params = annotation.classFields();
+            //AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
+            ///params = annotation.classFields();
+            params = Utils.getDomainClassSlots(clazz);
         }
         catch (Exception e) {
             throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Such class is not identified as a channel.");
@@ -102,9 +113,9 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         ///jObj.addProperty("password", obj.getPassword());
 
         try {
-            AnotacaoCanal annotation = obj.getClass().getAnnotation(AnotacaoCanal.class);
-
-            for (String str : annotation.classFields()) {
+            //AnotacaoCanal annotation = obj.getClass().getAnnotation(AnotacaoCanal.class);
+            //for (String str : annotation.classFields()) {
+            for (String str : Utils.getDomainClassSlots(obj.getClass())) {
                 String methodName = "get" + Utils.capitalizeFirstLetter(str);
                 String value = (String) obj.getClass().getMethod(methodName).invoke(obj); //always strings
                 jObj.addProperty(str, value);

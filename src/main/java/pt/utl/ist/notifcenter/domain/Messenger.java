@@ -2,7 +2,7 @@ package pt.utl.ist.notifcenter.domain;
 
 import java.util.HashMap;
 
-@AnotacaoCanal(classFields = {"numeroTelemovel", "tokenAcesso"})
+@AnotacaoCanal//(classFields = {"numeroTelemovel", "tokenAcesso"})
 public class Messenger extends Messenger_Base {
     
     public Messenger() {
