@@ -5,6 +5,8 @@
     <title>Notifcenter - Applications/Senders</title>
 
     <c:set var="urlPrefix" value="/notifcenter/aplicacoes/"/>
+    <c:set var="gruposDestinatarios" value="gruposdestinatarios"/>
+    <c:set var="canaisNotificacao" value="canaisnotificacao"/>
     <c:set var="slash" value="/"/>
 
     <style>
@@ -46,6 +48,7 @@
                 <th>Id</th>
                 <th>Name</th>
                 <th>Notification Channels</th>
+                <th>Receiver Groups</th>
                 <th>Actions</th>
             </tr>
 
@@ -80,7 +83,7 @@
                     <td>
                         <c:choose>
                             <c:when test="${id != null}"> <%-- robustness --%>
-                                <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${id}"/>" method="get">
+                                <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${id}${slash}${canaisNotificacao}"/>" method="get">
                                     <input type="submit" value="Go">
                                 </form>
                             </c:when>
@@ -89,6 +92,21 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
+
+
+                    <td>
+                        <c:choose>
+                            <c:when test="${id != null}"> <%-- robustness --%>
+                                <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${id}${slash}${gruposDestinatarios}"/>" method="get">
+                                    <input type="submit" value="Go">
+                                </form>
+                            </c:when>
+                            <c:otherwise>
+                                id error
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+
 
                     <td>
                         <c:if test="${id != null}"> <%-- robustness --%>

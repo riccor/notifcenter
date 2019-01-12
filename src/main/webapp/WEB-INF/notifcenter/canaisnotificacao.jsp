@@ -5,6 +5,7 @@
     <title>Notifcenter - Applications/Senders/Notification Channels</title>
 
     <c:set var="urlPrefix" value="/notifcenter/aplicacoes/"/>
+    <c:set var="canaisNotificacao" value="canaisnotificacao"/>
     <c:set var="slash" value="/"/>
     <c:set var="paropen" value="("/>
     <c:set var="parclose" value=")"/>
@@ -68,7 +69,7 @@
                         <c:choose>
                             <c:when test="${id != null && entry.key == 'approved'}"> <%-- robustness --%>
                                 <td>
-                                    <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}"/>" onsubmit="return confirm('Do you really want to edit this notification channel?');" method="post" >
+                                    <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}${slash}${canaisNotificacao}"/>" onsubmit="return confirm('Do you really want to edit this notification channel?');" method="post" >
                                         <select name="aguardandoAprovacao">
 
                                             <c:choose>
@@ -97,7 +98,7 @@
 
                     <td>
                         <c:if test="${id != null}"> <%-- robustness --%>
-                            <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}"/>" onsubmit="return confirm('Do you really want to delete this notification channel?');" method="post">
+                            <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}${slash}${canaisNotificacao}"/>" onsubmit="return confirm('Do you really want to delete this notification channel?');" method="post">
                                 <input type="hidden" name="deleteCanalNotificacao" value="<c:out value="${id}"/>">
                                 <input type="submit" value="Delete">
                             </form>
@@ -113,7 +114,7 @@
     <div class="create-canalnotificacao" id="div2">
         <br><h3>Add new notification channel</h3>
 
-        <form id="form2" action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}"/>" method="post" >
+        <form id="form2" action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}${slash}${canaisNotificacao}"/>" method="post" >
             <table id="table2">
                 <tr>
                     <td>Select channel:</td>
