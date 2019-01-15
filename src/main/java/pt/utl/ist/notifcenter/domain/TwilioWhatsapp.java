@@ -1,7 +1,6 @@
 package pt.utl.ist.notifcenter.domain;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
@@ -15,6 +14,8 @@ import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.Atomic;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
+import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
+import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import pt.utl.ist.notifcenter.utils.Utils;
 
 import java.util.*;
@@ -81,8 +82,14 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
     }
     */
 
+    public void checkIsMessageAdequateForChannel(Mensagem msg) {
+
+    }
+
     @Override
     public void sendMessage(Mensagem msg){
+
+        checkIsMessageAdequateForChannel(msg);
 
         MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();

@@ -6,9 +6,14 @@ public class Email extends Email_Base {
         super();
     }
 
+    public void checkIsMessageAdequateForChannel(Mensagem msg) {
+
+    }
+
     @Override
     public void sendMessage(Mensagem msg) {
 
+        checkIsMessageAdequateForChannel(msg);
     }
 
 }

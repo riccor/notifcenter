@@ -1,7 +1,5 @@
 package pt.utl.ist.notifcenter.domain;
 
-import java.util.HashMap;
-
 @AnotacaoCanal//(classFields = {"numeroTelemovel", "tokenAcesso"})
 public class Messenger extends Messenger_Base {
     
@@ -9,18 +7,19 @@ public class Messenger extends Messenger_Base {
         super();
     }
 
+    public void checkIsMessageAdequateForChannel(Mensagem msg) {
+
+    }
+
     @Override
     public void sendMessage(Mensagem msg) {
 
+        checkIsMessageAdequateForChannel(msg);
     }
 
     /*
     public String toString() {
         return "NumeroTelemovel: " + getNumeroTelemovel() + " TokenAcesso: " + getTokenAcesso();
     }*/
-
-    public HashMap<String, String> getParams() {
-        return new HashMap<String, String>();
-    }
 
 }

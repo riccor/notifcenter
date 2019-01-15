@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorsAndWarnings {
 
+    INVALID_ASSUNTO_ERROR ("invalidMessageAssunto", "Invalid message param: assunto", HttpStatus.PRECONDITION_FAILED),
+    INVALID_TEXTO_CURTO_ERROR ("invalidMessageTextoCurto", "Invalid message param: textoCurto", HttpStatus.PRECONDITION_FAILED),
+    INVALID_TEXTO_LONGO_ERROR ("invalidMessageTextoLongo", "Invalid message param: textoLongo", HttpStatus.PRECONDITION_FAILED),
     NOTALLOWED_VIEW_PAGE_ERROR ("notAllowedPage", "No permissions to view this page.", HttpStatus.FORBIDDEN),
     INVALID_JSON_ERROR ("invalidJson", "Invalid JSON data.", HttpStatus.PRECONDITION_FAILED),
     INVALID_DATETIME_ERROR ("invalidDatetime", "Invalid datetime. Valid pattern is dd.MM.yyyy HH:mm:ss.SSS", HttpStatus.PRECONDITION_FAILED),

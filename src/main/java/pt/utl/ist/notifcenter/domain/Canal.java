@@ -25,6 +25,8 @@ public abstract class Canal extends Canal_Base {
 
     public abstract void sendMessage(Mensagem msg); //{ System.out.println("\n\nshould not see this"); }
 
+    public abstract void checkIsMessageAdequateForChannel(Mensagem msg);
+
     @Atomic
     public void delete() {
         for (CanalNotificacao cn : this.getCanalNotificacaoSet()) {

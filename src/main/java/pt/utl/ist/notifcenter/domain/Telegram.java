@@ -7,10 +7,14 @@ public class Telegram extends Telegram_Base {
         super();
     }
 
-    @Override
-    public void sendMessage(Mensagem msg) {
+    public void checkIsMessageAdequateForChannel(Mensagem msg) {
 
     }
 
+    @Override
+    public void sendMessage(Mensagem msg) {
+
+        checkIsMessageAdequateForChannel(msg);
+    }
 
 }

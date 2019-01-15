@@ -1,6 +1,7 @@
 package pt.utl.ist.notifcenter.domain;
 
 import org.apache.avro.reflect.Nullable;
+import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.joda.time.DateTime;
@@ -9,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
+import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
+import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 import java.util.ArrayList;
 
@@ -29,6 +32,13 @@ public class Mensagem extends Mensagem_Base {
 
     @Atomic
     public static Mensagem createMensagem(final CanalNotificacao canalNotificacao, final PersistentGroup[] gruposDestinatarios, final String assunto, final String textoCurto, final String textoLongo, @Nullable final DateTime dataEntrega, @Nullable final String callbackUrlEstadoEntrega /*, @Nullable final ArrayList<Attachment> attachments*/) {
+
+        if (textoCurto.length() > Integer.parseInt(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize())) {
+            ///IllegalArgumentException
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "TextoCurto must be at most " +
+                    NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize() + " characters long.");
+        }
+
         Mensagem mensagem = new Mensagem();
         mensagem.setCanalNotificacao(canalNotificacao);
 
