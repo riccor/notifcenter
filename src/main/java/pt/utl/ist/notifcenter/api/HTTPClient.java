@@ -27,7 +27,11 @@ public class HTTPClient {
         return new String(Base64.getDecoder().decode(encodedToken), StandardCharsets.UTF_8);
     }
 
+
+
     public static String createBasicAuthString(String username, String password){
+        ///TODO: URL encode username and password first (according to RFC 1738):
+        ///return String.format("Basic %s", base64Encode(URLencode(username) + ":" + URLencode(password)));
         return String.format("Basic %s", base64Encode(username + ":" + password));
     }
 
