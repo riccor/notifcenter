@@ -110,13 +110,12 @@ class Canal {
     }
 
     class Twitter extends Canal {
-        String numeroTelemovel;
-        String idAplicacao;
-        String chaveAplicacao;    
-        /* Alternativa:
-            String oauth2TokenAcesso;
-            String oauth2SegredoDoToken;
-        */
+        //String numeroTelemovel;
+        String oauth_consumer_key;
+        String oauth_consumer_secret;
+        String oauth_token;
+        String oauth_token_secret;
+        String uri;
     }
 
     // Assumo que isto também é um canal

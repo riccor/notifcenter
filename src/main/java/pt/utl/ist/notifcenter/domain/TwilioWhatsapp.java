@@ -14,8 +14,6 @@ import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.Atomic;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
-import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
-import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import pt.utl.ist.notifcenter.utils.Utils;
 
 import java.util.*;
@@ -97,12 +95,9 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
         header.add("Authorization", HTTPClient.createBasicAuthString(this.getAccountSID(), this.getAuthToken()));
 
-        body.put("To", Arrays.asList("initializing...")); ///
-        body.put("From", Arrays.asList(this.getFromPhoneNumber()));
-
-        String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + msg.getExternalId();
-        String message = msg.getTextoCurto() + linkForMessage;
-        body.put("Body", Arrays.asList(message));
+        body.put("To", Collections.singletonList("initializing...")); ///
+        body.put("From", Collections.singletonList(this.getFromPhoneNumber()));
+        body.put("Body", Collections.singletonList(msg.createSimpleMessageNotificationWithLink()));
 
         for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
             group.getMembers().forEach(user -> {
@@ -114,13 +109,13 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
                 for (Contacto contacto : user.getContactosSet()) {
 
-                    if (contacto.getCanal().getExternalId().equals(this.getExternalId())) {
+                    if (contacto.getCanal().equals(this)) {
 
                         //Debug
                         System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
                         //impedir que a mesma mensagem seja enviada duas vezes para o mesmo destinatário:
-                        if (contacto.getEstadoDeEntregaDeMensagemEnviadaAContactoSet().stream().anyMatch(e -> e.getMensagem().getExternalId().equals(msg.getExternalId()))) {
+                        if (contacto.getEstadoDeEntregaDeMensagemEnviadaAContactoSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
                             System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
                         }
                         else {

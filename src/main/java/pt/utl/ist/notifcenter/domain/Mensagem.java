@@ -53,8 +53,7 @@ public class Mensagem extends Mensagem_Base {
 
         if (callbackUrlEstadoEntrega != null) {
             mensagem.setCallbackUrlEstadoEntrega(callbackUrlEstadoEntrega);
-        }
-        else {
+        } else {
             mensagem.setCallbackUrlEstadoEntrega("none");
         }
 
@@ -67,8 +66,7 @@ public class Mensagem extends Mensagem_Base {
         if (dataEntrega != null) {
             mensagem.setDataEntrega(dataEntrega);
             //TODO fazer algo para enviar mensagem no futuro
-        }
-        else {
+        } else {
             mensagem.setDataEntrega(DateTime.now());
         }
 
@@ -79,6 +77,12 @@ public class Mensagem extends Mensagem_Base {
     @Atomic
     public void addAttachment(Attachment at) {
         this.addAttachments(at);
+    }
+
+    public String createSimpleMessageNotificationWithLink() {
+        String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + this.getExternalId();
+        String simple = this.getTextoCurto() + linkForMessage;
+        return simple;
     }
 
     @Atomic

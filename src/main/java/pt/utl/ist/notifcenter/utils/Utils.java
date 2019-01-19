@@ -15,25 +15,39 @@ import pt.utl.ist.notifcenter.domain.Canal;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Utils {
+    
+    //colors
+    public static final String RED = "\033[0;31m";     // RED
+    public static final String GREEN = "\033[0;32m";   // GREEN
+    public static final String WHITE = "\033[0;37m";   // WHITE
+    public static final String MAGENTA = "\033[0;35m";  // MAGENTA
+    public static final String CYAN = "\033[0;36m";     // CYAN
 
-    /* já existe no bennu e mais eficiente (usa ConcurrentHashMap como cache):
-    @Atomic
-    public static User findUserByName(String name) {
-        Set<User> users = FenixFramework.getDomainRoot().getBennu().getUserSet();
-        for (User u : users) {
-            if (u.getName().equals(name))
-                return u;
-        }
-        return null;
+    public static long getCurrentEpochTime() {
+        return new Date().getTime() / 1000L;
     }
-    */
+
+    public static String getCurrentEpochTimeAsString() {
+        return Long.toString(getCurrentEpochTime());
+    }
+
+    public static String generateRandomLettersString(int length) {
+
+        final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+        Random random = new Random();
+        StringBuilder builder = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            builder.append(ALPHABET.charAt(random.nextInt(ALPHABET.length())));
+        }
+
+        return builder.toString();
+    }
 
     public static String splitAndGetLastIndex(String str, String regex) {
         String[] bits = str.split(regex);
@@ -153,6 +167,14 @@ public class Utils {
         return propertiesMap;
     }
 
+    public static void printMap(Map<String, String> map, String title) {
+        System.out.println();
+        System.out.println(Utils.MAGENTA + title + Utils.CYAN);
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            System.out.println(entry.getKey() + " => " + entry.getValue());
+        }
+        System.out.println();
+    }
 
 }
 

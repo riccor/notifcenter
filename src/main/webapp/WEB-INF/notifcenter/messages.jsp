@@ -6,6 +6,7 @@
 
     <c:set var="urlPrefix" value="/notifcenter/mensagens"/>
     <c:set var="slash" value="/"/>
+    <c:set var="status" value="deliverystatuses"/>
 
     <style>
         #table1 {
@@ -53,6 +54,7 @@
                 <th>Delivery date</th>
                 <th>Delivery status callback</th>
                 <th>Attachments</th>
+                <th>Delivery statuses</th>
                 <th>Actions</th>
             </tr>
 
@@ -73,6 +75,19 @@
                         <td><c:out value="${entry.value}"/></td>
 
                     </c:forEach>
+
+                    <td>
+                        <c:choose>
+                            <c:when test="${id != null}"> <%-- robustness --%>
+                                <form action="<c:out value="${urlPrefix}${slash}${id}${slash}${status}"/>" method="get">
+                                    <input type="submit" value="Go">
+                                </form>
+                            </c:when>
+                            <c:otherwise>
+                                id error
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
 
                     <td>
                         <c:if test="${id != null}"> <%-- robustness --%>

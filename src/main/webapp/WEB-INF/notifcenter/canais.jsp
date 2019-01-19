@@ -44,8 +44,7 @@
                 <th>Id</th>
                 <th>Type</th>
                 <th>Email</th>
-                <th colspan="4">Authentication parameters</th>
-                <th>Actions</th>
+                <th colspan="6">Authentication parameters</th>
             </tr>
 
             <c:set var="formPrefix" value="form-"/>

@@ -254,6 +254,15 @@ public class AplicacaoResource extends BennuRestResource {
         return view(create(body, Aplicacao.class), AplicacaoAdapter.class);
     }
 
+    @RequestMapping(value = "/recursive", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement recursive(@RequestBody JsonElement body) {
+
+        String property = "recipient_id";
+        System.out.println("\n\nresult: " + UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(body.getAsJsonObject(), property));
+
+        return body;
+    }
+
     @RequestMapping(value = "/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement viewAplicacao(@PathVariable("app") Aplicacao app) {
 

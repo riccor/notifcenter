@@ -104,6 +104,47 @@ public class MensagensController {
     }
 
 
+    //Message delivery status
+    @RequestMapping("/{msg}/deliverystatuses")
+    public String mensagemDeliveryStatus(@PathVariable("msg") Mensagem msg, Model model, HttpServletRequest request) {
+
+        if (!UtilsResource.isUserLoggedIn()) {
+            ///throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
+            return "redirect:/login?callback=" + request.getRequestURL();
+        }
+
+        if (!FenixFramework.isDomainObjectValid(msg)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR);
+        }
+
+        User user = UtilsResource.getAuthenticatedUser();
+        UtilsResource.checkIsUserValid(user);
+        UtilsResource.checkAdminPermissions(user);
+
+        model.addAttribute("message", msg);
+        model.addAttribute("deliverystatuses", getExistingDeliveryStatusesFromMessage(msg));
+
+        return "notifcenter/deliverystatuses";
+    }
+
+    public List<HashMap<String, String>> getExistingDeliveryStatusesFromMessage(Mensagem msg) {
+
+        List<HashMap<String, String>> list = new ArrayList<>();
+
+        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : msg.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+            HashMap<String, String> map = new LinkedHashMap<>();
+            map.put("id", e.getExternalId());
+            map.put("channel", e.getCanal().getExternalId());
+            map.put("contact", e.getContacto().getExternalId());
+            map.put("externalId", e.getIdExterno());
+            map.put("deliveryStatus", e.getEstadoEntrega());
+
+            list.add(map);
+        }
+
+        return list;
+    }
+
     //View message:
     @RequestMapping("/{msg}")
     public String mensagem(@PathVariable("msg") Mensagem msg, Model model, HttpServletRequest request) {

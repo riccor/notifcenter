@@ -11,15 +11,32 @@ import org.joda.time.DateTime;
 import org.springframework.util.MultiValueMap;
 import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
-import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class UtilsResource {
+
+    public static String getRequiredValueOrReturnNullInsteadRecursive(JsonObject obj, String property) {
+
+        String toReturn = getRequiredValueOrReturnNullInstead(obj, property);
+
+        if (toReturn == null) {
+            for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+
+                if (entry.getValue() instanceof JsonObject) {
+                    toReturn = getRequiredValueOrReturnNullInsteadRecursive(entry.getValue().getAsJsonObject(), property);
+                }
+
+                if (toReturn != null) {
+                    break;
+                }
+            }
+        }
+
+        return toReturn;
+    }
 
     public static JsonObject stringToJson(String messageJson) {
         try {
