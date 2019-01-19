@@ -20,10 +20,12 @@ public class UtilsResource {
 
     public static String getRequiredValueOrReturnNullInsteadRecursive(JsonObject obj, String property) {
 
-        String toReturn = getRequiredValueOrReturnNullInstead(obj, property);
+        String toReturn = getRequiredValueOrReturnNullInsteadSpecial(obj, property);
 
         if (toReturn == null) {
             for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+
+                //System.out.println("key: " + entry.getKey() + " | value: " + entry.getValue().toString());
 
                 if (entry.getValue() instanceof JsonObject) {
                     toReturn = getRequiredValueOrReturnNullInsteadRecursive(entry.getValue().getAsJsonObject(), property);
@@ -55,6 +57,16 @@ public class UtilsResource {
             }
         }
         throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
+    }
+
+    //Using toString() instead of getAsString()
+    public static String getRequiredValueOrReturnNullInsteadSpecial(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            if (!obj.get(property).toString().isEmpty()) {
+                return obj.get(property).toString().replace("\"", ""); //remove quotes
+            }
+        }
+        return null;
     }
 
     public static String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {

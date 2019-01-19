@@ -5,6 +5,10 @@ Twitter Direct Messages: https://developer.twitter.com/en/docs/direct-messages/s
 
 Using Twitter Oauth legacy authentication
 
+Get twitter user id through username: http://gettwitterid.com/
+
+my twitter account id: 1085250046176702466
+
 Limit:
 Requests / 24-hour window	1000 per user; 15000 per app
 */
@@ -12,6 +16,7 @@ Requests / 24-hour window	1000 per user; 15000 per app
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.apache.avro.reflect.Nullable;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.springframework.http.*;
 import org.springframework.web.context.request.async.DeferredResult;
@@ -78,9 +83,10 @@ public class Twitter extends Twitter_Base {
     }
 
     public void checkIsMessageAdequateForChannel(Mensagem msg) /*throws NotifcenterException*/ {
-        if (msg.getTextoLongo().length() > 10000) {
+        if (msg.createSimpleMessageNotificationWithLink().length() > 10000) {
             ///IllegalArgumentException
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoLongo must be at most 10000 characters long for " + this.getClass().getSimpleName() + " channel.");
+            //" Check localhost:8080/notifcenter/mensagens/281681135140901".length() = 59
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto must be at most " + (10000-59) + " characters long.");
         }
     }
 
@@ -116,12 +122,12 @@ public class Twitter extends Twitter_Base {
                             String bodyContent = HTTPClient.stringToJson(createTwitterBody(msg.createSimpleMessageNotificationWithLink(), contacto.getDadosContacto())).toString();
 
                             //debug:
-                            System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
+                            ///System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
 
                             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                             deferredResult.setResultHandler((Object responseEntity) -> {
 
-                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm);
+                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, user);
 
                             });
 
@@ -145,7 +151,7 @@ public class Twitter extends Twitter_Base {
         }
     }
 
-    static void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm) {
+    static void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm, User user) {
 
         //Debug
         HTTPClient.printResponseEntity(responseEntity);
@@ -158,22 +164,32 @@ public class Twitter extends Twitter_Base {
         "message_data":{"text":"3anexosmensagem Check localhost:8080\/notifcenter\/mensagens\/281681135140903",
         "entities":{"hashtags":[],"symbols":[],"user_mentions":[],"urls":[]}}}}}
 
-         */
+        */
+
+        /*
+        Known response errors:
+        {"errors":[{"code":150,"message":"You cannot send messages to users who are not following you."}]}
+        {"errors":[{"code":108,"message":"Cannot find specified user."}]}
+        */
 
         JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
-        ///String idExterno = UtilsResource.getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "id");
         String idExterno = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "id");
-        String estadoEntrega = "Delivered";
+        String estadoEntrega;
 
-        //EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(canal, msg, contacto, idExterno, estadoEntrega);
-        edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
+        if (idExterno == null) {
+            idExterno = "null";
+        }
 
-        if (responseEntity.getStatusCode() != HttpStatus.OK || responseEntity.getStatusCode() != HttpStatus.CREATED || idExterno == null || estadoEntrega == null) {
-            System.out.println("Failed to send message to " + edm.getContacto().getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+        if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
+            estadoEntrega = "Delivered";
+            System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
         else {
-            System.out.println("Success on sending message to " + edm.getContacto().getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "errors");
+            System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
+
+        edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
     }
 
 
@@ -232,7 +248,7 @@ public class Twitter extends Twitter_Base {
     public static String createParameterString(Map<String, String> map) {
 
         //debug:
-        Utils.printMap(map, "MAP that originates Parameter String:");
+        ///Utils.printMap(map, "MAP that originates Parameter String:");
 
         StringBuilder sb = new StringBuilder("");
         for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -267,7 +283,7 @@ public class Twitter extends Twitter_Base {
         map.put(HTTPClient.percentEncode("oauth_signature"), HTTPClient.percentEncode(signature));
 
         //debug:
-        Utils.printMap(map, "MAP that originates Header String:");
+        ///Utils.printMap(map, "MAP that originates Header String:");
 
         StringBuilder sb2 = new StringBuilder("Oauth ");
         for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -378,9 +394,7 @@ public class Twitter extends Twitter_Base {
         return signatureBase64;
     }
 
-    
-    
-    
+
 }
 
 

@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -129,7 +130,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                             deferredResult.setResultHandler((Object responseEntity) -> {
 
                                 //handleDeliveryStatus((ResponseEntity<String>) responseEntity, this, msg, contacto);
-                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm);
+                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, user);
 
                             });
 
@@ -154,7 +155,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         }
     }
 
-    static void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm) {
+    static void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm, User user) {
 
         //Debug
         HTTPClient.printResponseEntity(responseEntity);
@@ -163,14 +164,22 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         String idExterno = UtilsResource.getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "sid");
         String estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "status");
 
+        if (idExterno == null) {
+            idExterno = "null";
+        }
+
+        if (estadoEntrega == null) {
+            estadoEntrega = "null";
+        }
+
         //EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(canal, msg, contacto, idExterno, estadoEntrega);
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
-        if (responseEntity.getStatusCode() != HttpStatus.OK || responseEntity.getStatusCode() != HttpStatus.CREATED || idExterno == null || estadoEntrega == null) {
-            System.out.println("Failed to send message to " + edm.getContacto().getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+        if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
+            System.out.println("Success on sending message to user id " + user.getExternalId() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
         else {
-            System.out.println("Success on sending message to " + edm.getContacto().getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Failed to send message to user id " + user.getExternalId() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
     }
 

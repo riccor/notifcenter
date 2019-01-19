@@ -10,6 +10,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.async.DeferredResult;
 
@@ -232,14 +233,13 @@ public class HTTPClient {
 
         AsyncRestTemplate restTemplate = new AsyncRestTemplate();
 
-        /*
+        //because of errors like "WARN  o.s.web.client.AsyncRestTemplate - Async POST request for "https://api.twitter.com/1.1/direct_messages/events/new.json" resulted in 403 (Forbidden); invoking error handler"
         restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
             protected boolean hasError(HttpStatus statusCode) {
                 System.out.println(Utils.WHITE + "\nHTTP async request status code: " + statusCode);
                 return false;
             }
         });
-        */
 
         ListenableFuture<ResponseEntity<String>> futureEntity = restTemplate.exchange(uri, method, entity, String.class);
         futureEntity.addCallback(new ListenableFutureCallback<ResponseEntity<String>>() {

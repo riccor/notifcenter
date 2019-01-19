@@ -142,7 +142,6 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.bennu.spring.security.CSRFTokenRepository;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;

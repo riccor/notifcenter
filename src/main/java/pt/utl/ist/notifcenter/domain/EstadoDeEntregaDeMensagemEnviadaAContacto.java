@@ -1,5 +1,6 @@
 package pt.utl.ist.notifcenter.domain;
 
+import org.apache.avro.reflect.Nullable;
 import pt.ist.fenixframework.Atomic;
 
 public class EstadoDeEntregaDeMensagemEnviadaAContacto extends EstadoDeEntregaDeMensagemEnviadaAContacto_Base {
@@ -30,7 +31,7 @@ public class EstadoDeEntregaDeMensagemEnviadaAContacto extends EstadoDeEntregaDe
     }
 
     @Atomic
-    public void changeIdExternoAndEstadoEntrega(String idExterno, String estadoEntrega) {
+    public void changeIdExternoAndEstadoEntrega(@Nullable String idExterno, @Nullable String estadoEntrega) {
         this.setIdExterno(idExterno);
         this.setEstadoEntrega(estadoEntrega);
     }
