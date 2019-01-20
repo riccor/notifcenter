@@ -99,9 +99,10 @@ class Canal {
     }
 
     class Telegram extends Canal{
-        String numeroTelemovel;
-        String ID;
-        String tokenAutorizacao;
+        //String numeroTelemovel;
+        //String ID;
+        String access_token;
+        String uri;
     }
 
     class Mattermost extends Canal{

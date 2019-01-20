@@ -123,14 +123,12 @@ public class HTTPClient {
 
         RestTemplate restTemplate = new RestTemplate();
 
-        /*
         restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
             protected boolean hasError(HttpStatus statusCode) {
                 System.out.println(Utils.WHITE + "\nHTTP sync request status code: " + statusCode);
                 return false;
             }
         });
-        */
 
         ResponseEntity<String> response = restTemplate.exchange(uri, method, entity, String.class);
         //String result = restTemplate.getForObject(uri, String.class);
@@ -160,14 +158,12 @@ public class HTTPClient {
 
         RestTemplate restTemplate = new RestTemplate();
 
-        /*
         restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
             protected boolean hasError(HttpStatus statusCode) {
                 System.out.println(Utils.WHITE + "\nHTTP sync request status code: " + statusCode);
                 return false;
             }
         });
-        */
         
         ResponseEntity<String> response = restTemplate.exchange(uri, method, entity, String.class);
         //String result = restTemplate.getForObject(uri, String.class);
@@ -197,14 +193,12 @@ public class HTTPClient {
 
         AsyncRestTemplate restTemplate = new AsyncRestTemplate();
 
-        /*
         restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
             protected boolean hasError(HttpStatus statusCode) {
                 System.out.println(Utils.WHITE + "\nHTTP async request status code: " + statusCode);
                 return false;
             }
         });
-        */
         
         ListenableFuture<ResponseEntity<String>> futureEntity = restTemplate.exchange(uri, method, entity, String.class);
         futureEntity.addCallback(new ListenableFutureCallback<ResponseEntity<String>>() {
