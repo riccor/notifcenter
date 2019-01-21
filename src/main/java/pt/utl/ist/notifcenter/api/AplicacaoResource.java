@@ -668,55 +668,44 @@ public class AplicacaoResource extends BennuRestResource {
     @SkipCSRF
     @RequestMapping(value = "/{canal}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, HttpServletRequest request) {
+        //Received content might not be JSON, so we do not use "@RequestBody JsonElement body"
 
         if (!FenixFramework.isDomainObjectValid(canal)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
         }
 
-        //PROBLEMA: Nao pode levar "@RequestBody JsonElement body"!
-        MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);///.getAsJsonObject();
-
         System.out.println("####### got new messagedeliverystatus message!!");
         System.out.println(HTTPClient.getHttpServletRequestParamsAsJson(request).toString());
 
-        //TODO - NAO É PRECISO FAZER ESTA DISTINCAO, POIS ESTE RECURSO ESTARÀ DENTRO DE TWILIOWHATSAPPRESOURCE.java!
-        ///TwilioWhatsapp
-        //"MessageStatus":"delivered","MessageSid":"SM9f705525cc4143ef8dece27557549a5f"
-        //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
-        String idExterno = UtilsResource.getRequiredValueFromMultiValueMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageSid");
-        String estadoEntrega = UtilsResource.getRequiredValueFromMultiValueMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageStatus");
-        ///}
+        EstadoDeEntregaDeMensagemEnviadaAContacto ede = canal.dealWithMessageDeliveryStatusCallback(request);
 
-        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
-            if (e.getIdExterno().equals(idExterno)) {
-                e.changeEstadoEntrega(estadoEntrega);
-
-                //If there is a message callback, then send message status to the app
-                if (!e.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
-
-                    MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-                    MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-
-                    header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-                    body.put("MessageId", Collections.singletonList(e.getMensagem().getExternalId()));
-                    body.put("User", Collections.singletonList(e.getContacto().getUtilizador().getUsername())); ///?
-                    body.put("MessageStatus", Collections.singletonList(estadoEntrega));
-
-                    DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-                    deferredResult.setResultHandler((Object responseEntity) -> {
-                        HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity); /// anything else to do?
-                    });
-
-                    HTTPClient.restASyncClient(HttpMethod.POST, e.getMensagem().getCallbackUrlEstadoEntrega(), header, body, deferredResult);
-                }
-
-                throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
-            }
+        if (ede == null) {
+            throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
         }
+        else {
 
-        throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
+            //If message parameter callbackUrlEstadoEntrega is not "none", then send message delivery status to the app
+            if (!ede.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
+
+                MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+                MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+
+                header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                body.put("MessageId", Collections.singletonList(ede.getMensagem().getExternalId()));
+                body.put("User", Collections.singletonList(ede.getContacto().getUtilizador().getUsername())); ///?
+                body.put("MessageStatus", Collections.singletonList(ede.getEstadoEntrega()));
+
+                DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+                deferredResult.setResultHandler((Object responseEntity) -> {
+                    HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity); ///anything else to do?
+                });
+
+                HTTPClient.restASyncClient(HttpMethod.POST, ede.getMensagem().getCallbackUrlEstadoEntrega(), header, body, deferredResult);
+            }
+
+            throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
+        }
     }
-
 
     @RequestMapping(value = "/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement getMessageStatus(/*@PathVariable("app") Aplicacao app,*/ @PathVariable("msg") Mensagem msg) {

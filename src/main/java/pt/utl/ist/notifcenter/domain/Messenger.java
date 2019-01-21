@@ -1,5 +1,7 @@
 package pt.utl.ist.notifcenter.domain;
 
+import javax.servlet.http.HttpServletRequest;
+
 @AnotacaoCanal//(classFields = {"numeroTelemovel", "tokenAcesso"})
 public class Messenger extends Messenger_Base {
     
@@ -17,9 +19,11 @@ public class Messenger extends Messenger_Base {
         checkIsMessageAdequateForChannel(msg);
     }
 
-    /*
-    public String toString() {
-        return "NumeroTelemovel: " + getNumeroTelemovel() + " TokenAcesso: " + getTokenAcesso();
-    }*/
+
+    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+
+        return null;
+    }
+
 
 }

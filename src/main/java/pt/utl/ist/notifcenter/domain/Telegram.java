@@ -42,6 +42,8 @@ import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import pt.utl.ist.notifcenter.utils.Utils;
 
+import javax.servlet.http.HttpServletRequest;
+
 @AnotacaoCanal
 public class Telegram extends Telegram_Base {
     
@@ -186,5 +188,10 @@ public class Telegram extends Telegram_Base {
         return String.format("{\"chat_id\": \"%s\", \"text\": \"%s\"}", recipient, text);
     }
 
+
+    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+
+        return null;
+    }
 
 }

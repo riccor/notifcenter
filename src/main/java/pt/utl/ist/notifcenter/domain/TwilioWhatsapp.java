@@ -21,6 +21,7 @@ import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.utils.Utils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @AnotacaoCanal//(classFields = {"accountSID", "authToken", "fromPhoneNumber", "uri"})
@@ -187,23 +188,23 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         }
     }
 
-    /*OLD
-    public ResponseEntity<String> sendMessage(final String to, final String message){
+    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request){
 
-        MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);
 
-        ///HttpHeaders header = HTTPClient.createBasicAuthHeader(this.getAccountSID(), this.getAuthToken());
-        ///header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-        header.add("Authorization", HTTPClient.createBasicAuthString(this.getAccountSID(), this.getAuthToken()));
+        //"MessageStatus":"delivered","MessageSid":"SM9f705525cc4143ef8dece27557549a5f"
+        String idExterno = UtilsResource.getRequiredValueFromMultiValueMap(requestParams, "MessageSid");
+        String estadoEntrega = UtilsResource.getRequiredValueFromMultiValueMap(requestParams, "MessageStatus");
 
-        body.put("To", Arrays.asList(to));
-        body.put("From", Arrays.asList(this.getFromPhoneNumber()));
-        body.put("Body", Arrays.asList(message));
+        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : this.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+            if (e.getIdExterno().equals(idExterno)) {
+                e.changeEstadoEntrega(estadoEntrega);
+                return e;
+            }
+        }
 
-        return HTTPClient.restSyncClient(HttpMethod.POST, this.getUri(), header, body);
+        return null;
     }
-    */
+
 
 }

@@ -1,5 +1,7 @@
 package pt.utl.ist.notifcenter.domain;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class Email extends Email_Base {
     
     public Email() {
@@ -14,6 +16,12 @@ public class Email extends Email_Base {
     public void sendMessage(Mensagem msg) {
 
         checkIsMessageAdequateForChannel(msg);
+    }
+
+
+    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+
+        return null;
     }
 
 }

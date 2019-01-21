@@ -2,6 +2,8 @@ package pt.utl.ist.notifcenter.domain;
 
 import pt.ist.fenixframework.Atomic;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class Twilio extends Twilio_Base {
 
     public Twilio() {
@@ -31,5 +33,9 @@ public class Twilio extends Twilio_Base {
         checkIsMessageAdequateForChannel(msg);
     }
 
-}
+    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
 
+        return null;
+    }
+
+}

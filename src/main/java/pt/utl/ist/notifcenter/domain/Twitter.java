@@ -29,6 +29,7 @@ import pt.utl.ist.notifcenter.utils.Utils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @AnotacaoCanal
@@ -189,6 +190,10 @@ public class Twitter extends Twitter_Base {
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
     }
 
+    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+
+        return null;
+    }
 
     public static String createTwitterBody(String text, String recipient) {
         return String.format("{\"event\": {\"type\": \"message_create\", \"message_create\": {\"target\": {\"recipient_id\": \"%s\"}, \"message_data\": {\"text\": \"%s\"}}}}", recipient, text);

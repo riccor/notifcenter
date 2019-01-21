@@ -1,5 +1,7 @@
 package pt.utl.ist.notifcenter.domain;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class Mattermost extends Mattermost_Base {
     
     public Mattermost() {
@@ -14,6 +16,11 @@ public class Mattermost extends Mattermost_Base {
     public void sendMessage(Mensagem msg) {
 
         checkIsMessageAdequateForChannel(msg);
+    }
+
+    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+
+        return null;
     }
 
 
