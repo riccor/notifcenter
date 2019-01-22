@@ -148,7 +148,7 @@ public class Telegram extends Telegram_Base {
         }
     }
 
-    static void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm, User user) {
+    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm, User user) {
 
         //Debug
         HTTPClient.printResponseEntity(responseEntity);
@@ -184,7 +184,7 @@ public class Telegram extends Telegram_Base {
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
     }
 
-    public static String createTelegramBody(String text, String recipient) {
+    public String createTelegramBody(String text, String recipient) {
         return String.format("{\"chat_id\": \"%s\", \"text\": \"%s\"}", recipient, text);
     }
 

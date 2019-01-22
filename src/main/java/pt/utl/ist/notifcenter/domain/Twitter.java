@@ -149,7 +149,7 @@ public class Twitter extends Twitter_Base {
         }
     }
 
-    static void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm, User user) {
+    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm, User user) {
 
         //Debug
         HTTPClient.printResponseEntity(responseEntity);
@@ -195,7 +195,7 @@ public class Twitter extends Twitter_Base {
         return null;
     }
 
-    public static String createTwitterBody(String text, String recipient) {
+    public String createTwitterBody(String text, String recipient) {
         return String.format("{\"event\": {\"type\": \"message_create\", \"message_create\": {\"target\": {\"recipient_id\": \"%s\"}, \"message_data\": {\"text\": \"%s\"}}}}", recipient, text);
     }
 
@@ -224,7 +224,7 @@ public class Twitter extends Twitter_Base {
         return httpHeaders;
     }
 
-    public static Map<String, String> createMap(String oauth_consumer_key, String oauth_token, String nonce, String epochTime) {
+    public Map<String, String> createMap(String oauth_consumer_key, String oauth_token, String nonce, String epochTime) {
         Map<String, String> map = new TreeMap<>(new Comparator<String>() {
             public int compare(String o1, String o2) {
                 return o1.toLowerCase().compareTo(o2.toLowerCase());
@@ -247,7 +247,7 @@ public class Twitter extends Twitter_Base {
         return map;
     }
 
-    public static String createParameterString(Map<String, String> map) {
+    public String createParameterString(Map<String, String> map) {
 
         //debug:
         ///Utils.printMap(map, "MAP that originates Parameter String:");
@@ -270,11 +270,11 @@ public class Twitter extends Twitter_Base {
         return sb.toString();
     }
 
-    private static String generateNonce() {
+    private String generateNonce() {
         return Utils.generateRandomLettersString(30);
     }
 
-    public static String createHeaderString(Map<String, String> map, String signature) {
+    public String createHeaderString(Map<String, String> map, String signature) {
 
         //WARNING2:
         //RECREATING TWITTER EXAMPLE:
@@ -339,7 +339,7 @@ public class Twitter extends Twitter_Base {
 
 
 
-    public static String createOAuthBaseString(String httpMethod, String url, String parameterString) {
+    public String createOAuthBaseString(String httpMethod, String url, String parameterString) {
         StringBuilder sb = new StringBuilder(httpMethod.toUpperCase());
         sb.append("&");
         sb.append(HTTPClient.percentEncode(url));
@@ -361,7 +361,7 @@ public class Twitter extends Twitter_Base {
         return sb.toString();
     }
 
-    public static String createOAuthSigningKey(String oauth_consumer_secret, String oauth_token_secret) {
+    public String createOAuthSigningKey(String oauth_consumer_secret, String oauth_token_secret) {
         StringBuilder sb = new StringBuilder(HTTPClient.percentEncode(oauth_consumer_secret));
         sb.append("&");
         sb.append(HTTPClient.percentEncode(HTTPClient.percentEncode(oauth_token_secret)));
@@ -372,7 +372,7 @@ public class Twitter extends Twitter_Base {
         return sb.toString();
     }
 
-    public static String createSignatureBase64(String baseString, String signingKey) {
+    public String createSignatureBase64(String baseString, String signingKey) {
 
         byte[] signature = null;
 

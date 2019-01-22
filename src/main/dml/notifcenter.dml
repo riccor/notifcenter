@@ -121,8 +121,9 @@ class Canal {
 
     // Assumo que isto também é um canal
     class Messenger extends Canal {
-        String numeroTelemovel;    
-        String tokenAcesso;
+        //String numeroTelemovel;
+        String access_token;
+        String uri;
     }
 
     // Assumo que isto também é um canal

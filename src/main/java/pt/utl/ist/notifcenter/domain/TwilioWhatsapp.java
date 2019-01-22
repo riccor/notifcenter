@@ -160,7 +160,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         }
     }
 
-    static void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm, User user) {
+    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm, User user) {
 
         //Debug
         HTTPClient.printResponseEntity(responseEntity);
