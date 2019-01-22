@@ -2,6 +2,9 @@ package pt.utl.ist.notifcenter.domain;
 
 /*
 Twilio - Whatsapp chat
+
+dadosContacto = whatsapp:+351<phoneNumber>
+
 */
 
 import com.google.gson.JsonElement;

@@ -5,7 +5,7 @@ Twitter Direct Messages: https://developer.twitter.com/en/docs/direct-messages/s
 
 Using Twitter Oauth legacy authentication
 
-Get twitter user id through username: http://gettwitterid.com/
+Get twitter user id through username (dadosContacto): http://gettwitterid.com/
 
 my twitter account id: 1085250046176702466
 

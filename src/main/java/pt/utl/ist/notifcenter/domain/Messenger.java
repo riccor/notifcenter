@@ -3,21 +3,14 @@ package pt.utl.ist.notifcenter.domain;
 /*
 Facebook messenger
 
-WARNING: NOT TESTED! Because:
-1. We can only send messages to users after they sent our Facebook page a message.
-2. When a user sends us their first message, Facebook automatically will send us a HTTP request to our webhook
-    with respective user "page-scoped ID" (PSID) = dadosContacto
-3. BUT when registering our webhook at https://developers.facebook.com/apps/<appId>/webhooks/,
-    I CANNOT register it because the following message appears: "A secure Callback URL (https) is required"
-    which means I cannot register my webhook on Facebook servers and COULD NOT test sending messages.
-
-
 NOTE: We can only send messages to users after they sent our Facebook page a message.
 
 Text sent must be UTF-8 and max. 2000 characters
 
 Access token aka "Page Access Token"
 https://developers.facebook.com/apps/<appId>/messenger/settings/
+
+dadosContacto = +351<phoneNumber>
 
 Rate limits:
 "Messenger Platform supports a high rate of calls to the Send API. However, you should architect your system
@@ -119,10 +112,10 @@ public class Messenger extends Messenger_Base {
 
                             HttpHeaders httpHeaders = new HttpHeaders();
                             httpHeaders.set("Content-type", "application/json");
-                            String bodyContent = HTTPClient.stringToJson(createMessengerBody(msg.createSimpleMessageNotificationWithLink(), contacto.getDadosContacto())).toString();
+                            String bodyContent = HTTPClient.stringToJson(createMessengerBodyPhoneNumber(msg.createSimpleMessageNotificationWithLink(), contacto.getDadosContacto())).toString();
 
                             //debug:
-                            System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
+                            //System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
 
                             String url;
                             try {
@@ -201,9 +194,23 @@ public class Messenger extends Messenger_Base {
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
     }
 
-    public String createMessengerBody(String text, String recipient_PSID) {
+    /*
+    WARNING: NOT TESTED! Because:
+    1. We can only send messages to users after they sent our Facebook page a message.
+    2. When a user sends us their first message, Facebook automatically will send us a HTTP request to our webhook
+        with respective user "page-scoped ID" (PSID) = dadosContacto
+    3. BUT when registering our webhook at https://developers.facebook.com/apps/<appId>/webhooks/,
+        I CANNOT register it because the following message appears: "A secure Callback URL (https) is required"
+        which means I cannot register my webhook on Facebook servers and COULD NOT test sending messages.
+     */
+    public String createMessengerBodyPageScopeId(String text, String recipient_PSID) {
         String messaging_type = "UPDATE";  //https://developers.facebook.com/docs/messenger-platform/send-messages/#messaging_types
         return String.format("{\"messaging_type\": \"%s\", \"recipient\": { \"id\": \"%s\" }, \"message\": { \"text\": \"%s\" } }", messaging_type, recipient_PSID, text);
+    }
+
+    public String createMessengerBodyPhoneNumber(String text, String phoneNumber) {
+        String messaging_type = "UPDATE";  //https://developers.facebook.com/docs/messenger-platform/send-messages/#messaging_types
+        return String.format("{\"messaging_type\": \"%s\", \"recipient\": { \"phone_number\": \"%s\" }, \"message\": { \"text\": \"%s\" } }", messaging_type, phoneNumber, text);
     }
 
     public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
