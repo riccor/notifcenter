@@ -7,6 +7,9 @@ send messages to test user id: 101142111005988
 
 Text sent must be UTF-8 and max. 2000 characters
 
+Access token aka "Page Access Token"
+https://developers.facebook.com/apps/<appId>/messenger/settings/
+
 Rate limits:
 "Messenger Platform supports a high rate of calls to the Send API. However, you should architect your system
 such that you distribute any sudden high amounts of load over time and are able to control your throughput
