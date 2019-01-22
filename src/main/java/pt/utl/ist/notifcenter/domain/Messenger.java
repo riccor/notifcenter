@@ -3,7 +3,16 @@ package pt.utl.ist.notifcenter.domain;
 /*
 Facebook messenger
 
-send messages to test user id: 101142111005988
+WARNING: NOT TESTED! Because:
+1. We can only send messages to users after they sent our Facebook page a message.
+2. When a user sends us their first message, Facebook automatically will send us a HTTP request to our webhook
+    with respective user "page-scoped ID" (PSID) = dadosContacto
+3. BUT when registering our webhook at https://developers.facebook.com/apps/<appId>/webhooks/,
+    I CANNOT register it because the following message appears: "A secure Callback URL (https) is required"
+    which means I cannot register my webhook on Facebook servers and COULD NOT test sending messages.
+
+
+NOTE: We can only send messages to users after they sent our Facebook page a message.
 
 Text sent must be UTF-8 and max. 2000 characters
 
@@ -192,7 +201,6 @@ public class Messenger extends Messenger_Base {
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
     }
 
-    //Note: "user ID's from Facebook Login integrations are app-scoped and will not work with the Messenger platform."
     public String createMessengerBody(String text, String recipient_PSID) {
         String messaging_type = "UPDATE";  //https://developers.facebook.com/docs/messenger-platform/send-messages/#messaging_types
         return String.format("{\"messaging_type\": \"%s\", \"recipient\": { \"id\": \"%s\" }, \"message\": { \"text\": \"%s\" } }", messaging_type, recipient_PSID, text);
@@ -202,24 +210,15 @@ public class Messenger extends Messenger_Base {
 
         MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);
 
-        //String idExterno = UtilsResource.getRequiredValueFromMultiValueMap(requestParams, "MessageSid");
-        //String estadoEntrega = UtilsResource.getRequiredValueFromMultiValueMap(requestParams, "MessageStatus");
-
+        //NOTE: Not tested because "A secure Callback URL (https) is required"
         //"verify token": hub_verify_token -> set by us on https://developers.facebook.com/apps/298908694309495/webhooks/
-
         String hub_challenge = UtilsResource.getRequiredValueFromMultiValueMapOrReturnNullInstead(requestParams, "hub_challenge");
-
-
-        System.out.print("#AQQQQQQQQQQQQQQQQQQQQQQUIIIIIIIIIIII");
-
         if (hub_challenge != null) {
             throw new AnotherNotifcenterException(ErrorsAndWarnings.SUCCESS, hub_challenge);
         }
 
-        System.out.print("#OKKKKKKK");
-
-
         return null;
     }
+
 
 }
