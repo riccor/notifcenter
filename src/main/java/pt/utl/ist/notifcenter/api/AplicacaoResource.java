@@ -665,6 +665,7 @@ public class AplicacaoResource extends BennuRestResource {
 
     //RECEBER NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS:
 
+    /*
     @SkipCSRF
     @RequestMapping(value = "/{canal}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, HttpServletRequest request) {
@@ -705,7 +706,7 @@ public class AplicacaoResource extends BennuRestResource {
 
             throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
         }
-    }
+    }*/
 
     @RequestMapping(value = "/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement getMessageStatus(/*@PathVariable("app") Aplicacao app,*/ @PathVariable("msg") Mensagem msg) {

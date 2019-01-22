@@ -94,6 +94,16 @@ public class UtilsResource {
         throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + key + "!");
     }
 
+    public static String getRequiredValueFromMultiValueMapOrReturnNullInstead(MultiValueMap<String, String> map, String key) {
+        List<String> value = map.get(key);
+        if (value != null) {
+            if (!value.get(0).isEmpty()) { //here we only return the first parameter found
+                return value.get(0);
+            }
+        }
+        return null;
+    }
+
     public static String[] getRequiredArrayValue(JsonObject obj, String property) {
         if (obj.has(property)) {
             //Gson googleJson = new Gson();

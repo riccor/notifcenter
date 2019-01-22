@@ -33,8 +33,9 @@ public enum ErrorsAndWarnings {
     NOTALLOWED_VIEW_MESSAGE_ERROR ("notAllowedToViewMessage", "No permissions to view such message.", HttpStatus.FORBIDDEN),
     NOTALLOWED_VIEW_ATTACHMENT_ERROR ("notAllowedToViewAttachment", "No permissions to view such attachment.", HttpStatus.FORBIDDEN),
     SUCCESS_THANKS ("none", "Thank you.", HttpStatus.OK),
+    SUCCESS ("none", "definable", HttpStatus.OK),
     MISSING_PARAMETER_ERROR ("missingParameter", "Missing parameter.", HttpStatus.PRECONDITION_FAILED),
-    UNKNOWN_MESSAGE_SID ("unknownMessageSid", "Unknown message SID.", HttpStatus.NOT_FOUND),
+    UNKNOWN_MESSAGE_ID ("unknownMessageId", "Unknown message ID.", HttpStatus.NOT_FOUND),
     ALREADY_EXISTING_RESOURCE ("resourceAlreadyExists", "Resource already exists.", HttpStatus.CONFLICT),
     ALREADY_EXISTING_RELATION_ERROR ("relationAlreadyExists", "Such relation already exists.", HttpStatus.CONFLICT),
     NON_EXISTING_RELATION ("nonExistingRelation", "Such relation does not exist.", HttpStatus.CONFLICT);

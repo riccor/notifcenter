@@ -28,10 +28,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.Atomic;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
+import pt.utl.ist.notifcenter.utils.AnotherNotifcenterException;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import pt.utl.ist.notifcenter.utils.Utils;
@@ -197,6 +199,25 @@ public class Messenger extends Messenger_Base {
     }
 
     public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+
+        MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);
+
+        //String idExterno = UtilsResource.getRequiredValueFromMultiValueMap(requestParams, "MessageSid");
+        //String estadoEntrega = UtilsResource.getRequiredValueFromMultiValueMap(requestParams, "MessageStatus");
+
+        //"verify token": hub_verify_token -> set by us on https://developers.facebook.com/apps/298908694309495/webhooks/
+
+        String hub_challenge = UtilsResource.getRequiredValueFromMultiValueMapOrReturnNullInstead(requestParams, "hub_challenge");
+
+
+        System.out.print("#AQQQQQQQQQQQQQQQQQQQQQQUIIIIIIIIIIII");
+
+        if (hub_challenge != null) {
+            throw new AnotherNotifcenterException(ErrorsAndWarnings.SUCCESS, hub_challenge);
+        }
+
+        System.out.print("#OKKKKKKK");
+
 
         return null;
     }

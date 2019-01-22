@@ -11,24 +11,28 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import pt.ist.fenixframework.DomainObject;
+import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.CanalAdapter;
 import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.domain.Canal;
+import pt.utl.ist.notifcenter.domain.EstadoDeEntregaDeMensagemEnviadaAContacto;
 import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
+import pt.utl.ist.notifcenter.utils.AnotherNotifcenterException;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import pt.utl.ist.notifcenter.utils.Utils;
 
-import java.lang.reflect.Method;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/apicanais")
@@ -151,6 +155,48 @@ public class CanalResource extends BennuRestResource {
         return view(CanalAdapter.update2(body, canal), CanalAdapter.class);
     }
 
+    @SkipCSRF
+    @RequestMapping(value = "/{canal}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, HttpServletRequest request) {
+        //Received content might not be JSON, so we do not use "@RequestBody JsonElement body"
+
+        if (!FenixFramework.isDomainObjectValid(canal)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
+        }
+
+        System.out.println("####### got new messagedeliverystatus message!!");
+        System.out.println(HTTPClient.getHttpServletRequestParamsAsJson(request).toString());
+
+        EstadoDeEntregaDeMensagemEnviadaAContacto ede = canal.dealWithMessageDeliveryStatusCallback(request);
+
+        if (ede == null) {
+            throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_ID);
+        }
+        else {
+
+            //If message parameter callbackUrlEstadoEntrega is not "none", then send message delivery status to the app
+            if (!ede.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
+
+                MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+                MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+
+                header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                body.put("MessageId", Collections.singletonList(ede.getMensagem().getExternalId()));
+                body.put("User", Collections.singletonList(ede.getContacto().getUtilizador().getUsername())); ///?
+                body.put("MessageStatus", Collections.singletonList(ede.getEstadoEntrega()));
+
+                DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+                deferredResult.setResultHandler((Object responseEntity) -> {
+                    HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity); ///anything else to do?
+                });
+
+                HTTPClient.restASyncClient(HttpMethod.POST, ede.getMensagem().getCallbackUrlEstadoEntrega(), header, body, deferredResult);
+            }
+
+            throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
+        }
+    }
+
     @ExceptionHandler({NotifcenterException.class})
     public ResponseEntity<JsonElement> errorHandler(NotifcenterException ex) {
 
@@ -164,5 +210,19 @@ public class CanalResource extends BennuRestResource {
         }
     }
 
+    //String returned, not JSON
+    @ExceptionHandler({AnotherNotifcenterException.class})
+    public ResponseEntity<String> errorHandler2(NotifcenterException ex) {
+
+        HttpHeaders header = new HttpHeaders();
+
+        //For Facebook Messenger to confirm my webhook (https://developers.facebook.com/apps/298908694309495/webhooks/)
+        if (ex.getMoreDetails().equalsIgnoreCase("definable")) {
+            return new ResponseEntity<>(ex.getMoreDetails(), header, ex.getErrorsAndWarnings().getHttpStatus());
+        }
+        else {
+            return new ResponseEntity<>("error", header, ex.getErrorsAndWarnings().getHttpStatus());
+        }
+    }
 
 }
