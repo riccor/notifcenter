@@ -24,6 +24,7 @@ public enum ErrorsAndWarnings {
     INVALID_GROUP_ERROR ("invalidGroup", "Invalid group ID.", HttpStatus.PRECONDITION_FAILED),
     INVALID_CANALNOTIFICACAO_ERROR ("invalidCanalNotificacao", "Invalid notification channel.", HttpStatus.PRECONDITION_FAILED),
     INVALID_MESSAGE_ERROR ("invalidMessage", "Invalid message.", HttpStatus.PRECONDITION_FAILED),
+    INVALID_MESSAGE_ATTACHMENT_SIZE_ERROR ("invalidMessageAttachmentSize", "Invalid message attachment size.", HttpStatus.PRECONDITION_FAILED),
     NOTALLOWED_CANALNOTIFICACAO_ERROR ("notAllowedCanalNotificacao", "No permissions to use such notification channel.", HttpStatus.FORBIDDEN),
     NOTALLOWED_GROUP_ERROR ("notAllowedGroup", "No permissions to send messages to group.", HttpStatus.FORBIDDEN),
     NOTALLOWED_TO_ADD_GROUP_ERROR ("notAllowedToAddGroup", "No permissions to add message receiving groups.", HttpStatus.FORBIDDEN),

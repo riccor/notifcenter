@@ -158,6 +158,7 @@ import org.fenixedu.bennu.core.domain.User;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
+import javax.naming.SizeLimitExceededException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
@@ -751,6 +752,12 @@ public class AplicacaoResource extends BennuRestResource {
         if (anexos != null) {
             for (MultipartFile file: anexos) {
                 try {
+
+                    long maxSize = Long.parseLong(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemAttachmentMaxSizeBytes());
+                    if (file.getSize() > maxSize) {
+                        throw new SizeLimitExceededException();
+                    }
+
                     Attachment at =  Attachment.createAttachment(msg, file.getOriginalFilename(), "lowlevelname-" + msg.getExternalId() + "-" + file.getOriginalFilename(), file.getInputStream());
                     //debug
                     //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
@@ -761,6 +768,11 @@ public class AplicacaoResource extends BennuRestResource {
                     //e.printStackTrace();
                     msg.delete(); //apagar mensagem criada em caso de falha num anexo
                     throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment " + file.getOriginalFilename() + " could not be loaded.");
+                }
+                catch (SizeLimitExceededException e) {
+                    msg.delete(); //apagar mensagem criada em caso de falha num anexo
+                    String maxSize = String.valueOf(Long.parseLong(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemAttachmentMaxSizeBytes())/(1000000L));
+                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ATTACHMENT_SIZE_ERROR, "Attachment " + file.getOriginalFilename() + " exceeds max. file size allowed (" + maxSize + "MB).");
                 }
             }
         }

@@ -184,10 +184,10 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
-            System.out.println("Success on sending message to user id " + user.getExternalId() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
         else {
-            System.out.println("Failed to send message to user id " + user.getExternalId() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
     }
 
