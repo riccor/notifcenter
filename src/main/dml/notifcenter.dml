@@ -94,13 +94,13 @@ class Canal {
 }
 
     class Email extends Canal{
-        String endereco;
-        Integer porto;
+        String smtpServer;
+        String smtpPort;
+        String smtpUsername;
+        String smtpPassword;
     }
 
     class Telegram extends Canal{
-        //String numeroTelemovel;
-        //String ID;
         String access_token;
         String uri;
     }

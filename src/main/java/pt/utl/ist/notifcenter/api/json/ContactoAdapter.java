@@ -18,8 +18,8 @@ public class ContactoAdapter implements JsonAdapter<Contacto> {
     public static Contacto create2(JsonElement jsonElement) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         User utilizador = UtilsResource.getDomainObjectFromJsonProperty(jsonElement, User.class, "utilizador");
-        Canal canal = UtilsResource.getDomainObjectFromJsonProperty(jsonElement, Canal.class, "canal");
-        String dadosContacto = UtilsResource.getRequiredValue(jObj, "dados");
+        Canal canal = UtilsResource.getDomainObjectFromJsonProperty(jsonElement, Canal.class, "channel");
+        String dadosContacto = UtilsResource.getRequiredValue(jObj, "data");
 
         for (Contacto c : utilizador.getContactosSet()) {
             if (c.getCanal().equals(canal) /*&& c.getDadosContacto().equals(dadosContacto)*/) {
@@ -35,7 +35,7 @@ public class ContactoAdapter implements JsonAdapter<Contacto> {
 
     public static Contacto update2(JsonElement jsonElement, Contacto contacto) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        String dadosContacto = UtilsResource.getRequiredValue(jObj, "dados");
+        String dadosContacto = UtilsResource.getRequiredValue(jObj, "data");
         return contacto.update(dadosContacto);
     }
 

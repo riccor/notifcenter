@@ -69,7 +69,7 @@
                         </c:if>
 
                         <c:choose>
-                            <c:when test="${id != null && entry.key != 'id' && entry.key != 'canal'}"> <%-- robustness AND disallow edit id and channel --%>
+                            <c:when test="${id != null && entry.key != 'id' && entry.key != 'channel'}"> <%-- robustness AND disallow edit id and channel --%>
                                 <td><input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
                             </c:when>
                             <c:otherwise>
@@ -111,21 +111,21 @@
                 <tr>
                     <td>Select channel:</td>
                     <td>
-                        <select name="canal">
-                            <c:forEach var="canal" items="${canais}">
+                        <select name="channel">
+                            <c:forEach var="channel" items="${canais}">
 
-                                <c:forEach var="entry" items="${canal}">
+                                <c:forEach var="entry" items="${channel}">
                                     <c:if test="${entry.key == 'id'}">
-                                        <c:set var="idcanal" value="${entry.value}"/>
+                                        <c:set var="idchannel" value="${entry.value}"/>
                                     </c:if>
 
                                     <c:if test="${entry.key == 'type'}">
-                                        <c:set var="typecanal" value="${entry.value}"/>
+                                        <c:set var="typechannel" value="${entry.value}"/>
                                     </c:if>
                                 </c:forEach>
 
-                                <c:if test="${idcanal != null && typecanal != null}"> <%-- robustness --%>
-                                    <option value="<c:out value="${idcanal}"/>"><c:out value="${typecanal} ${paropen}${idcanal}${parclose}"/></option>
+                                <c:if test="${idchannel != null && typechannel != null}"> <%-- robustness --%>
+                                    <option value="<c:out value="${idchannel}"/>"><c:out value="${typechannel} ${paropen}${idchannel}${parclose}"/></option>
                                 </c:if>
 
                             </c:forEach>

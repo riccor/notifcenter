@@ -74,7 +74,7 @@ public class UtilizadoresController {
 
         model.addAttribute("user", user);
         model.addAttribute("contacts", getExistingUserContactos(user));
-        model.addAttribute("parametros_contacto", new String[]{"dados"});
+        model.addAttribute("parametros_contacto", new String[]{"data"});
         model.addAttribute("canais", CanaisController.getExistingChannels());
 
         return "notifcenter/contactos";
@@ -87,8 +87,8 @@ public class UtilizadoresController {
         for (Contacto c : user.getContactosSet()) {
             HashMap<String, String> map = new LinkedHashMap<>();
             map.put("id", c.getExternalId());
-            map.put("canal", c.getCanal().getClass().getSimpleName() + " (" + c.getCanal().getExternalId() + ")");
-            map.put("dados", c.getDadosContacto());
+            map.put("channel", c.getCanal().getClass().getSimpleName() + " (" + c.getCanal().getExternalId() + ")");
+            map.put("data", c.getDadosContacto());
             list.add(map);
         }
 
