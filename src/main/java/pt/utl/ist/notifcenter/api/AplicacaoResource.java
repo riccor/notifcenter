@@ -884,6 +884,12 @@ public class AplicacaoResource extends BennuRestResource {
         return new HttpEntity<>(fileContent, header);
     }
 
+    @RequestMapping(value = "/email")
+    public String sendEmail() {
+        Email.sendMail();
+        return "Email sent successfully";
+    }
+
     @RequestMapping(value = "/{app}/{msg}/listattachments", method = RequestMethod.GET)
     public JsonElement listMessageAttachments(@PathVariable("app") Aplicacao app, @PathVariable("msg") Mensagem msg) {
 

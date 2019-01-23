@@ -20,13 +20,22 @@
     <properties>
         <version.org.fenixedu.bennu>5.2.1</version.org.fenixedu.bennu>
         <version.org.fenixedu.bennu.spring>5.2.1</version.org.fenixedu.bennu.spring>
+        <version.javax.mail>1.6.2</version.javax.mail>
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>${version.javax.mail}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.fenixedu</groupId>
             <artifactId>bennu-core</artifactId>
