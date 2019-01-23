@@ -23,6 +23,7 @@ public class Twilio extends Twilio_Base {
         return twilio;
     }
 
+    @Override
     public void checkIsMessageAdequateForChannel(Mensagem msg) {
 
     }
@@ -33,6 +34,7 @@ public class Twilio extends Twilio_Base {
         checkIsMessageAdequateForChannel(msg);
     }
 
+    @Override
     public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
 
         return null;

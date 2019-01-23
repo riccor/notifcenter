@@ -83,6 +83,7 @@ public class Twitter extends Twitter_Base {
         return this;
     }
 
+    @Override
     public void checkIsMessageAdequateForChannel(Mensagem msg) /*throws NotifcenterException*/ {
         if (msg.createSimpleMessageNotificationWithLink().length() > 10000) {
             ///IllegalArgumentException
@@ -92,6 +93,7 @@ public class Twitter extends Twitter_Base {
     }
 
     //Note: only one recipient per message!
+    @Override
     public void sendMessage(Mensagem msg){
 
         checkIsMessageAdequateForChannel(msg);
@@ -190,6 +192,7 @@ public class Twitter extends Twitter_Base {
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
     }
 
+    @Override
     public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
 
         return null;

@@ -76,6 +76,7 @@ public class Messenger extends Messenger_Base {
         return this;
     }
 
+    @Override
     public void checkIsMessageAdequateForChannel(Mensagem msg) {
         if (msg.createSimpleMessageNotificationWithLink().length() > 2000) {
             ///IllegalArgumentException
@@ -84,6 +85,7 @@ public class Messenger extends Messenger_Base {
         }
     }
 
+    @Override
     public void sendMessage(Mensagem msg){
 
         checkIsMessageAdequateForChannel(msg);
@@ -213,6 +215,7 @@ public class Messenger extends Messenger_Base {
         return String.format("{\"messaging_type\": \"%s\", \"recipient\": { \"phone_number\": \"%s\" }, \"message\": { \"text\": \"%s\" } }", messaging_type, phoneNumber, text);
     }
 
+    @Override
     public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
 
         MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);

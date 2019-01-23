@@ -8,6 +8,7 @@ public class Email extends Email_Base {
         super();
     }
 
+    @Override
     public void checkIsMessageAdequateForChannel(Mensagem msg) {
 
     }
@@ -18,7 +19,7 @@ public class Email extends Email_Base {
         checkIsMessageAdequateForChannel(msg);
     }
 
-
+    @Override
     public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
 
         return null;

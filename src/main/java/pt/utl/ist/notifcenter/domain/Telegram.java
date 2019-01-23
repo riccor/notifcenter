@@ -78,10 +78,12 @@ public class Telegram extends Telegram_Base {
         return this;
     }
 
+    @Override
     public void checkIsMessageAdequateForChannel(Mensagem msg) {
 
     }
 
+    @Override
     public void sendMessage(Mensagem msg){
 
         checkIsMessageAdequateForChannel(msg);
@@ -188,7 +190,7 @@ public class Telegram extends Telegram_Base {
         return String.format("{\"chat_id\": \"%s\", \"text\": \"%s\"}", recipient, text);
     }
 
-
+    @Override
     public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
 
         return null;

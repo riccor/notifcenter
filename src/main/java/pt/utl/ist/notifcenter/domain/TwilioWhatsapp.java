@@ -89,6 +89,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
     }
     */
 
+    @Override
     public void checkIsMessageAdequateForChannel(Mensagem msg) {
 
     }
@@ -191,6 +192,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         }
     }
 
+    @Override
     public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request){
 
         MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);
