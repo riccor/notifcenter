@@ -51,7 +51,7 @@ public class Twitter extends Twitter_Base {
         twitter.setUri(uri);
 
         //Debug
-        twitter.setEmail("Twitter-" + twitter.getExternalId() + "@notifcenter.com");
+        ///twitter.setEmail("Twitter-" + twitter.getExternalId() + "@notifcenter.com");
 
         return twitter;
     }

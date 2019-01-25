@@ -59,7 +59,7 @@ public class Telegram extends Telegram_Base {
         telegram.setUri(uri);
 
         //Debug
-        telegram.setEmail("Telegram-" + telegram.getExternalId() + "@notifcenter.com");
+        ///telegram.setEmail("Telegram-" + telegram.getExternalId() + "@notifcenter.com");
 
         return telegram;
     }

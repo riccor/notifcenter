@@ -89,7 +89,7 @@ public class CanaisController {
             HashMap<String, String> map = new LinkedHashMap<>();
             map.put("id", c.getExternalId());
             map.put("type", c.getClass().getSimpleName());
-            map.put("email", c.getEmail());
+            ///map.put("email", c.getEmail());
 
             try {
                 //AnotacaoCanal annotation = c.getClass().getAnnotation(AnotacaoCanal.class);

@@ -39,7 +39,7 @@ public class Email extends Email_Base {
         email.setSmtpPassword(smtpPassword);
 
         //Debug
-        email.setEmail("Email-" + email.getExternalId() + "@notifcenter.com");
+        ///email.setEmail("Email-" + email.getExternalId() + "@notifcenter.com");
 
         return email;
     }

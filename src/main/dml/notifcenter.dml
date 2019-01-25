@@ -89,8 +89,8 @@ class Attachment extends .org.fenixedu.bennu.io.domain.GenericFile{
 *  Não compreendi o propósito dos atributos email e password nesta entidde.
 */
 class Canal {
-    String email;
-    String password;
+    //String email;
+    //String password;
 }
 
     class Email extends Canal{

@@ -57,7 +57,7 @@ public class Messenger extends Messenger_Base {
         messenger.setUri(uri);
 
         //Debug
-        messenger.setEmail("messenger-" + messenger.getExternalId() + "@notifcenter.com");
+        ///messenger.setEmail("messenger-" + messenger.getExternalId() + "@notifcenter.com");
 
         return messenger;
     }

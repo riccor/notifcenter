@@ -43,7 +43,6 @@
             <tr>
                 <th>Id</th>
                 <th>Type</th>
-                <th>Email</th>
                 <th colspan="6">Authentication parameters</th>
             </tr>
 
@@ -57,7 +56,7 @@
                 <tr>
                     <c:forEach var="entry" items="${canal}">
                         <c:choose>
-                            <c:when test="${entry.key == 'type' || entry.key == 'email' || entry.key == 'id'}">
+                            <c:when test="${entry.key == 'type' || entry.key == 'id'}">
                                 <td><c:out value="${entry.value}"/></td>
                                 <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingChannels() --%>
                                     <c:set var="id" value="${entry.value}"/>

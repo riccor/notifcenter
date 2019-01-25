@@ -105,7 +105,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("type", obj.getClass().getSimpleName());
-        jObj.addProperty("email", obj.getEmail());
+        ///jObj.addProperty("email", obj.getEmail());
         ///jObj.addProperty("password", obj.getPassword());
 
         try {

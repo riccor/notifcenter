@@ -1194,7 +1194,9 @@ public class AplicacaoResource extends BennuRestResource {
 
         System.out.println(view(twilioWhatsapp, CanalAdapter.class).toString());
 
-        String t = SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
+
+        ///setemail()
+        String t = "AAA"; ///SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
 
         return "emails dos canais: " + t;
     }

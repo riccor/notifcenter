@@ -44,7 +44,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         twilioWhatsapp.setUri(uri);
 
         //Debug
-        twilioWhatsapp.setEmail("twiliowhatsapp-" + twilioWhatsapp.getExternalId() + "@notifcenter.com");
+        ///twilioWhatsapp.setEmail("twiliowhatsapp-" + twilioWhatsapp.getExternalId() + "@notifcenter.com");
 
         return twilioWhatsapp;
     }
