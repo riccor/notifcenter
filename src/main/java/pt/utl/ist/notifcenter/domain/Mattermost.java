@@ -9,6 +9,11 @@ public class Mattermost extends Mattermost_Base {
     }
 
     @Override
+    public String getUri() {
+        return null;
+    }
+
+    @Override
     public void checkIsMessageAdequateForChannel(Mensagem msg) {
 
     }

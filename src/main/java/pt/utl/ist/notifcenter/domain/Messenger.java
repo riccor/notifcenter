@@ -49,12 +49,17 @@ public class Messenger extends Messenger_Base {
         super();
     }
 
+    @Override
+    public String getUri() {
+        return "https://graph.facebook.com/v2.6/me/messages?access_token=%s";
+    }
+
     @Atomic
-    public static Messenger createChannel(String access_token, String uri) {
+    public static Messenger createChannel(String access_token /*, String uri*/) {
 
         Messenger messenger = new Messenger();
         messenger.setAccess_token(access_token);
-        messenger.setUri(uri);
+        /*messenger.setUri(uri);*/
 
         //Debug
         ///messenger.setEmail("messenger-" + messenger.getExternalId() + "@notifcenter.com");
@@ -63,15 +68,16 @@ public class Messenger extends Messenger_Base {
     }
 
     @Atomic
-    public Messenger updateChannel(@Nullable final String access_token, @Nullable final String uri) {
+    public Messenger updateChannel(@Nullable final String access_token /*, @Nullable final String uri*/) {
 
         if (Utils.isValidString(access_token)) {
             this.setAccess_token(access_token);
         }
 
+        /*
         if (Utils.isValidString(uri)) {
             this.setUri(uri);
-        }
+        }*/
 
         return this;
     }

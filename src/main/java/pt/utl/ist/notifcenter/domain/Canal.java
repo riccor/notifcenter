@@ -30,6 +30,8 @@ public abstract class Canal extends Canal_Base {
 
     public abstract EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request);
 
+    public abstract String getUri();
+
     @Atomic
     public void delete() {
         for (CanalNotificacao cn : this.getCanalNotificacaoSet()) {

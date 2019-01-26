@@ -39,16 +39,21 @@ public class Twitter extends Twitter_Base {
         super();
     }
 
+    @Override
+    public String getUri() {
+        return "https://api.twitter.com/1.1/direct_messages/events/new.json";
+    }
+
     @Atomic
     public static Twitter createChannel(String oauth_consumer_key, String oauth_consumer_secret,
-                                        String oauth_token, String oauth_token_secret, String uri) {
+                                        String oauth_token, String oauth_token_secret/*, String uri*/) {
 
         Twitter twitter = new Twitter();
         twitter.setOauth_consumer_key(oauth_consumer_key);
         twitter.setOauth_consumer_secret(oauth_consumer_secret);
         twitter.setOauth_token(oauth_token);
         twitter.setOauth_token_secret(oauth_token_secret);
-        twitter.setUri(uri);
+        /*twitter.setUri(uri);*/
 
         //Debug
         ///twitter.setEmail("Twitter-" + twitter.getExternalId() + "@notifcenter.com");
@@ -58,7 +63,7 @@ public class Twitter extends Twitter_Base {
 
     @Atomic
     public Twitter updateChannel(@Nullable final String oauth_consumer_key, @Nullable final String oauth_consumer_secret,
-                                 @Nullable final String oauth_token, @Nullable final String oauth_token_secret, @Nullable final String uri) {
+                                 @Nullable final String oauth_token, @Nullable final String oauth_token_secret /*, @Nullable final String uri*/) {
 
         if (Utils.isValidString(oauth_consumer_key)) {
             this.setOauth_consumer_key(oauth_consumer_key);
@@ -76,9 +81,10 @@ public class Twitter extends Twitter_Base {
             this.setOauth_token_secret(oauth_token_secret);
         }
 
+        /*
         if (Utils.isValidString(uri)) {
             this.setUri(uri);
-        }
+        }*/
 
         return this;
     }

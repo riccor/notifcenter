@@ -60,6 +60,11 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
             }
         }
 
+        if (assunto.length() > Integer.parseInt(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemAssuntoMaxSize())) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Assunto must be at most " +
+                    NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemAssuntoMaxSize() + " characters long.");
+        }
+
         if (textoCurto.length() > Integer.parseInt(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize())) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "TextoCurto must be at most " +
                     NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize() + " characters long.");

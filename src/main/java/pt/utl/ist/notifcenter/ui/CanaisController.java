@@ -14,7 +14,6 @@ import pt.utl.ist.notifcenter.api.CanalResource;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.api.json.CanalAdapter;
-import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.domain.Canal;
 import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;

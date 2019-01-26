@@ -30,18 +30,23 @@ import java.util.*;
 @AnotacaoCanal//(classFields = {"accountSID", "authToken", "fromPhoneNumber", "uri"})
 public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
+    @Override
+    public String getUri() {
+        return "https://api.twilio.com/2010-04-01/Accounts/AC6cbbd7d6eb26d8dc34fce44a4bea8a1c/Messages.json";
+    }
+
     private TwilioWhatsapp() {
         super();
         //this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
     }
 
     @Atomic
-    public static TwilioWhatsapp createChannel(final String accountSID, final String authToken, final String fromPhoneNumber, final String uri) {
+    public static TwilioWhatsapp createChannel(final String accountSID, final String authToken, final String fromPhoneNumber /*, final String uri*/) {
         TwilioWhatsapp twilioWhatsapp = new TwilioWhatsapp();
         twilioWhatsapp.setAccountSID(accountSID);
         twilioWhatsapp.setAuthToken(authToken);
         twilioWhatsapp.setFromPhoneNumber(fromPhoneNumber);
-        twilioWhatsapp.setUri(uri);
+        //twilioWhatsapp.setUri(uri);
 
         //Debug
         ///twilioWhatsapp.setEmail("twiliowhatsapp-" + twilioWhatsapp.getExternalId() + "@notifcenter.com");
@@ -50,7 +55,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
     }
 
     @Atomic
-    public TwilioWhatsapp updateChannel(@Nullable final String accountSID, @Nullable final String authToken, @Nullable final String fromPhoneNumber, @Nullable final String uri) {
+    public TwilioWhatsapp updateChannel(@Nullable final String accountSID, @Nullable final String authToken, @Nullable final String fromPhoneNumber /*, @Nullable final String uri*/) {
 
         if (Utils.isValidString(accountSID)) {
             this.setAccountSID(accountSID);
@@ -64,9 +69,11 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
             this.setFromPhoneNumber(fromPhoneNumber);
         }
 
+        /*
         if (Utils.isValidString(uri)) {
             this.setUri(uri);
         }
+        */
 
         return this;
     }
@@ -80,7 +87,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
             return null;
         }
 
-        return createChannel/*TwilioWhatsApp*/(propertiesMap.get("accountSID"), propertiesMap.get("authToken"), propertiesMap.get("fromPhoneNumber"), propertiesMap.get("uri"));
+        return createChannel/*TwilioWhatsApp*/(propertiesMap.get("accountSID"), propertiesMap.get("authToken"), propertiesMap.get("fromPhoneNumber")/*, propertiesMap.get("uri")*/);
     }
 
     /*

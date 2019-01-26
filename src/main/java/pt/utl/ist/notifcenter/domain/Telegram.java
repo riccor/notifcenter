@@ -51,12 +51,17 @@ public class Telegram extends Telegram_Base {
         super();
     }
 
+    @Override
+    public String getUri() {
+        return "https://api.telegram.org/bot%s/sendMessage";
+    }
+
     @Atomic
-    public static Telegram createChannel(String access_token, String uri) {
+    public static Telegram createChannel(String access_token/*, String uri*/) {
 
         Telegram telegram = new Telegram();
         telegram.setAccess_token(access_token);
-        telegram.setUri(uri);
+        //telegram.setUri(uri);
 
         //Debug
         ///telegram.setEmail("Telegram-" + telegram.getExternalId() + "@notifcenter.com");
@@ -65,15 +70,16 @@ public class Telegram extends Telegram_Base {
     }
 
     @Atomic
-    public Telegram updateChannel(@Nullable final String access_token, @Nullable final String uri) {
+    public Telegram updateChannel(@Nullable final String access_token/*, @Nullable final String uri*/) {
 
         if (Utils.isValidString(access_token)) {
             this.setAccess_token(access_token);
         }
 
+        /*
         if (Utils.isValidString(uri)) {
             this.setUri(uri);
-        }
+        }*/
 
         return this;
     }

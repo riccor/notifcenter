@@ -11,6 +11,11 @@ public class Twilio extends Twilio_Base {
         //this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
     }
 
+    @Override
+    public String getUri() {
+        return null;
+    }
+
     @Atomic
     public static Twilio createTwilio(final String accountSID, final String authToken) {
         Twilio twilio = new Twilio();

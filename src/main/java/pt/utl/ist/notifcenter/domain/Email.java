@@ -9,12 +9,15 @@ Tutorial on how to authorize a third-party app (like this project) to send mails
 
 */
 
+import com.google.common.base.Throwables;
 import org.apache.avro.reflect.Nullable;
+import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import pt.ist.fenixframework.Atomic;
 import pt.utl.ist.notifcenter.utils.Utils;
 
+import javax.activation.DataHandler;
+import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
@@ -24,6 +27,13 @@ import javax.mail.internet.*;
 
 @AnotacaoCanal
 public class Email extends Email_Base {
+
+    private Session emailClient = null;
+
+    @Override
+    public String getUri() {
+        return null;
+    }
 
     public Email() {
         super();
@@ -71,49 +81,105 @@ public class Email extends Email_Base {
 
     }
 
+    private void createEmailClient() {
+        if (emailClient == null) {
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true"); //this might not be needed
+            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            props.put("mail.smtp.host", this.getSmtpServer());
+            props.put("mail.smtp.port", this.getSmtpPort());
+
+            emailClient = Session.getInstance(props, new javax.mail.Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(Email.this.getSmtpUsername(), Email.this.getSmtpPassword());
+                }
+            });
+        }
+    }
+
     @Override
     public void sendMessage(Mensagem msg) {
 
         checkIsMessageAdequateForChannel(msg);
 
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true"); //it seems this is not needed
-        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        props.put("mail.smtp.host", this.getSmtpServer());
-        props.put("mail.smtp.port", this.getSmtpPort());
-
-        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(Email.this.getSmtpUsername(), Email.this.getSmtpPassword());
-            }
-        });
+        createEmailClient();
 
         try {
-            Message mailToSend = new MimeMessage(session);
+            Message mailToSend = new MimeMessage(emailClient);
             mailToSend.setFrom(new InternetAddress(this.getSmtpUsername(), false));
 
+            //A way to try to get delivery status
+            //mailToSend.setHeader("Disposition-Notification-To", "notifcentremail@gmail.com");
+
             ArrayList<InternetAddress> listOfToAddresses = new ArrayList<>();
-            listOfToAddresses.add(new InternetAddress("notifcentremail@gmail.com")); //dadosContacto
+            //listOfToAddresses.add(new InternetAddress("notifcentremail@gmail.com")); //dadosContacto
+            for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
+                group.getMembers().forEach(user -> {
 
+                    //Debug
+                    System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
 
+                    boolean userHasNoContactForThisChannel = true;
+
+                    for (Contacto contacto : user.getContactosSet()) {
+
+                        if (contacto.getCanal().equals(this)) {
+
+                            //Debug
+                            //System.out.println("has dadosContacto " + contacto.getDadosContacto());
+
+                            //impedir que a mesma mensagem seja enviada duas vezes para o mesmo destinatário:
+                            if (contacto.getEstadoDeEntregaDeMensagemEnviadaAContactoSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
+                                System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
+                            }
+                            else {
+
+                                try {
+                                    listOfToAddresses.add(new InternetAddress(contacto.getDadosContacto()));
+                                    EstadoDeEntregaDeMensagemEnviadaAContacto edm = EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(this, msg, contacto, "unavailable", "unavailable");
+
+                                    userHasNoContactForThisChannel = false;
+                                }
+                                catch (AddressException e) {
+                                    System.out.println("WARNING: Wrong Email address " + contacto.getDadosContacto() + " for user id " + user.getExternalId());
+                                }
+
+                            }
+
+                            break; //no need to search more contacts for this user on this channel.
+                        }
+                    }
+
+                    if (userHasNoContactForThisChannel) {
+                        System.out.println("WARNING: user " + user.getUsername() + " has no available contact for " + this.getClass().getSimpleName());
+                    }
+
+                });
+            }
 
             //mailToSend.addRecipients(Message.RecipientType.BCC, InternetAddress.parse("abc@abc.com,abc@def.com,ghi@abc.com"));
             mailToSend.setRecipients(Message.RecipientType.BCC, listOfToAddresses.toArray(new InternetAddress[0]));
 
             mailToSend.setSubject(msg.getAssunto());
-            //mailToSend.setContent("Notifcentre email - CONTENT", "text/html"); //it seems this is not needed
             mailToSend.setSentDate(new Date());
 
             Multipart multipart = new MimeMultipart();
 
             MimeBodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setContent(msg.createSimpleMessageNotificationWithLink(), "text/html");
+            messageBodyPart.setContent(msg.getTextoLongo(), "text/html");
             multipart.addBodyPart(messageBodyPart);
 
-            MimeBodyPart attachPart = new MimeBodyPart();
-            attachPart.attachFile("/home/cr/imgg.png");
-            multipart.addBodyPart(attachPart);
+            //MimeBodyPart attachPart = new MimeBodyPart();
+            //attachPart.attachFile("/home/cr/imgg.png");
+            //multipart.addBodyPart(attachPart);
+            for (Attachment a : msg.getAttachmentsSet()) {
+                MimeBodyPart attachPart = new MimeBodyPart();
+                ByteArrayDataSource bds = new ByteArrayDataSource(a.getContent(), a.getContentType());
+                attachPart.setDataHandler(new DataHandler(bds));
+                attachPart.setFileName(a.getDisplayName());
+                multipart.addBodyPart(attachPart);
+            }
 
             mailToSend.setContent(multipart);
             Transport.send(mailToSend);
@@ -128,11 +194,13 @@ public class Email extends Email_Base {
             System.out.println("MessagingException");
             //throw new Exception();
         }
-        catch (IOException e) {
+        /*catch (IOException e) {
             e.printStackTrace();
             System.out.println("IOException");
             //throw new Exception();
         }
+        */
+
     }
 
 

@@ -49,6 +49,9 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupnoti
         @ConfigurationProperty(key = "notifcenter.mensagem.textocurto.maxsize", defaultValue = "90")
         public String notifcenterMensagemTextoCurtoMaxSize();
 
+        @ConfigurationProperty(key = "notifcenter.mensagem.assunto.maxsize", defaultValue = "256")
+        public String notifcenterMensagemAssuntoMaxSize();
+
         @ConfigurationProperty(key = "notifcenter.mensagem.attachment.maxsize", defaultValue = "25000000") //bytes
         public String notifcenterMensagemAttachmentMaxSizeBytes();
 

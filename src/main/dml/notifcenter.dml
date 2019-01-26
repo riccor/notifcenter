@@ -102,7 +102,7 @@ class Canal {
 
     class Telegram extends Canal{
         String access_token;
-        String uri;
+        //String uri;
     }
 
     class Mattermost extends Canal{
@@ -116,14 +116,14 @@ class Canal {
         String oauth_consumer_secret;
         String oauth_token;
         String oauth_token_secret;
-        String uri;
+        //String uri;
     }
 
     // Assumo que isto também é um canal
     class Messenger extends Canal {
         //String numeroTelemovel;
         String access_token;
-        String uri;
+        //String uri;
     }
 
     // Assumo que isto também é um canal
@@ -136,7 +136,7 @@ class Canal {
         String accountSID;
         String authToken;
         String fromPhoneNumber;
-        String uri;
+        //String uri;
     }
 
 
