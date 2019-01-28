@@ -124,52 +124,52 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
                 boolean userHasNoContactForThisChannel = true;
 
-                for (Contacto contacto : user.getContactosSet()) {
+                //prevent duplicated message for same user:
+                if (user.getUserMessageDeliveryStatusSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
+                    System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
+                    userHasNoContactForThisChannel = false;
+                }
+                else {
+                    for (Contacto contacto : user.getContactosSet()) {
+                        if (contacto.getCanal().equals(this)) {
 
-                    if (contacto.getCanal().equals(this)) {
+                            //Debug
+                            System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
-                        //Debug
-                        System.out.println("has dadosContacto " + contacto.getDadosContacto());
-
-                        //prevent duplicated message for same user:
-                        if (contacto.getEstadoDeEntregaDeMensagemEnviadaAContactoSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
-                            System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
-                        }
-                        else {
                             //responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));
                             body.remove("To");
                             body.put("To", Collections.singletonList(contacto.getDadosContacto()));
 
-                            EstadoDeEntregaDeMensagemEnviadaAContacto edm = EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(this, msg, contacto, "none_yet", "none_yet");
+                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "none_yet", "none_yet");
 
                             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                             deferredResult.setResultHandler((Object responseEntity) -> {
 
                                 //handleDeliveryStatus((ResponseEntity<String>) responseEntity, this, msg, contacto);
-                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, user);
+                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm);
 
                             });
 
                             //HTTPClient.restSyncClient(HttpMethod.POST, this.getUri(), header, body);
                             HTTPClient.restASyncClient(HttpMethod.POST, this.getUri(), header, body, deferredResult);
+
+                            userHasNoContactForThisChannel = false;
+
+                            break; //no need to search more contacts for this user on this channel.
                         }
-
-                        userHasNoContactForThisChannel = false;
-
-                        break; //no need to search more contacts for this user on this channel.
                     }
                 }
 
                 if (userHasNoContactForThisChannel) {
                     System.out.println("WARNING: user " + user.getUsername() + " has no contact for " + this.getClass().getSimpleName());
-                    //EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(this, msg, contacto, "none", "failed:no_channel_contact_data");
+                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
                 }
 
             });
         }
     }
 
-    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm, User user) {
+    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm) {
 
         //Debug
         HTTPClient.printResponseEntity(responseEntity);
@@ -186,19 +186,19 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
             estadoEntrega = "null";
         }
 
-        //EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(canal, msg, contacto, idExterno, estadoEntrega);
+        //UserMessageDeliveryStatus.createUserMessageDeliveryStatus(canal, msg, contacto, idExterno, estadoEntrega);
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
-            System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Success on sending message to user id " + edm.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
         else {
-            System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Failed to send message to user id " + edm.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
     }
 
     @Override
-    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request){
+    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request){
 
         MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);
 
@@ -206,7 +206,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         String idExterno = UtilsResource.getRequiredValueFromMultiValueMap(requestParams, "MessageSid");
         String estadoEntrega = UtilsResource.getRequiredValueFromMultiValueMap(requestParams, "MessageStatus");
 
-        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : this.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+        for (UserMessageDeliveryStatus e : this.getUserMessageDeliveryStatusSet()) {
             if (e.getIdExterno().equals(idExterno)) {
                 e.changeEstadoEntrega(estadoEntrega);
                 return e;

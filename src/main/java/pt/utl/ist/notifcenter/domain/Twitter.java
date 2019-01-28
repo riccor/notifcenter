@@ -112,19 +112,19 @@ public class Twitter extends Twitter_Base {
 
                 boolean userHasNoContactForThisChannel = true;
 
-                for (Contacto contacto : user.getContactosSet()) {
+                //prevent duplicated message for same user:
+                if (user.getUserMessageDeliveryStatusSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
+                    System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
+                    userHasNoContactForThisChannel = false;
+                }
+                else {
+                    for (Contacto contacto : user.getContactosSet()) {
+                        if (contacto.getCanal().equals(this)) {
 
-                    if (contacto.getCanal().equals(this)) {
+                            //Debug
+                            System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
-                        //Debug
-                        System.out.println("has dadosContacto " + contacto.getDadosContacto());
-
-                        //prevent duplicated message for same user:
-                        if (contacto.getEstadoDeEntregaDeMensagemEnviadaAContactoSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
-                            System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
-                        }
-                        else {
-                            EstadoDeEntregaDeMensagemEnviadaAContacto edm = EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(this, msg, contacto, "none_yet", "none_yet");
+                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "none_yet", "none_yet");
 
                             HttpHeaders httpHeaders = createTwitterOAuthHeader("POST", edm.getExternalId());
                             httpHeaders.set("Content-type", "application/json");
@@ -136,28 +136,29 @@ public class Twitter extends Twitter_Base {
                             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                             deferredResult.setResultHandler((Object responseEntity) -> {
 
-                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, user);
+                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm);
 
                             });
 
                             HTTPClient.restASyncClientBody(HttpMethod.POST, this.getUri(), httpHeaders, bodyContent, deferredResult);
+
+                            userHasNoContactForThisChannel = false;
+
+                            break; //no need to search more contacts for this user on this channel.
                         }
-
-                        userHasNoContactForThisChannel = false;
-
-                        break; //no need to search more contacts for this user on this channel.
                     }
                 }
 
                 if (userHasNoContactForThisChannel) {
                     System.out.println("WARNING: user " + user.getUsername() + " has no contact for " + this.getClass().getSimpleName());
+                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
                 }
 
             });
         }
     }
 
-    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm, User user) {
+    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm) {
 
         //Debug
         HTTPClient.printResponseEntity(responseEntity);
@@ -188,18 +189,18 @@ public class Twitter extends Twitter_Base {
 
         if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
             estadoEntrega = "Delivered";
-            System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Success on sending message to user id " + edm.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
         else {
             estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "errors");
-            System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Failed to send message to user id " + edm.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
 
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
     }
 
     @Override
-    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
 
         return null;
     }
@@ -212,7 +213,7 @@ public class Twitter extends Twitter_Base {
     public HttpHeaders createTwitterOAuthHeader(String httpMethod, String nonce) {
 
         String epochO = Utils.getCurrentEpochTimeAsString();
-        //String nonce = generateNonce(); //I am using external id from EstadoDeEntregaDeMensagemEnviadaAContacto
+        //String nonce = generateNonce(); //I am using external id from UserMessageDeliveryStatus
 
         //Map<String, String> map = createMap(oauth_consumer_keyA, oauth_tokenA, nonceA, epochA);
         Map<String, String> map = createMap(this.getOauth_consumer_key(), this.getOauth_token(), nonce, epochO);

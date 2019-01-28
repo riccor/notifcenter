@@ -122,22 +122,22 @@ public class Email extends Email_Base {
 
                     boolean userHasNoContactForThisChannel = true;
 
-                    for (Contacto contacto : user.getContactosSet()) {
+                    //prevent duplicated message for same user:
+                    if (user.getUserMessageDeliveryStatusSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
+                        System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
+                        userHasNoContactForThisChannel = false;
+                    }
+                    else {
+                        for (Contacto contacto : user.getContactosSet()) {
 
-                        if (contacto.getCanal().equals(this)) {
+                            if (contacto.getCanal().equals(this)) {
 
-                            //Debug
-                            //System.out.println("has dadosContacto " + contacto.getDadosContacto());
-
-                            //prevent duplicated message for same user:
-                            if (contacto.getEstadoDeEntregaDeMensagemEnviadaAContactoSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
-                                System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
-                            }
-                            else {
+                                //Debug
+                                //System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
                                 try {
                                     listOfToAddresses.add(new InternetAddress(contacto.getDadosContacto()));
-                                    EstadoDeEntregaDeMensagemEnviadaAContacto edm = EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(this, msg, contacto, "unavailable", "unavailable");
+                                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "unavailable", "unavailable");
 
                                     userHasNoContactForThisChannel = false;
                                 }
@@ -145,14 +145,14 @@ public class Email extends Email_Base {
                                     System.out.println("WARNING: Wrong Email address " + contacto.getDadosContacto() + " for user id " + user.getExternalId());
                                 }
 
+                                break; //no need to search more contacts for this user on this channel.
                             }
-
-                            break; //no need to search more contacts for this user on this channel.
                         }
                     }
 
                     if (userHasNoContactForThisChannel) {
                         System.out.println("WARNING: user " + user.getUsername() + " has no available contact for " + this.getClass().getSimpleName());
+                        UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
                     }
 
                 });
@@ -205,7 +205,7 @@ public class Email extends Email_Base {
 
 
     @Override
-    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
 
         return null;
     }
