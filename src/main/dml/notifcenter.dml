@@ -155,7 +155,7 @@ class ExemploIdentidade {
 }
 
 
-class EstadoDeEntregaDeMensagemEnviadaAContacto {
+class UserMessageDeliveryStatus {
     String idExterno;
     String estadoEntrega;
 }
@@ -253,22 +253,25 @@ relation AttachmentGroup {
 
 
 
-relation CanalTemEstadosDeEntregaDeMensagensEnviadasAContactos {
+relation CanalTemEstadosDeEntregaDeMensagensEnviadasAUtilizadores {
     Canal playsRole canal { multiplicity 1..1; }
-    EstadoDeEntregaDeMensagemEnviadaAContacto playsRole estadoDeEntregaDeMensagemEnviadaAContacto { multiplicity 0..*; }
+    UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
 }
 
-relation EstadoDeEntregaTemMensagem {
+relation EstadoDeEntregaDeMensagemTemMensagem {
     Mensagem playsRole mensagem { multiplicity 1..1; }
-    EstadoDeEntregaDeMensagemEnviadaAContacto playsRole estadoDeEntregaDeMensagemEnviadaAContacto { multiplicity 0..*; }
+    UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
 }
 
-relation EstadoDeEntregaTemContacto {
+/*relation EstadoDeEntregaDeMensagemTemContacto {
     Contacto playsRole contacto { multiplicity 1..1; }
-    EstadoDeEntregaDeMensagemEnviadaAContacto playsRole estadoDeEntregaDeMensagemEnviadaAContacto { multiplicity 0..*; }
+    UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
+}*/
+
+relation EstadoDeEntregaDeMensagemTemUtilizador {
+    .org.fenixedu.bennu.core.domain.User playsRole utilizador { multiplicity 1..1; }
+    UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
 }
-
-
 
 
 

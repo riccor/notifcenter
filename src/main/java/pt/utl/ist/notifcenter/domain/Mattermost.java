@@ -25,7 +25,7 @@ public class Mattermost extends Mattermost_Base {
     }
 
     @Override
-    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
 
         return null;
     }

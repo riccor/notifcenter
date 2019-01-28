@@ -22,7 +22,7 @@ import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.CanalAdapter;
 import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.domain.Canal;
-import pt.utl.ist.notifcenter.domain.EstadoDeEntregaDeMensagemEnviadaAContacto;
+import pt.utl.ist.notifcenter.domain.UserMessageDeliveryStatus;
 import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 import pt.utl.ist.notifcenter.utils.AnotherNotifcenterException;
@@ -167,7 +167,7 @@ public class CanalResource extends BennuRestResource {
         System.out.println("####### got new messagedeliverystatus message!!");
         System.out.println(HTTPClient.getHttpServletRequestParamsAsJson(request).toString());
 
-        EstadoDeEntregaDeMensagemEnviadaAContacto ede = canal.dealWithMessageDeliveryStatusCallback(request);
+        UserMessageDeliveryStatus ede = canal.dealWithMessageDeliveryStatusCallback(request);
 
         if (ede == null) {
             throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_ID);
@@ -182,7 +182,7 @@ public class CanalResource extends BennuRestResource {
 
                 header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
                 body.put("MessageId", Collections.singletonList(ede.getMensagem().getExternalId()));
-                body.put("User", Collections.singletonList(ede.getContacto().getUtilizador().getUsername())); ///?
+                body.put("User", Collections.singletonList(ede.getUtilizador().getUsername())); ///?
                 body.put("MessageStatus", Collections.singletonList(ede.getEstadoEntrega()));
 
                 DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();

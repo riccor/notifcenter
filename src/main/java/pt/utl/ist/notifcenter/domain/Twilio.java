@@ -40,7 +40,7 @@ public class Twilio extends Twilio_Base {
     }
 
     @Override
-    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
 
         return null;
     }

@@ -42,7 +42,7 @@
             <tr>
                 <th>Id</th>
                 <th>Channel</th>
-                <th>Contact</th>
+                <th>User</th>
                 <th>External Id</th>
                 <th>Status</th>
             </tr>
