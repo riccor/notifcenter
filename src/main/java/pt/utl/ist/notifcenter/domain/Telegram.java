@@ -109,7 +109,7 @@ public class Telegram extends Telegram_Base {
                         //Debug
                         //System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
-                        //impedir que a mesma mensagem seja enviada duas vezes para o mesmo destinatário:
+                        //prevent duplicated message for same user:
                         if (contacto.getEstadoDeEntregaDeMensagemEnviadaAContactoSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
                             System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
                         }
