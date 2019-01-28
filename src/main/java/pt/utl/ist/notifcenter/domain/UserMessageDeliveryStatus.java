@@ -46,7 +46,7 @@ public class UserMessageDeliveryStatus extends UserMessageDeliveryStatus_Base {
         this.setMensagem(null); ///
 
         this.getUtilizador().removeUserMessageDeliveryStatus(this);
-        this.setUtilizador(null); ///
+        this.setUtilizador(null);
 
         this.deleteDomainObject();
     }
