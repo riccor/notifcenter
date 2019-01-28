@@ -679,7 +679,7 @@ public class AplicacaoResource extends BennuRestResource {
         System.out.println("####### got new messagedeliverystatus message!!");
         System.out.println(HTTPClient.getHttpServletRequestParamsAsJson(request).toString());
 
-        EstadoDeEntregaDeMensagemEnviadaAContacto ede = canal.dealWithMessageDeliveryStatusCallback(request);
+        UserMessageDeliveryStatus ede = canal.dealWithMessageDeliveryStatusCallback(request);
 
         if (ede == null) {
             throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
@@ -725,8 +725,8 @@ public class AplicacaoResource extends BennuRestResource {
         JsonArray jArray = new JsonArray();
 
         //TODO -> done.
-        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : msg.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
-            jArray.add(view(e, EstadoDeEntregaDeMensagemEnviadaAContactoAdapter.class));
+        for (UserMessageDeliveryStatus e : msg.getUserMessageDeliveryStatusSet()) {
+            jArray.add(view(e, UserMessageDeliveryStatusAdapter.class));
         }
 
         jObj.add("status", jArray);

@@ -49,9 +49,10 @@ public class Contacto extends Contacto_Base {
         this.getCanal().removeContacto(this);
         this.setCanal(null); ///
 
-        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : this.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+        /*
+        for (UserMessageDeliveryStatus e : this.getUserMessageDeliveryStatusSet()) {
             e.delete();
-        }
+        }*/
 
         this.deleteDomainObject();
     }

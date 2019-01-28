@@ -28,7 +28,7 @@ public abstract class Canal extends Canal_Base {
 
     public abstract void checkIsMessageAdequateForChannel(Mensagem msg);
 
-    public abstract EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request);
+    public abstract UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request);
 
     public abstract String getUri();
 
@@ -42,7 +42,7 @@ public abstract class Canal extends Canal_Base {
             c.delete();
         }
 
-        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : this.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+        for (UserMessageDeliveryStatus e : this.getUserMessageDeliveryStatusSet()) {
             e.delete();
         }
 

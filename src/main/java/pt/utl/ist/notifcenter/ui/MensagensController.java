@@ -131,11 +131,12 @@ public class MensagensController {
 
         List<HashMap<String, String>> list = new ArrayList<>();
 
-        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : msg.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+        for (UserMessageDeliveryStatus e : msg.getUserMessageDeliveryStatusSet()) {
             HashMap<String, String> map = new LinkedHashMap<>();
             map.put("id", e.getExternalId());
             map.put("channel", e.getCanal().getExternalId());
-            map.put("contact", e.getContacto().getExternalId());
+            //map.put("contact", e.getContacto().getExternalId());
+            map.put("user", e.getUtilizador().getExternalId());
             map.put("externalId", e.getIdExterno());
             map.put("deliveryStatus", e.getEstadoEntrega());
 

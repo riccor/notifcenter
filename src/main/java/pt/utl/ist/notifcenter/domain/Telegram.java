@@ -102,19 +102,19 @@ public class Telegram extends Telegram_Base {
 
                 boolean userHasNoContactForThisChannel = true;
 
-                for (Contacto contacto : user.getContactosSet()) {
+                //prevent duplicated message for same user:
+                if (user.getUserMessageDeliveryStatusSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
+                    System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
+                    userHasNoContactForThisChannel = false;
+                }
+                else {
+                    for (Contacto contacto : user.getContactosSet()) {
+                        if (contacto.getCanal().equals(this)) {
 
-                    if (contacto.getCanal().equals(this)) {
+                            //Debug
+                            //System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
-                        //Debug
-                        //System.out.println("has dadosContacto " + contacto.getDadosContacto());
-
-                        //impedir que a mesma mensagem seja enviada duas vezes para o mesmo destinatário:
-                        if (contacto.getEstadoDeEntregaDeMensagemEnviadaAContactoSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
-                            System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
-                        }
-                        else {
-                            EstadoDeEntregaDeMensagemEnviadaAContacto edm = EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(this, msg, contacto, "none_yet", "none_yet");
+                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "none_yet", "none_yet");
 
                             HttpHeaders httpHeaders = new HttpHeaders();
                             httpHeaders.set("Content-type", "application/json");
@@ -126,37 +126,37 @@ public class Telegram extends Telegram_Base {
                             String url;
                             try {
                                 url = String.format(this.getUri(), this.getAccess_token());
-                            }
-                            catch (Exception e) {
+                            } catch (Exception e) {
                                 throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Please contact system administration. URL error on channel " + this.getExternalId());
                             }
-
 
                             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                             deferredResult.setResultHandler((Object responseEntity) -> {
 
-                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, user);
+                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm);
 
                             });
 
                             HTTPClient.restASyncClientBody(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
+
+
+                            userHasNoContactForThisChannel = false;
+
+                            break; //no need to search more contacts for this user on this channel.
                         }
-
-                        userHasNoContactForThisChannel = false;
-
-                        break; //no need to search more contacts for this user on this channel.
                     }
                 }
 
                 if (userHasNoContactForThisChannel) {
                     System.out.println("WARNING: user " + user.getUsername() + " has no contact for " + this.getClass().getSimpleName());
+                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
                 }
 
             });
         }
     }
 
-    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm, User user) {
+    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm) {
 
         //Debug
         HTTPClient.printResponseEntity(responseEntity);
@@ -182,11 +182,11 @@ public class Telegram extends Telegram_Base {
 
         if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
             estadoEntrega = "Delivered";
-            System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Success on sending message to user id " + edm.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
         else {
             estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "error_code") + " " + UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "description");
-            System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Failed to send message to user id " + edm.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
 
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
@@ -197,7 +197,7 @@ public class Telegram extends Telegram_Base {
     }
 
     @Override
-    public EstadoDeEntregaDeMensagemEnviadaAContacto dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
 
         return null;
     }

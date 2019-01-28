@@ -100,7 +100,7 @@ public class Mensagem extends Mensagem_Base {
             //this.removeAttachments(a);
         }
 
-        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : this.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+        for (UserMessageDeliveryStatus e : this.getUserMessageDeliveryStatusSet()) {
             e.delete();
         }
 
