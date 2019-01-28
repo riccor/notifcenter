@@ -146,7 +146,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                             deferredResult.setResultHandler((Object responseEntity) -> {
 
                                 //handleDeliveryStatus((ResponseEntity<String>) responseEntity, this, msg, contacto);
-                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm);
+                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, user);
 
                             });
 
@@ -169,7 +169,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         }
     }
 
-    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm) {
+    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm, User user) {
 
         //Debug
         HTTPClient.printResponseEntity(responseEntity);
@@ -190,10 +190,10 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
-            System.out.println("Success on sending message to user id " + edm.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
         else {
-            System.out.println("Failed to send message to user id " + edm.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
     }
 
