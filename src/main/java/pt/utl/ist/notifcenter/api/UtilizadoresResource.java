@@ -55,8 +55,8 @@ public class UtilizadoresResource extends BennuRestResource {
     @SkipCSRF
     @RequestMapping(value = "/{utilizador}/addcontacto", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addContactoUtilizador(@PathVariable("utilizador") User utilizador,
-                                             @RequestParam(value = "dados") String dadosContacto,
-                                             @RequestParam(value = "canal") Canal canal) {
+                                             @RequestParam(value = "data") String dadosContacto,
+                                             @RequestParam(value = "channel") Canal canal) {
 
         if (!FenixFramework.isDomainObjectValid(utilizador)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
@@ -68,10 +68,25 @@ public class UtilizadoresResource extends BennuRestResource {
 
         JsonObject jObj = new JsonObject();
         jObj.addProperty("utilizador", utilizador.getExternalId());
-        jObj.addProperty("canal", canal.getExternalId());
-        jObj.addProperty("dados", dadosContacto);
+        jObj.addProperty("channel", canal.getExternalId());
+        jObj.addProperty("data", dadosContacto);
 
         return view(create(jObj, Contacto.class), ContactoAdapter.class);
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{utilizador}/addcontacto2", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addContactoUtilizador2(@PathVariable("utilizador") User utilizador, @RequestBody JsonElement body) {
+
+        if (!FenixFramework.isDomainObjectValid(utilizador)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
+        }
+
+        JsonObject jObj = body.getAsJsonObject();
+        UtilsResource.deletePropertyFromJsonObject(jObj, "utilizador"); //avoid hacks
+        jObj.addProperty("utilizador", utilizador.getExternalId());
+
+        return view(create(body, Contacto.class), ContactoAdapter.class);
     }
 
     @SkipCSRF
@@ -97,7 +112,7 @@ public class UtilizadoresResource extends BennuRestResource {
     @SkipCSRF
     @RequestMapping(value = "/{utilizador}/{contacto}/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateContacto(@PathVariable("utilizador") User utilizador, @PathVariable(value = "contacto") Contacto contacto,
-                                       @RequestParam(value = "dados") String dadosContacto) {
+                                       @RequestParam(value = "data") String dadosContacto) {
 
         if (!FenixFramework.isDomainObjectValid(utilizador)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
@@ -108,9 +123,9 @@ public class UtilizadoresResource extends BennuRestResource {
         }
 
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("dados", dadosContacto);
+        jObj.addProperty("data", dadosContacto);
 
-        return view(update(jObj, ContactoAdapter.class), ContactoAdapter.class);
+        return view(update(jObj, contacto, ContactoAdapter.class), ContactoAdapter.class);
     }
 
     @SkipCSRF
@@ -164,7 +179,6 @@ public class UtilizadoresResource extends BennuRestResource {
     }
 
     //Called when NotifcenterException is thrown due to some error
-
     @ExceptionHandler({NotifcenterException.class})
     public ResponseEntity<JsonElement> errorHandler(NotifcenterException ex) {
 
@@ -177,4 +191,7 @@ public class UtilizadoresResource extends BennuRestResource {
             return new ResponseEntity<>(ex.getErrorsAndWarnings().toJson(), header, ex.getErrorsAndWarnings().getHttpStatus());
         }
     }
+
+
 }
+
