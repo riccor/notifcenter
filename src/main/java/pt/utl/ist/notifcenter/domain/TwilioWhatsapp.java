@@ -3,7 +3,9 @@ package pt.utl.ist.notifcenter.domain;
 /*
 Twilio - Whatsapp chat
 
-dadosContacto = whatsapp:+351<phoneNumber>
+Configuration link: https://www.twilio.com/console/sms/whatsapp/sandbox
+STATUS CALLBACK URL for the created example (used to receive message delivery statuses from Twilio): http://www.notifcentre.com:8080/notifcenter/apicanais/281835753963522/messagedeliverystatus
+USERID (dadosContacto): whatsapp:+351<phoneNumber>
 
 */
 

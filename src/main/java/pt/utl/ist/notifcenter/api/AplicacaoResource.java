@@ -734,6 +734,11 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
+    //COMO GERAR TOKEN CSRF VALIDO?
+    //notes:
+    //header for token: X-CSRF-TOKEN (taken from CSRFToken)
+    //body param for token: _csrf
+    //link: https://github.com/FenixEdu/bennu/tree/master/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security
     @SkipCSRF
     @RequestMapping(value = "/{app}/sendmensagem", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement sendMensagem(@PathVariable("app") Aplicacao app,

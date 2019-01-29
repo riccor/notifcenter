@@ -9,7 +9,6 @@ Tutorial on how to authorize a third-party app (like this project) to send mails
 
 */
 
-import com.google.common.base.Throwables;
 import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import pt.ist.fenixframework.Atomic;
@@ -71,6 +70,8 @@ public class Email extends Email_Base {
         if (Utils.isValidString(smtpPassword)) {
             this.setSmtpPassword(smtpPassword);
         }
+
+        emailClient = null;
 
         return this;
     }
