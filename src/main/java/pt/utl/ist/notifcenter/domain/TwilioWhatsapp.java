@@ -34,7 +34,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
     @Override
     public String getUri() {
-        return "https://api.twilio.com/2010-04-01/Accounts/AC6cbbd7d6eb26d8dc34fce44a4bea8a1c/Messages.json";
+        return "https://api.twilio.com/2010-04-01/Accounts/%s/Messages.json";
     }
 
     private TwilioWhatsapp() {
@@ -153,7 +153,8 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                             });
 
                             //HTTPClient.restSyncClient(HttpMethod.POST, this.getUri(), header, body);
-                            HTTPClient.restASyncClient(HttpMethod.POST, this.getUri(), header, body, deferredResult);
+                            String uri = String.format(this.getUri(), this.getAccountSID());
+                            HTTPClient.restASyncClient(HttpMethod.POST, uri, header, body, deferredResult);
 
                             userHasNoContactForThisChannel = false;
 
