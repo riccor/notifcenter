@@ -13,8 +13,7 @@ import pt.utl.ist.notifcenter.security.NotifcenterInterceptor;
 
 //Este procura recursos em ../WEB-INF/resources/[notifcenter e mytest]/Resources.properties
 
-//NOTA:
-//para o método "addInterceptors" funcionar, adicionei "extends WebMvcConfigurationSupport ou WebMvcConfigurerAdapter"
+//NOTA: para o método "addInterceptors" funcionar, adicionei "extends WebMvcConfigurationSupport ou WebMvcConfigurerAdapter"
 
 //EnableAsync
 @BennuSpringModule(basePackages = "pt.utl.ist.notifcenter", bundles = {"NotifcenterResources", "MyTestResources"})

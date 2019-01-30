@@ -155,6 +155,8 @@ public class CanalResource extends BennuRestResource {
         return view(CanalAdapter.update2(body, canal), CanalAdapter.class);
     }
 
+
+    //RECEBER NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS:
     @SkipCSRF
     @RequestMapping(value = "/{canal}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, HttpServletRequest request) {

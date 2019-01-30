@@ -53,7 +53,8 @@ public class Mensagem extends Mensagem_Base {
 
         if (callbackUrlEstadoEntrega != null) {
             mensagem.setCallbackUrlEstadoEntrega(callbackUrlEstadoEntrega);
-        } else {
+        }
+        else {
             mensagem.setCallbackUrlEstadoEntrega("none");
         }
 
@@ -65,8 +66,9 @@ public class Mensagem extends Mensagem_Base {
 
         if (dataEntrega != null) {
             mensagem.setDataEntrega(dataEntrega);
-            //TODO fazer algo para enviar mensagem no futuro
-        } else {
+            //Opcional: fazer algo para enviar mensagem no futuro
+        }
+        else {
             mensagem.setDataEntrega(DateTime.now());
         }
 

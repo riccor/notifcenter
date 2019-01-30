@@ -2,7 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
-    <title>Notifcenter - Applications/Senders/Receiver Groups</title>
+    <title>Notifcenter - Applications/Senders/Recipient Groups</title>
 
     <c:set var="urlPrefix" value="/notifcenter/aplicacoes/"/>
     <c:set var="grupsDest" value="gruposdestinatarios"/>
@@ -38,11 +38,11 @@
 </head>
 
 <body>
-    <h2><b>Applications/Senders/Receiver groups manager</b></h2>
+    <h2><b>Applications/Senders/Recipient groups manager</b></h2>
 
-    <div class="list-applications-senders-receivergroups" id="div1">
+    <div class="list-applications-senders-recipientgroups" id="div1">
 
-        <br><h4>Receiver groups for sender ${sender.nome} (${sender.externalId}) from application ${application.name} (${application.externalId})</h4>
+        <br><h4>Recipient groups for sender ${sender.nome} (${sender.externalId}) from application ${application.name} (${application.externalId})</h4>
 
         <table id="table1" style="width: 100%, box-sizing: border-box">
             <tr>
@@ -72,7 +72,7 @@
 
                     <td>
                         <c:if test="${id != null}"> <%-- robustness --%>
-                            <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}${slash}${grupsDest}"/>" onsubmit="return confirm('Do you really want to remove this receiver group?');" method="post">
+                            <form action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}${slash}${grupsDest}"/>" onsubmit="return confirm('Do you really want to remove this recipient group?');" method="post">
                                 <input type="hidden" name="removeGrupoDestinatario" value="<c:out value="${id}"/>">
                                 <input type="submit" value="Delete">
                             </form>
@@ -85,8 +85,8 @@
 
     </div>
 
-    <div class="add-receivergroup" id="div2">
-        <br><h3>Add new receiver group</h3>
+    <div class="add-recipientgroup" id="div2">
+        <br><h3>Add new recipient group</h3>
 
         <form id="form2" action="<c:out value="${urlPrefix}${application.externalId}${slash}${sender.externalId}${slash}${grupsDest}"/>" method="post" >
             <table id="table2">

@@ -86,7 +86,7 @@ public class UtilizadoresResource extends BennuRestResource {
         UtilsResource.deletePropertyFromJsonObject(jObj, "utilizador"); //avoid hacks
         jObj.addProperty("utilizador", utilizador.getExternalId());
 
-        return view(create(body, Contacto.class), ContactoAdapter.class);
+        return view(create(jObj, Contacto.class), ContactoAdapter.class);
     }
 
     @SkipCSRF

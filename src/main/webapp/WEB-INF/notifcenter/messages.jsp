@@ -47,7 +47,7 @@
                 <th>Id</th>
                 <th>Notification Channel</th>
                 <th>Sender</th>
-                <th>Receiver Group(s)</th>
+                <th>Recipient Group(s)</th>
                 <th>Subject</th>
                 <th>Short text</th>
                 <th>Long text</th>
@@ -101,7 +101,7 @@
                         <c:choose>
                             <c:when test="${id != null}"> <%-- robustness --%>
                                 <form action="<c:out value="${urlPrefix}${slash}${id}"/>" method="get">
-                                    <input type="submit" value="Go">
+                                    <input type="submit" value="View">
                                 </form>
                             </c:when>
                             <c:otherwise>

@@ -14,7 +14,6 @@
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/281835753963522 (show canal)
 //POST {"createChannel": "Messenger", "accountSID":"accountSID1", "authToken":"authToken1", "fromPhoneNumber":"fromPhoneNumber1", "uriaa":"uri2"} -> http://{{DOMAIN}}:8080/notifcenter/apicanais/addcanal
 
-//TODO
 //OK3:
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/addaplicacao?name=app_99&redirect_uri=http://app99_site.com/code&description=descricao_app99
 //POST {"name":"app_55", "description":"d5", "redirect_uri":"http://app55_site.com/code&description=descricao_app55", "author":"author1", "site_url": "siteurl1"} http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/addaplicacao2
@@ -196,7 +195,7 @@ public class AplicacaoResource extends BennuRestResource {
        /{app}/{remetente}/listcanaisnotificacao
        
        /{app}/sendmensagem
-
+        /{app}/listmensagens
        /{app}/{msg}/listattachments
        /{app}/attachments/{fileId}
        /attachments/{fileId}
@@ -252,15 +251,6 @@ public class AplicacaoResource extends BennuRestResource {
     public JsonElement addAplicacao2(@RequestBody JsonElement body) {
 
         return view(create(body, Aplicacao.class), AplicacaoAdapter.class);
-    }
-
-    @RequestMapping(value = "/recursive", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement recursive(@RequestBody JsonElement body) {
-
-        String property = "recipient_id";
-        System.out.println("\n\nresult: " + UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(body.getAsJsonObject(), property));
-
-        return body;
     }
 
     @RequestMapping(value = "/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -355,6 +345,17 @@ public class AplicacaoResource extends BennuRestResource {
 
         Remetente remetente = Remetente.createRemetente(app, nomeRemetente);
         return view(remetente, RemetenteAdapter.class);
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/addremetente2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addRemetente2(@PathVariable("app") Aplicacao app, @RequestBody JsonElement body) {
+
+        JsonObject jObj = body.getAsJsonObject();
+        UtilsResource.deletePropertyFromJsonObject(jObj, "app"); //avoid hacks
+        jObj.addProperty("app", app.getExternalId());
+
+        return view(create(jObj, Remetente.class), RemetenteAdapter.class);
     }
 
     @RequestMapping(value = "/{app}/{remetente}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -623,7 +624,7 @@ public class AplicacaoResource extends BennuRestResource {
 
     //debug purposes:
     @SkipCSRF
-    @RequestMapping(value = "approvecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/approvecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement approveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
 
         if (!FenixFramework.isDomainObjectValid(cn)) {
@@ -636,7 +637,7 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "disapprovecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/disapprovecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement disapproveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
 
         if (!FenixFramework.isDomainObjectValid(cn)) {
@@ -649,7 +650,7 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
-    //Notifcenter callback
+    //Notifcenter callback (NOT BEING USED)
 
     @SkipCSRF
     @RequestMapping(value = "/notifcentercallback", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -664,75 +665,8 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
-    //RECEBER NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS:
 
-    /*
-    @SkipCSRF
-    @RequestMapping(value = "/{canal}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, HttpServletRequest request) {
-        //Received content might not be JSON, so we do not use "@RequestBody JsonElement body"
-
-        if (!FenixFramework.isDomainObjectValid(canal)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
-        }
-
-        System.out.println("####### got new messagedeliverystatus message!!");
-        System.out.println(HTTPClient.getHttpServletRequestParamsAsJson(request).toString());
-
-        UserMessageDeliveryStatus ede = canal.dealWithMessageDeliveryStatusCallback(request);
-
-        if (ede == null) {
-            throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
-        }
-        else {
-
-            //If message parameter callbackUrlEstadoEntrega is not "none", then send message delivery status to the app
-            if (!ede.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
-
-                MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-                MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-
-                header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-                body.put("MessageId", Collections.singletonList(ede.getMensagem().getExternalId()));
-                body.put("User", Collections.singletonList(ede.getContacto().getUtilizador().getUsername())); ///?
-                body.put("MessageStatus", Collections.singletonList(ede.getEstadoEntrega()));
-
-                DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-                deferredResult.setResultHandler((Object responseEntity) -> {
-                    HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity); ///anything else to do?
-                });
-
-                HTTPClient.restASyncClient(HttpMethod.POST, ede.getMensagem().getCallbackUrlEstadoEntrega(), header, body, deferredResult);
-            }
-
-            throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
-        }
-    }*/
-
-    @RequestMapping(value = "/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement getMessageStatus(/*@PathVariable("app") Aplicacao app,*/ @PathVariable("msg") Mensagem msg) {
-
-        /*if (!FenixFramework.isDomainObjectValid(app)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
-        }*/
-
-        if (!FenixFramework.isDomainObjectValid(msg)) { // || !msg.getCanalNotificacao().getRemetente().getAplicacao().getExternalId().equals(app.getExternalId())) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR);
-        }
-
-        JsonObject jObj = view(msg, MensagemAdapter.class).getAsJsonObject();
-
-        JsonArray jArray = new JsonArray();
-
-        //TODO -> done.
-        for (UserMessageDeliveryStatus e : msg.getUserMessageDeliveryStatusSet()) {
-            jArray.add(view(e, UserMessageDeliveryStatusAdapter.class));
-        }
-
-        jObj.add("status", jArray);
-
-        return jObj;
-    }
+    //SUB-AGRUPAMENTO: APLICACOES->MENSAGENS
 
     //COMO GERAR TOKEN CSRF VALIDO?
     //notes:
@@ -859,8 +793,54 @@ public class AplicacaoResource extends BennuRestResource {
         return msg;
     }*/
 
+    @RequestMapping(value = "/{app}/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement getMessageStatus(@PathVariable("app") Aplicacao app, @PathVariable("msg") Mensagem msg) {
 
-    //AGRUPAMENTO - attachments
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (!FenixFramework.isDomainObjectValid(msg) || !msg.getCanalNotificacao().getRemetente().getAplicacao().equals(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR);
+        }
+
+        JsonObject jObj = view(msg, MensagemAdapter.class).getAsJsonObject();
+
+        JsonArray jArray = new JsonArray();
+
+        for (UserMessageDeliveryStatus e : msg.getUserMessageDeliveryStatusSet()) {
+            jArray.add(view(e, UserMessageDeliveryStatusAdapter.class));
+        }
+
+        jObj.add("status", jArray);
+
+        return jObj;
+    }
+
+    @RequestMapping(value = "/{app}/listmensagens", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listMensagensApp(@PathVariable("app") Aplicacao app) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        for (Remetente r : app.getRemetentesSet()) {
+            for (CanalNotificacao cn : r.getCanaisNotificacaoSet()) {
+                for (Mensagem msg : cn.getMensagemSet()) {
+                    jArray.add(view(msg, MensagemAdapter.class));
+                }
+            }
+        }
+
+        jObj.add("mensagens", jArray);
+
+        return jObj;
+    }
+
+    //SUB-AGRUPAMENTO: APLICACOES->ATTACHMENTS
 
     @RequestMapping(value = "/{app}/attachments/{fileId}", method = RequestMethod.GET)
     public HttpEntity<byte[]> downloadAttachmentApp(@PathVariable("app") Aplicacao app, @PathVariable("fileId") Attachment attachment) {
@@ -913,7 +893,6 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
-
     //Called when NotifcenterException is thrown due to some error
 
     @ExceptionHandler({NotifcenterException.class})
@@ -929,6 +908,37 @@ public class AplicacaoResource extends BennuRestResource {
         }
     }
 
+
+
+
+
+
+    //SUB-AGRUPAMENTO: FUNCOES DEBUG
+
+    //Debug
+    @RequestMapping(value = "/groupdebug", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement groupDebug(@RequestParam("name") String name) {
+
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        DynamicGroup g = Group.dynamic(name);
+
+        jObj.addProperty("name", g.getName());
+        g.getMembers().forEach(e -> jArray.add(e.getUsername()));
+        jObj.add("membros", jArray);
+
+        return jObj;
+    }
+
+    @RequestMapping(value = "/recursive", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement recursive(@RequestBody JsonElement body) {
+
+        String property = "recipient_id";
+        System.out.println("\n\nresult: " + UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(body.getAsJsonObject(), property));
+
+        return body;
+    }
 
     // LIST CANAIS / APPS / USERS / GROUPS / ATTACHMENTS / MENSAGENS / CONTACTOS
 
@@ -958,22 +968,6 @@ public class AplicacaoResource extends BennuRestResource {
 
         return "All channels were deleted!";
     }*/
-
-    //Debug
-    @RequestMapping(value = "/groupdebug", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement groupDebug(@RequestParam("name") String name) {
-
-        JsonObject jObj = new JsonObject();
-        JsonArray jArray = new JsonArray();
-
-        DynamicGroup g = Group.dynamic(name);
-
-        jObj.addProperty("name", g.getName());
-        g.getMembers().forEach(e -> jArray.add(e.getUsername()));
-        jObj.add("membros", jArray);
-
-        return jObj;
-    }
 
     @RequestMapping(value = "/listgrupos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listGrupos() {
@@ -1272,6 +1266,24 @@ public class AplicacaoResource extends BennuRestResource {
         String t4 = "test4";
         return t4;
     }
+
+    //"Failed to convert value of type 'java.lang.String' to required type 'org.fenixedu.bennu.core.groups.DynamicGroup"
+    /*@RequestMapping(value = "test44", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement test44(@RequestParam("g") DynamicGroup dg) {
+
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        dg.getMembers().forEach(user -> {
+            jArray.add((user.getUsername()));
+
+        });
+
+        jObj.addProperty("name", dg.getName());
+        jObj.add("members", jArray);
+
+        return jObj;
+    }*/
 
     @OAuthEndpoint("scope3")
     @RequestMapping(value = "test5", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

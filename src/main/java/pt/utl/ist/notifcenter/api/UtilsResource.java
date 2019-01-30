@@ -174,6 +174,11 @@ public class UtilsResource {
     }
 
     public static DateTime getDatetime(String dt) {
+
+        if (dt == null) {
+            return DateTime.now();
+        }
+
         try {
             DateTime date = DateTime.parse(dt, org.joda.time.format.DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss.SSS"));
             return date;

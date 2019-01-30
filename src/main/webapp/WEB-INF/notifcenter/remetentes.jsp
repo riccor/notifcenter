@@ -48,7 +48,7 @@
                 <th>Id</th>
                 <th>Name</th>
                 <th>Notification Channels</th>
-                <th>Receiver Groups</th>
+                <th>Recipient Groups</th>
                 <th>Actions</th>
             </tr>
 

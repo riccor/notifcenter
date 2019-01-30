@@ -82,7 +82,7 @@ public class HTTPClient {
     }
 
     public static String createBasicAuthString(String username, String password) {
-        ///TODO: URL encode username and password first (according to RFC 1738):
+        ///URL encode username and password first (according to RFC 1738):
         return String.format("Basic %s", base64Encode(tryUrlEncode(username) + ":" + tryUrlEncode(password)));
     }
 
