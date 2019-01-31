@@ -990,7 +990,10 @@ public class AplicacaoResource extends BennuRestResource {
         JsonArray jArray = new JsonArray();
 
         for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
+
+            //TODO PROCURAR TODOS OS FILES STORAGES COM OBJECTOS DO TIPO ATTACHMENT
             if (fs.getName().equals(NotifcenterSpringConfiguration.getConfiguration().notifcenterFileStorageName())) {
+
                 for (GenericFile atch : fs.getFileSet()) {
                     jArray.add(view(atch, AttachmentAdapter.class));
                 }

@@ -89,54 +89,56 @@ class Attachment extends .org.fenixedu.bennu.io.domain.GenericFile{
 *  Não compreendi o propósito dos atributos email e password nesta entidde.
 */
 class Canal {
+    String config;
     //String email;
     //String password;
 }
 
     class Email extends Canal{
-        String smtpServer;
-        String smtpPort;
-        String smtpUsername;
-        String smtpPassword;
+        //String smtpServer;
+        //String smtpPort;
+        //String smtpUsername;
+        //String smtpPassword;
     }
 
     class Telegram extends Canal{
-        String access_token;
-        //String uri;
+S        ////String uri;
+        //int messageCount;
+        //String lastUser;
     }
 
     class Mattermost extends Canal{
-        String oauth2IdCliente;
-        String oauth2Secredo;
+        //String oauth2IdCliente;
+        //String oauth2Secredo;
     }
 
     class Twitter extends Canal {
-        //String numeroTelemovel;
-        String oauth_consumer_key;
-        String oauth_consumer_secret;
-        String oauth_token;
-        String oauth_token_secret;
-        //String uri;
+        ////String numeroTelemovel;
+        //String oauth_consumer_key;
+        //String oauth_consumer_secret;
+        //String oauth_token;
+        //String oauth_token_secret;
+        ////String uri;
     }
 
     // Assumo que isto também é um canal
     class Messenger extends Canal {
-        //String numeroTelemovel;
-        String access_token;
-        //String uri;
+        ////String numeroTelemovel;
+        //String access_token;
+        ////String uri;
     }
 
     // Assumo que isto também é um canal
     class Twilio extends Canal {
-        String accountSID;
-        String authToken;
+        //String accountSID;
+        //String authToken;
     }
 
     class TwilioWhatsapp extends Canal {
-        String accountSID;
-        String authToken;
-        String fromPhoneNumber;
-        //String uri;
+        //String accountSID;
+        //String authToken;
+        //String fromPhoneNumber;
+        ////String uri;
     }
 
 
@@ -252,11 +254,12 @@ relation AttachmentGroup {
 */
 
 
-
+/* ////redundante (TODO: confirmar!)
 relation CanalTemEstadosDeEntregaDeMensagensEnviadasAUtilizadores {
     Canal playsRole canal { multiplicity 1..1; }
     UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
 }
+*/
 
 relation EstadoDeEntregaDeMensagemTemMensagem {
     Mensagem playsRole mensagem { multiplicity 1..1; }

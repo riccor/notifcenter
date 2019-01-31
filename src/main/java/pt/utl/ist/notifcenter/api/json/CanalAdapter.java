@@ -26,6 +26,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
 
         try {
             clazz = Class.forName(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain() + "." + channelType);
+//TODO IR AO STATIC MAP
 
             if(!Utils.isClassAChannel(clazz)) {
                 throw new Exception("error");
@@ -33,14 +34,17 @@ public class CanalAdapter implements JsonAdapter<Canal> {
 
             //AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
             //params = annotation.classFields();
-            params = Utils.getDomainClassSlots(clazz);
+            ///params = Utils.getDomainClassSlots(clazz);
         }
         catch (Exception e) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_NAME_ERROR);
         }
 
+        Canal.createNewCanal(clazz, jsonElement.toString());
+/*
         Class[] args = new Class[params.length]; //always strings
         Arrays.fill(args, String.class);
+
 
         Object[] methodArgs = new Object[params.length];
         for (int i = 0; i < params.length; i++) {
@@ -55,7 +59,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         catch (Exception e) {
             ///e.printStackTrace();
             throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Server could not create a new channel.");
-        }
+        }*
     }
 
     public static Canal update2(JsonElement jsonElement, Canal canal) {

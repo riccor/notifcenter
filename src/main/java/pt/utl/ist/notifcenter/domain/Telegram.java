@@ -26,6 +26,7 @@ GET https://api.telegram.org/bot%s/getUpdates (this gets a list of ids of people
 */
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.core.domain.User;
@@ -44,20 +45,27 @@ import pt.utl.ist.notifcenter.utils.Utils;
 
 import javax.servlet.http.HttpServletRequest;
 
-@AnotacaoCanal
+//@AnotacaoCanal
 public class Telegram extends Telegram_Base {
-    
-    public Telegram() {
+
+    static {
+        final JsonObject example = new JsonObject();
+        example.addProperty("access_token", "example token");
+        example.addProperty("url", "example url");
+        CanalProvider provider = new CanalProvider(example.toString(), (config) -> new Telegram(config));
+        Canal.CHHANNELS.put(Telegram.class, provider);
+    }
+
+    public Telegram(final String config) {
         super();
+        setConfig(config);
     }
 
-    @Override
-    public String getUri() {
-        return "https://api.telegram.org/bot%s/sendMessage";
-    }
+    private static String URL = "https://api.telegram.org/bot%s/sendMessage";
 
+    /* TODO: APAGAR createChannel
     @Atomic
-    public static Telegram createChannel(String access_token/*, String uri*/) {
+    public static Telegram createChannel(String access_token/, String uri/) {
 
         Telegram telegram = new Telegram();
         telegram.setAccess_token(access_token);
@@ -68,21 +76,23 @@ public class Telegram extends Telegram_Base {
 
         return telegram;
     }
+    */
 
-    @Atomic
-    public Telegram updateChannel(@Nullable final String access_token/*, @Nullable final String uri*/) {
+    //TODO: FICA EM CANAL.JAVA -> APENAS fica algo como SETCONFIGUPDATE()
+   /* Atomic
+  public Telegram updateChannel(@Nullable final String access_token/, @Nullable final String uri/) {
 
         if (Utils.isValidString(access_token)) {
             this.setAccess_token(access_token);
         }
 
-        /*
+        /
         if (Utils.isValidString(uri)) {
             this.setUri(uri);
-        }*/
+        }/
 
         return this;
-    }
+    }*/
 
     @Override
     public void checkIsMessageAdequateForChannel(Mensagem msg) {
@@ -125,7 +135,7 @@ public class Telegram extends Telegram_Base {
 
                             String url;
                             try {
-                                url = String.format(this.getUri(), this.getAccess_token());
+                                url = String.format(URL, config().get("access_token").getAsString());
                             } catch (Exception e) {
                                 throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Please contact system administration. URL error on channel " + this.getExternalId());
                             }

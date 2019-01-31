@@ -59,6 +59,7 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport
         @ConfigurationProperty(key = "notifcenter.mensagem.attachment.maxsize", defaultValue = "25000000") //bytes
         public String notifcenterMensagemAttachmentMaxSizeBytes();
 
+        //TODO -
         @ConfigurationProperty(key = "notifcenter.filestorage.name", defaultValue = "notistore-1")
         public String notifcenterFileStorageName();
 

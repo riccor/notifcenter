@@ -54,7 +54,10 @@ public class Attachment extends Attachment_Base {
     }
 
     @Atomic
+    @Override
     public void delete() {
+
+
         this.setMensagem(null);
 
         //TODO how to delete file from filesystem ???
@@ -66,9 +69,8 @@ public class Attachment extends Attachment_Base {
             deleteDomainObject();
         }*/
 
-        this.setStorage(null);
-        this.setFileSupport(null);
-        this.deleteDomainObject();
+        super.delete();
+
     }
 
 }
