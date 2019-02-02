@@ -12,10 +12,7 @@ import org.joda.time.DateTime;
 import org.springframework.web.multipart.MultipartFile;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.UtilsResource;
-import pt.utl.ist.notifcenter.domain.Aplicacao;
-import pt.utl.ist.notifcenter.domain.Attachment;
-import pt.utl.ist.notifcenter.domain.CanalNotificacao;
-import pt.utl.ist.notifcenter.domain.Mensagem;
+import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
@@ -27,6 +24,11 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
 
         //NOTE: jsonElement property 'app' must be inserted by the server
         Aplicacao app = UtilsResource.getDomainObjectFromJsonProperty(jsonElement, Aplicacao.class, "app");
+
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
+        }
+
         CanalNotificacao canalNotificacao = UtilsResource.getDomainObjectFromJsonProperty(jsonElement, CanalNotificacao.class, "canalnotificacao");
 
         String[] gd = UtilsResource.getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
@@ -41,7 +43,6 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
 
         String callbackUrlEstadoEntrega = UtilsResource.getRequiredValueOrReturnNullInstead(jsonElement.getAsJsonObject(), "callbackurl");
 
-
         //verify params
         if (!FenixFramework.isDomainObjectValid(canalNotificacao) || !app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "Such canalnotificacao doesnt exist.");
@@ -55,8 +56,10 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
                 throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group id " + group.toString() + " doesnt exist.");
             }
 
-            if (canalNotificacao.getRemetente().getGruposSet().stream().noneMatch(e -> e.equals(group))) {
-                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "No permissions to send messages to group id " + group.getExternalId() + " !");
+            if (app.getPermissoesAplicacao().equals(AppPermissions.RREQUIRES_APPROVAL)) {
+                if (canalNotificacao.getRemetente().getGruposSet().stream().noneMatch(e -> e.equals(group))) {
+                    throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "No permissions to send messages to group id " + group.getExternalId() + " !");
+                }
             }
         }
 

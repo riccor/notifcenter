@@ -4,6 +4,8 @@ package pt.utl.ist.notifcenter.domain;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import pt.ist.fenixframework.Atomic;
+import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
+import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
@@ -13,38 +15,16 @@ import java.util.function.Function;
 
 public abstract class Canal extends Canal_Base {
 
-    @Atomic
-    public static void createNewCanal(Class<?> clazz, String toString) {
-        final CanalProvider provider = Canal.CHHANNELS.get(clazz);
-        if (entrada == null) { //if no such channel type, then throw exception
-            throw Expcetion();
-        }
-
-        final Canal canal = provider.getContructor().apply(toString);
-
-    }
-
-    @Override
-    public void setConfig(final String config) { //NOTA: equivalente a updateChannel()!! (?)
-        super.setConfig();
-        CHHANNELS.get(this.getClass()).getConfigExampleJson().entrySet()
-                .forEach(); //TODO: cruzar tabela (ou exemplo json) com parametros recebidos
-        config()
-    }
-
-    @atomic
-    setConfigUpdate
-
-    protected abstract String[] configFields();
+    public static Map<Class, CanalProvider> CHANNELS = Collections.synchronizedMap(new HashMap<>());
 
     public static class CanalProvider {
-
         private String configExample;
         private Function<String, Canal> contructor;
 
         public String getConfigExample() {
             return configExample;
         }
+
         public JsonObject getConfigExampleJson() {
             return new JsonParser().parse(configExample).getAsJsonObject();
         }
@@ -57,10 +37,36 @@ public abstract class Canal extends Canal_Base {
             this.configExample = configExample;
             this.contructor = contructor;
         }
-
     }
 
-    public static Map<Class, CanalProvider> CHHANNELS = Collections.synchronizedMap(new HashMap<>());
+    @Atomic
+    public static void createNewCanal(Class<?> clazz, String toString) {
+        final CanalProvider provider = Canal.CHANNELS.get(clazz);
+        if (provider == null) { //if no such channel type, then throw exception
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_NAME_ERROR);
+        }
+
+        final Canal canal = provider.getContructor().apply(toString);
+    }
+
+    @Override
+    public void setConfig(final String config) { //NOTA: equivalente a updateChannel()!! (?)
+        super.setConfig();
+        CHANNELS.get(this.getClass()).getConfigExampleJson().entrySet()
+                .forEach(); //TODO: cruzar tabela (ou exemplo json) com parametros recebidos
+        config()
+    }
+
+    protected JsonObject config() {
+        return new JsonParser().parse(getConfig());
+    }
+
+    @atomic
+    setConfigUpdate
+
+
+    //TODO: apagar,certo?
+    //protected abstract String[] configFields();
 
     public Canal() {
         super();
@@ -78,10 +84,6 @@ public abstract class Canal extends Canal_Base {
     }
     */
 
-    protected JsonObject config() {
-        return new JsonParser().parse(getConfig());
-    }
-
     public abstract void sendMessage(Mensagem msg); //{ System.out.println("\n\nshould not see this"); }
 
     public abstract void checkIsMessageAdequateForChannel(Mensagem msg);
@@ -89,7 +91,7 @@ public abstract class Canal extends Canal_Base {
     public abstract UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request);
 
     //TODO: NEM TODOS OS CANAIS TÊM URL (EXEMPLO: ENTRAR MENSAGEM POR CORREIO)
-//    public abstract String getUri();
+    //public abstract String getUri();
 
     @Atomic
     public void delete() {

@@ -504,8 +504,15 @@ public class AplicacaoResource extends BennuRestResource {
         JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
-        for (PersistentGroup group : remetente.getGruposSet()) {
-            jArray.add(view(group, PersistentGroupAdapter.class));
+        if (app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
+            for (PersistentGroup g : FenixFramework.getDomainRoot().getBennu().getGroupSet()) {
+                jArray.add(view(g, PersistentGroupAdapter.class));
+            }
+        }
+        else if (app.getPermissoesAplicacao().equals(AppPermissions.RREQUIRES_APPROVAL)) {
+            for (PersistentGroup g : remetente.getGruposSet()) {
+                jArray.add(view(g, PersistentGroupAdapter.class));
+            }
         }
 
         jObj.addProperty("appId", app.getExternalId());

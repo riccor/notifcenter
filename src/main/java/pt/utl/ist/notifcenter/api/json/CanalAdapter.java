@@ -26,7 +26,10 @@ public class CanalAdapter implements JsonAdapter<Canal> {
 
         try {
             clazz = Class.forName(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain() + "." + channelType);
-//TODO IR AO STATIC MAP
+
+            //TODO IR AO STATIC MAP
+
+
 
             if(!Utils.isClassAChannel(clazz)) {
                 throw new Exception("error");
@@ -59,7 +62,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         catch (Exception e) {
             ///e.printStackTrace();
             throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Server could not create a new channel.");
-        }*
+        }*/
     }
 
     public static Canal update2(JsonElement jsonElement, Canal canal) {

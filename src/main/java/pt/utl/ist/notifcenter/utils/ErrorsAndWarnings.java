@@ -27,6 +27,7 @@ public enum ErrorsAndWarnings {
     INVALID_MESSAGE_ATTACHMENT_SIZE_ERROR ("invalidMessageAttachmentSize", "Invalid message attachment size.", HttpStatus.PRECONDITION_FAILED),
     NOTALLOWED_CANALNOTIFICACAO_ERROR ("notAllowedCanalNotificacao", "No permissions to use such notification channel.", HttpStatus.FORBIDDEN),
     NOTALLOWED_GROUP_ERROR ("notAllowedGroup", "No permissions to send messages to group.", HttpStatus.FORBIDDEN),
+    BLOCKED_APP_ERROR ("blockedApp", "Application is blocked.", HttpStatus.FORBIDDEN),
     NOTALLOWED_TO_ADD_GROUP_ERROR ("notAllowedToAddGroup", "No permissions to add message receiving groups.", HttpStatus.FORBIDDEN),
     COULD_NOT_DELIVER_MESSAGE ("couldNotDeliverMessage", "Could not deliver message.", HttpStatus.REQUEST_TIMEOUT),
     INVALID_ATTACHMENT_ERROR ("attachmentNotFound", "No such attachment was found.", HttpStatus.NOT_FOUND),
