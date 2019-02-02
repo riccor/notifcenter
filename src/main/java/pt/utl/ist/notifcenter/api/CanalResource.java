@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.CanalAdapter;
-import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.domain.Canal;
 import pt.utl.ist.notifcenter.domain.UserMessageDeliveryStatus;
 import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
@@ -33,6 +32,7 @@ import pt.utl.ist.notifcenter.utils.Utils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/apicanais")
@@ -80,8 +80,19 @@ public class CanalResource extends BennuRestResource {
         return jArray;
     }
 
-
     public static MultiValueMap<String, String> getAvailableChannelsNamesAndParams() {
+        MultiValueMap<String, String> list = new LinkedMultiValueMap<>();
+
+        for (Map.Entry e : Canal.CHANNELS.entrySet()) {
+            Canal canal = (Canal) e.getKey();
+            Canal.CanalProvider cprov = (Canal.CanalProvider) e.getValue();
+            list.put(canal.getClass().getSimpleName(), Arrays.asList(cprov.getConfigExample()));
+        }
+
+        return list;
+    }
+
+    /*public static MultiValueMap<String, String> getAvailableChannelsNamesAndParams() {
         MultiValueMap<String, String> list = new LinkedMultiValueMap<>();
 
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
@@ -101,7 +112,7 @@ public class CanalResource extends BennuRestResource {
         }
 
         return list;
-    }
+    }*/
 
     @RequestMapping(value = "/{canal}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement viewCanal(@PathVariable(value = "canal") Canal canal) {

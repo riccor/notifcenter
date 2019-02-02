@@ -134,7 +134,7 @@ public class MensagensController {
         for (UserMessageDeliveryStatus e : msg.getUserMessageDeliveryStatusSet()) {
             HashMap<String, String> map = new LinkedHashMap<>();
             map.put("id", e.getExternalId());
-            map.put("channel", e.getCanal().getExternalId());
+            map.put("channel", e.getMensagem().getCanalNotificacao().getCanal().getExternalId()); //UML SIMPLIFIED
             //map.put("contact", e.getContacto().getExternalId());
             map.put("user", e.getUtilizador().getExternalId());
             map.put("externalId", e.getIdExterno());

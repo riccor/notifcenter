@@ -9,8 +9,9 @@ public class SistemaNotificacoes extends SistemaNotificacoes_Base {
     private SistemaNotificacoes() {
         super();
         this.setRoot(FenixFramework.getDomainRoot());
+
+        //LC - 31-1-2019
         Group.dynamic("notificationAdmins").toPersistentGroup();
-        Group.
     }
 
     @Atomic
@@ -19,9 +20,5 @@ public class SistemaNotificacoes extends SistemaNotificacoes_Base {
         final SistemaNotificacoes sistema = FenixFramework.getDomainRoot().getSistemaNotificacoes();
         return sistema == null ? new SistemaNotificacoes() : sistema;
     }
-
-
-    //como fazer print
-
 
 }

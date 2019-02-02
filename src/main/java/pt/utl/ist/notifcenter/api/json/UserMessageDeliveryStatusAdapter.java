@@ -24,13 +24,11 @@ public class UserMessageDeliveryStatusAdapter implements JsonAdapter<UserMessage
     public JsonElement view(UserMessageDeliveryStatus obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("id", obj.getExternalId());
-        jObj.addProperty("canal", obj.getCanal().getExternalId());
-        //jObj.addProperty("contacto", obj.getContacto().getExternalId());
+        jObj.addProperty("canal", obj.getMensagem().getCanalNotificacao().getCanal().getExternalId());
         jObj.addProperty("utilizador", obj.getUtilizador().getExternalId());
         jObj.addProperty("idExterno", obj.getIdExterno());
         jObj.addProperty("estadoEntrega", obj.getEstadoEntrega());
         return jObj;
     }
-
 
 }

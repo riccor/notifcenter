@@ -10,9 +10,8 @@ USERID (dadosContacto): whatsapp:+351<phoneNumber>
 */
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.apache.avro.reflect.Nullable;
-import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.springframework.http.HttpMethod;
@@ -21,82 +20,29 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.async.DeferredResult;
-import pt.ist.fenixframework.Atomic;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
-import pt.utl.ist.notifcenter.utils.Utils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-@AnotacaoCanal//(classFields = {"accountSID", "authToken", "fromPhoneNumber", "uri"})
 public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
-    @Override
-    public String getUri() {
-        return "https://api.twilio.com/2010-04-01/Accounts/%s/Messages.json";
+    static {
+        final JsonObject example = new JsonObject();
+        example.addProperty("accountSID", "example accountSID");
+        example.addProperty("authToken", "example authToken");
+        example.addProperty("fromPhoneNumber", "example fromPhoneNumber");
+        CanalProvider provider = new CanalProvider(example.toString(), (config) -> new TwilioWhatsapp(config));
+        Canal.CHANNELS.put(TwilioWhatsapp.class, provider);
     }
 
-    private TwilioWhatsapp() {
+    private static String URL = "https://api.twilio.com/2010-04-01/Accounts/%s/Messages.json";
+
+    public TwilioWhatsapp(final String config) {
         super();
-        //this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
+        this.setConfig(config);
     }
-
-    @Atomic
-    public static TwilioWhatsapp createChannel(final String accountSID, final String authToken, final String fromPhoneNumber /*, final String uri*/) {
-        TwilioWhatsapp twilioWhatsapp = new TwilioWhatsapp();
-        twilioWhatsapp.setAccountSID(accountSID);
-        twilioWhatsapp.setAuthToken(authToken);
-        twilioWhatsapp.setFromPhoneNumber(fromPhoneNumber);
-        //twilioWhatsapp.setUri(uri);
-
-        //Debug
-        ///twilioWhatsapp.setEmail("twiliowhatsapp-" + twilioWhatsapp.getExternalId() + "@notifcenter.com");
-
-        return twilioWhatsapp;
-    }
-
-    @Atomic
-    public TwilioWhatsapp updateChannel(@Nullable final String accountSID, @Nullable final String authToken, @Nullable final String fromPhoneNumber /*, @Nullable final String uri*/) {
-
-        if (Utils.isValidString(accountSID)) {
-            this.setAccountSID(accountSID);
-        }
-
-        if (Utils.isValidString(authToken)) {
-            this.setAuthToken(authToken);
-        }
-
-        if (Utils.isValidString(fromPhoneNumber)) {
-            this.setFromPhoneNumber(fromPhoneNumber);
-        }
-
-        /*
-        if (Utils.isValidString(uri)) {
-            this.setUri(uri);
-        }
-        */
-
-        return this;
-    }
-
-    public static TwilioWhatsapp createTwilioWhatsappFromPropertiesFile(final String file) {
-        String filename = String.format(NotifcenterSpringConfiguration.getConfiguration().notifcenterChannelsCredentials(), file);
-        Map<String, String> propertiesMap = Utils.loadPropertiesFromPropertiesFile(TwilioWhatsapp.class, filename, "accountSID", "authToken", "fromPhoneNumber", "uri");
-
-        if (!Utils.isMapFilled(propertiesMap)) {
-            System.out.println("Error: Cannot create entity from file.");
-            return null;
-        }
-
-        return createChannel/*TwilioWhatsApp*/(propertiesMap.get("accountSID"), propertiesMap.get("authToken"), propertiesMap.get("fromPhoneNumber")/*, propertiesMap.get("uri")*/);
-    }
-
-    /*
-    public static adaptMessageToChannel(Mensagem mensagem) {
-
-    }
-    */
 
     @Override
     public void checkIsMessageAdequateForChannel(Mensagem msg) {
@@ -112,10 +58,10 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 
         header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-        header.add("Authorization", HTTPClient.createBasicAuthString(this.getAccountSID(), this.getAuthToken()));
+        header.add("Authorization", HTTPClient.createBasicAuthString(this.getConfigAsJson().get("accountSID").getAsString(), this.getConfigAsJson().get("authToken").getAsString()));
 
         body.put("To", Collections.singletonList("initializing...")); ///
-        body.put("From", Collections.singletonList(this.getFromPhoneNumber()));
+        body.put("From", Collections.singletonList(this.getConfigAsJson().get("fromPhoneNumber").getAsString()));
         body.put("Body", Collections.singletonList(msg.createSimpleMessageNotificationWithLink()));
 
         for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
@@ -142,7 +88,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                             body.remove("To");
                             body.put("To", Collections.singletonList(contacto.getDadosContacto()));
 
-                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "none_yet", "none_yet");
+                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "none_yet", "none_yet");
 
                             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                             deferredResult.setResultHandler((Object responseEntity) -> {
@@ -152,8 +98,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
                             });
 
-                            //HTTPClient.restSyncClient(HttpMethod.POST, this.getUri(), header, body);
-                            String uri = String.format(this.getUri(), this.getAccountSID());
+                            String uri = String.format(URL, this.getConfigAsJson().get("accountSID").getAsString());
                             HTTPClient.restASyncClient(HttpMethod.POST, uri, header, body, deferredResult);
 
                             userHasNoContactForThisChannel = false;
@@ -165,7 +110,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
                 if (userHasNoContactForThisChannel) {
                     System.out.println("WARNING: user " + user.getUsername() + " has no contact for " + this.getClass().getSimpleName());
-                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
+                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
                 }
 
             });
@@ -209,15 +154,41 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         String idExterno = UtilsResource.getRequiredValueFromMultiValueMap(requestParams, "MessageSid");
         String estadoEntrega = UtilsResource.getRequiredValueFromMultiValueMap(requestParams, "MessageStatus");
 
+        /* NOTA: REMOVED BECAUSE OF UML DISCONNECTION BETWEEN ENTITIES USERDELIVERYSTATUS AND CANAL
         for (UserMessageDeliveryStatus e : this.getUserMessageDeliveryStatusSet()) {
             if (e.getIdExterno().equals(idExterno)) {
                 e.changeEstadoEntrega(estadoEntrega);
                 return e;
+            }
+        }*/
+
+        //NOTA: LESS EFFICIENT BUT SIMPLIFIES UML
+        for (CanalNotificacao cn : this.getCanalNotificacaoSet()) {
+            for (Mensagem m : cn.getMensagemSet()) {
+                for (UserMessageDeliveryStatus e : m.getUserMessageDeliveryStatusSet()) {
+                    if (e.getIdExterno().equals(idExterno)) {
+                        e.changeEstadoEntrega(estadoEntrega);
+                        return e;
+                    }
+                }
             }
         }
 
         return null;
     }
 
-
 }
+
+
+    /*
+    public static TwilioWhatsapp createTwilioWhatsappFromPropertiesFile(final String file) {
+        String filename = String.format(NotifcenterSpringConfiguration.getConfiguration().notifcenterChannelsCredentials(), file);
+        Map<String, String> propertiesMap = Utils.loadPropertiesFromPropertiesFile(TwilioWhatsapp.class, filename, "accountSID", "authToken", "fromPhoneNumber", "uri");
+
+        if (!Utils.isMapFilled(propertiesMap)) {
+            System.out.println("Error: Cannot create entity from file.");
+            return null;
+        }
+
+        return createChannel//TwilioWhatsApp//(propertiesMap.get("accountSID"), propertiesMap.get("authToken"), propertiesMap.get("fromPhoneNumber")//, propertiesMap.get("uri")//);
+    }*/

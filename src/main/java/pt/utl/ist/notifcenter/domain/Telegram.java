@@ -28,7 +28,6 @@ GET https://api.telegram.org/bot%s/getUpdates (this gets a list of ids of people
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.springframework.http.HttpHeaders;
@@ -36,63 +35,26 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
-import pt.ist.fenixframework.Atomic;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
-import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
-import pt.utl.ist.notifcenter.utils.NotifcenterException;
-import pt.utl.ist.notifcenter.utils.Utils;
 
 import javax.servlet.http.HttpServletRequest;
 
-//@AnotacaoCanal
 public class Telegram extends Telegram_Base {
 
     static {
         final JsonObject example = new JsonObject();
         example.addProperty("access_token", "example token");
-        example.addProperty("url", "example url");
         CanalProvider provider = new CanalProvider(example.toString(), (config) -> new Telegram(config));
-        Canal.CHHANNELS.put(Telegram.class, provider);
-    }
-
-    public Telegram(final String config) {
-        super();
-        setConfig(config);
+        Canal.CHANNELS.put(Telegram.class, provider);
     }
 
     private static String URL = "https://api.telegram.org/bot%s/sendMessage";
 
-    /* TODO: APAGAR createChannel
-    @Atomic
-    public static Telegram createChannel(String access_token/, String uri/) {
-
-        Telegram telegram = new Telegram();
-        telegram.setAccess_token(access_token);
-        //telegram.setUri(uri);
-
-        //Debug
-        ///telegram.setEmail("Telegram-" + telegram.getExternalId() + "@notifcenter.com");
-
-        return telegram;
+    public Telegram(final String config) {
+        super();
+        this.setConfig(config);
     }
-    */
-
-    //TODO: FICA EM CANAL.JAVA -> APENAS fica algo como SETCONFIGUPDATE()
-   /* Atomic
-  public Telegram updateChannel(@Nullable final String access_token/, @Nullable final String uri/) {
-
-        if (Utils.isValidString(access_token)) {
-            this.setAccess_token(access_token);
-        }
-
-        /
-        if (Utils.isValidString(uri)) {
-            this.setUri(uri);
-        }/
-
-        return this;
-    }*/
 
     @Override
     public void checkIsMessageAdequateForChannel(Mensagem msg) {
@@ -124,7 +86,7 @@ public class Telegram extends Telegram_Base {
                             //Debug
                             //System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
-                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "none_yet", "none_yet");
+                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "none_yet", "none_yet");
 
                             HttpHeaders httpHeaders = new HttpHeaders();
                             httpHeaders.set("Content-type", "application/json");
@@ -133,12 +95,7 @@ public class Telegram extends Telegram_Base {
                             //debug:
                             //System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
 
-                            String url;
-                            try {
-                                url = String.format(URL, config().get("access_token").getAsString());
-                            } catch (Exception e) {
-                                throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Please contact system administration. URL error on channel " + this.getExternalId());
-                            }
+                            String url = String.format(URL, this.getConfigAsJson().get("access_token").getAsString());
 
                             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                             deferredResult.setResultHandler((Object responseEntity) -> {
@@ -159,7 +116,7 @@ public class Telegram extends Telegram_Base {
 
                 if (userHasNoContactForThisChannel) {
                     System.out.println("WARNING: user " + user.getUsername() + " has no contact for " + this.getClass().getSimpleName());
-                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
+                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
                 }
 
             });

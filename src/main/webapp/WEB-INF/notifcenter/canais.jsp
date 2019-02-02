@@ -4,7 +4,6 @@
     <title>Notifcenter - Channels</title>
 
     <c:set var="urlPrefix" value="/notifcenter/canais"/>
-    <c:set var="columnsSpan" value="6"/>
 
     <style>
         #table1 {
@@ -44,7 +43,8 @@
             <tr>
                 <th>Id</th>
                 <th>Type</th>
-                <th colspan="<c:out value="${columnsSpan}"/>">Authentication parameters</th>
+                <th>Authentication parameters</th>
+                <th>Actions</th>
             </tr>
 
             <c:set var="formPrefix" value="form-"/>
@@ -54,12 +54,8 @@
                      <c:remove var="id"/>
                 </c:if>
 
-                <c:set var="countParams" value="0"/>
-
                 <tr>
                     <c:forEach var="entry" items="${canal}">
-
-                        <c:set var="countParams" value="${countParams + 1}"/>
 
                         <c:choose>
                             <c:when test="${entry.key == 'type' || entry.key == 'id'}">
@@ -82,10 +78,6 @@
                                 </c:choose>
                             </c:otherwise>
                         </c:choose>
-                    </c:forEach>
-
-                    <c:forEach begin="${countParams}" end="${columnsSpan - 1}">
-                        <td></td>
                     </c:forEach>
 
                     <td>

@@ -65,6 +65,23 @@ public class CanaisController {
         return "notifcenter/canais";
     }
 
+    //returns a list of hashmaps with channels names and respective params
+    public static List<HashMap<String, String>> getExistingChannels() {
+
+        List<HashMap<String, String>> list = new ArrayList<>();
+
+        for (Canal c : SistemaNotificacoes.getInstance().getCanaisSet()) {
+
+            HashMap<String, String> map = new LinkedHashMap<>();
+            map.put("id", c.getExternalId());
+            map.put("type", c.getClass().getSimpleName());
+            map.put("config", c.getConfig());
+            list.add(map);
+        }
+
+        return list;
+    }
+
     @ExceptionHandler({NotifcenterException.class})
     public ResponseEntity<String> errorHandlerHTML(NotifcenterException ex) {
 
@@ -76,37 +93,6 @@ public class CanaisController {
         else {
             return new ResponseEntity<>(ex.getErrorsAndWarnings().toHTML(), header, ex.getErrorsAndWarnings().getHttpStatus());
         }
-    }
-
-    //returns a list of hashmaps with channels names and respective params
-    public static List<HashMap<String, String>> getExistingChannels() {
-
-        List<HashMap<String, String>> list = new ArrayList<>();
-
-        for (Canal c : SistemaNotificacoes.getInstance().getCanaisSet()) {
-
-            HashMap<String, String> map = new LinkedHashMap<>();
-            map.put("id", c.getExternalId());
-            map.put("type", c.getClass().getSimpleName());
-            ///map.put("email", c.getEmail());
-
-            try {
-                //AnotacaoCanal annotation = c.getClass().getAnnotation(AnotacaoCanal.class);
-                //for (String key : annotation.classFields()) {
-                for (String key : Utils.getDomainClassSlots(c.getClass())) {
-                    String methodName = "get" + Utils.capitalizeFirstLetter(key);
-                    String value = (String) c.getClass().getMethod(methodName).invoke(c); //são sempre strings
-                    map.put(key, value);
-                }
-            }
-            catch (Exception e) {
-                System.out.println("error on getting a channel class param");
-            }
-
-            list.add(map);
-        }
-
-        return list;
     }
 
 }

@@ -1196,7 +1196,7 @@ public class AplicacaoResource extends BennuRestResource {
     }
     */
 
-    @RequestMapping(value = "/twiliowhatsappfile", method = RequestMethod.GET)
+    /*@RequestMapping(value = "/twiliowhatsappfile", method = RequestMethod.GET)
     public String twiliofile() {
         //opens file /channelscredentials/twiliowhatsapp1.properties:
         TwilioWhatsapp twilioWhatsapp = TwilioWhatsapp.createTwilioWhatsappFromPropertiesFile("twiliowhatsapp1");
@@ -1208,7 +1208,7 @@ public class AplicacaoResource extends BennuRestResource {
         String t = "AAA"; ///SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
 
         return "emails dos canais: " + t;
-    }
+    }*/
 
 
     // IGNORAR (HTTP client sync and async tests):

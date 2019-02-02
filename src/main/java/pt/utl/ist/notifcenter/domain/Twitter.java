@@ -14,13 +14,12 @@ Requests / 24-hour window	1000 per user; 15000 per app
 */
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.springframework.http.*;
 import org.springframework.web.context.request.async.DeferredResult;
-import pt.ist.fenixframework.Atomic;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
@@ -32,61 +31,23 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-@AnotacaoCanal
 public class Twitter extends Twitter_Base {
 
-    public Twitter() {
+    static {
+        final JsonObject example = new JsonObject();
+        example.addProperty("oauth_consumer_key", "example oauth_consumer_key");
+        example.addProperty("oauth_consumer_secret", "example oauth_token_secret");
+        example.addProperty("oauth_token", "example oauth_token");
+        example.addProperty("oauth_token_secret", "example oauth_token_secret");
+        CanalProvider provider = new CanalProvider(example.toString(), (config) -> new Twitter(config));
+        Canal.CHANNELS.put(Twitter.class, provider);
+    }
+
+    private static String URL = "https://api.twitter.com/1.1/direct_messages/events/new.json";
+
+    public Twitter(final String config) {
         super();
-    }
-
-    @Override
-    public String getUri() {
-        return "https://api.twitter.com/1.1/direct_messages/events/new.json";
-    }
-
-    @Atomic
-    public static Twitter createChannel(String oauth_consumer_key, String oauth_consumer_secret,
-                                        String oauth_token, String oauth_token_secret/*, String uri*/) {
-
-        Twitter twitter = new Twitter();
-        twitter.setOauth_consumer_key(oauth_consumer_key);
-        twitter.setOauth_consumer_secret(oauth_consumer_secret);
-        twitter.setOauth_token(oauth_token);
-        twitter.setOauth_token_secret(oauth_token_secret);
-        /*twitter.setUri(uri);*/
-
-        //Debug
-        ///twitter.setEmail("Twitter-" + twitter.getExternalId() + "@notifcenter.com");
-
-        return twitter;
-    }
-
-    @Atomic
-    public Twitter updateChannel(@Nullable final String oauth_consumer_key, @Nullable final String oauth_consumer_secret,
-                                 @Nullable final String oauth_token, @Nullable final String oauth_token_secret /*, @Nullable final String uri*/) {
-
-        if (Utils.isValidString(oauth_consumer_key)) {
-            this.setOauth_consumer_key(oauth_consumer_key);
-        }
-
-        if (Utils.isValidString(oauth_consumer_secret)) {
-            this.setOauth_consumer_secret(oauth_consumer_secret);
-        }
-
-        if (Utils.isValidString(oauth_token)) {
-            this.setOauth_token(oauth_token);
-        }
-
-        if (Utils.isValidString(oauth_token_secret)) {
-            this.setOauth_token_secret(oauth_token_secret);
-        }
-
-        /*
-        if (Utils.isValidString(uri)) {
-            this.setUri(uri);
-        }*/
-
-        return this;
+        this.setConfig(config);
     }
 
     @Override
@@ -124,7 +85,7 @@ public class Twitter extends Twitter_Base {
                             //Debug
                             System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
-                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "none_yet", "none_yet");
+                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "none_yet", "none_yet");
 
                             HttpHeaders httpHeaders = createTwitterOAuthHeader("POST", edm.getExternalId());
                             httpHeaders.set("Content-type", "application/json");
@@ -140,7 +101,7 @@ public class Twitter extends Twitter_Base {
 
                             });
 
-                            HTTPClient.restASyncClientBody(HttpMethod.POST, this.getUri(), httpHeaders, bodyContent, deferredResult);
+                            HTTPClient.restASyncClientBody(HttpMethod.POST, URL, httpHeaders, bodyContent, deferredResult);
 
                             userHasNoContactForThisChannel = false;
 
@@ -151,7 +112,7 @@ public class Twitter extends Twitter_Base {
 
                 if (userHasNoContactForThisChannel) {
                     System.out.println("WARNING: user " + user.getUsername() + " has no contact for " + this.getClass().getSimpleName());
-                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
+                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
                 }
 
             });
@@ -216,13 +177,13 @@ public class Twitter extends Twitter_Base {
         //String nonce = generateNonce(); //I am using external id from UserMessageDeliveryStatus
 
         //Map<String, String> map = createMap(oauth_consumer_keyA, oauth_tokenA, nonceA, epochA);
-        Map<String, String> map = createMap(this.getOauth_consumer_key(), this.getOauth_token(), nonce, epochO);
+        Map<String, String> map = createMap(this.getConfigAsJson().get("oauth_consumer_key").getAsString(), this.getConfigAsJson().get("oauth_token").getAsString(), nonce, epochO);
 
         String parameterString = createParameterString(map);
 
-        String baseString = createOAuthBaseString(httpMethod, this.getUri(), parameterString);
+        String baseString = createOAuthBaseString(httpMethod, URL, parameterString);
 
-        String signingKey = createOAuthSigningKey(this.getOauth_consumer_secret(), this.getOauth_token_secret());
+        String signingKey = createOAuthSigningKey(this.getConfigAsJson().get("oauth_consumer_secret").getAsString(), this.getConfigAsJson().get("oauth_token_secret").getAsString());
 
         String signatureBase64 = createSignatureBase64(baseString, signingKey);
 

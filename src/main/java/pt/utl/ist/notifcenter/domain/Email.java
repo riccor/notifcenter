@@ -9,10 +9,8 @@ Tutorial on how to authorize a third-party app (like this project) to send mails
 
 */
 
-import org.apache.avro.reflect.Nullable;
+import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
-import pt.ist.fenixframework.Atomic;
-import pt.utl.ist.notifcenter.utils.Utils;
 
 import javax.activation.DataHandler;
 import javax.mail.util.ByteArrayDataSource;
@@ -24,59 +22,25 @@ import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
 
-@AnotacaoCanal
 public class Email extends Email_Base {
 
     private Session emailClient = null;
 
-    @Override
-    public String getUri() {
-        return null;
+    static {
+        final JsonObject example = new JsonObject();
+        example.addProperty("smtpServer", "example smtpServer");
+        example.addProperty("smtpPort", "example smtpPort");
+        example.addProperty("smtpUsername", "example smtpUsername");
+        example.addProperty("smtpPassword", "example smtpPassword");
+        CanalProvider provider = new CanalProvider(example.toString(), (config) -> new Email(config));
+        Canal.CHANNELS.put(Email.class, provider);
     }
 
-    public Email() {
+    public Email(final String config) {
         super();
+        this.setConfig(config);
     }
 
-    @Atomic
-    public static Email createChannel(String smtpServer, String smtpPort, String smtpUsername, String smtpPassword) {
-
-        Email email = new Email();
-        email.setSmtpServer(smtpServer);
-        email.setSmtpPort(smtpPort);
-        email.setSmtpUsername(smtpUsername);
-        email.setSmtpPassword(smtpPassword);
-
-        //Debug
-        ///email.setEmail("Email-" + email.getExternalId() + "@notifcenter.com");
-
-        return email;
-    }
-
-    @Atomic
-    public Email updateChannel(@Nullable String smtpServer, @Nullable String smtpPort, @Nullable String smtpUsername, @Nullable String smtpPassword) {
-
-        if (Utils.isValidString(smtpServer)) {
-            this.setSmtpServer(smtpServer);
-        }
-        if (Utils.isValidString(smtpPort)) {
-            this.setSmtpPort(smtpPort);
-        }
-
-        if (Utils.isValidString(smtpUsername)) {
-            this.setSmtpUsername(smtpUsername);
-        }
-
-        if (Utils.isValidString(smtpPassword)) {
-            this.setSmtpPassword(smtpPassword);
-        }
-
-        emailClient = null;
-
-        return this;
-    }
-
-    
     @Override
     public void checkIsMessageAdequateForChannel(Mensagem msg) {
 
@@ -88,12 +52,12 @@ public class Email extends Email_Base {
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.starttls.enable", "true"); //this might not be needed
             props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            props.put("mail.smtp.host", this.getSmtpServer());
-            props.put("mail.smtp.port", this.getSmtpPort());
+            props.put("mail.smtp.host", this.getConfigAsJson().get("smtpServer").getAsString());
+            props.put("mail.smtp.port", this.getConfigAsJson().get("smtpPort").getAsString());
 
             emailClient = Session.getInstance(props, new javax.mail.Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(Email.this.getSmtpUsername(), Email.this.getSmtpPassword());
+                    return new PasswordAuthentication(Email.this.getConfigAsJson().get("smtpUsername").getAsString(), Email.this.getConfigAsJson().get("getSmtpPassword").getAsString());
                 }
             });
         }
@@ -108,7 +72,7 @@ public class Email extends Email_Base {
 
         try {
             Message mailToSend = new MimeMessage(emailClient);
-            mailToSend.setFrom(new InternetAddress(this.getSmtpUsername(), false));
+            mailToSend.setFrom(new InternetAddress(this.getConfigAsJson().get("smtpUsername").getAsString(), false));
 
             //A way to try to get delivery status
             //mailToSend.setHeader("Disposition-Notification-To", "notifcentremail@gmail.com");
@@ -138,7 +102,7 @@ public class Email extends Email_Base {
 
                                 try {
                                     listOfToAddresses.add(new InternetAddress(contacto.getDadosContacto()));
-                                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "unavailable", "unavailable");
+                                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "unavailable", "unavailable");
 
                                     userHasNoContactForThisChannel = false;
                                 }
@@ -153,7 +117,7 @@ public class Email extends Email_Base {
 
                     if (userHasNoContactForThisChannel) {
                         System.out.println("WARNING: user " + user.getUsername() + " has no available contact for " + this.getClass().getSimpleName());
-                        UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
+                        UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
                     }
 
                 });
@@ -193,23 +157,13 @@ public class Email extends Email_Base {
         catch (MessagingException e) {
             e.printStackTrace();
             System.out.println("MessagingException");
-            //throw new Exception();
         }
-        /*catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("IOException");
-            //throw new Exception();
-        }
-        */
-
     }
-
 
     @Override
     public UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
 
         return null;
     }
-
 
 }

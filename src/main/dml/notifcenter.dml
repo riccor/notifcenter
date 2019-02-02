@@ -102,9 +102,11 @@ class Canal {
     }
 
     class Telegram extends Canal{
-S        ////String uri;
-        //int messageCount;
-        //String lastUser;
+        ////String uri;
+        //String access_token;
+        //EXAMPLE PARAMS THAT COULD BE ADDED:
+        ///int messageCount;
+        ///String lastUser;
     }
 
     class Mattermost extends Canal{
@@ -126,12 +128,6 @@ S        ////String uri;
         ////String numeroTelemovel;
         //String access_token;
         ////String uri;
-    }
-
-    // Assumo que isto também é um canal
-    class Twilio extends Canal {
-        //String accountSID;
-        //String authToken;
     }
 
     class TwilioWhatsapp extends Canal {

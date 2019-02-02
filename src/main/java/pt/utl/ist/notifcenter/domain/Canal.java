@@ -1,9 +1,11 @@
 package pt.utl.ist.notifcenter.domain;
 
 //import org.springframework.http.ResponseEntity;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import pt.ist.fenixframework.Atomic;
+import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
@@ -15,7 +17,7 @@ import java.util.function.Function;
 
 public abstract class Canal extends Canal_Base {
 
-    public static Map<Class, CanalProvider> CHANNELS = Collections.synchronizedMap(new HashMap<>());
+    public static Map<Class<?>, CanalProvider> CHANNELS = Collections.synchronizedMap(new HashMap<>());
 
     public static class CanalProvider {
         private String configExample;
@@ -25,7 +27,7 @@ public abstract class Canal extends Canal_Base {
             return configExample;
         }
 
-        public JsonObject getConfigExampleJson() {
+        public JsonObject getConfigExampleAsJson() {
             return new JsonParser().parse(configExample).getAsJsonObject();
         }
 
@@ -40,58 +42,46 @@ public abstract class Canal extends Canal_Base {
     }
 
     @Atomic
-    public static void createNewCanal(Class<?> clazz, String toString) {
+    public static Canal createChannel(Class<?> clazz, String toString) {
         final CanalProvider provider = Canal.CHANNELS.get(clazz);
         if (provider == null) { //if no such channel type, then throw exception
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_NAME_ERROR);
         }
 
-        final Canal canal = provider.getContructor().apply(toString);
+        return provider.getContructor().apply(toString);
     }
 
     @Override
-    public void setConfig(final String config) { //NOTA: equivalente a updateChannel()!! (?)
-        super.setConfig();
-        CHANNELS.get(this.getClass()).getConfigExampleJson().entrySet()
-                .forEach(); //TODO: cruzar tabela (ou exemplo json) com parametros recebidos
-        config()
+    @Atomic
+    public void setConfig(final String config) { //equivalent to updateChannel()
+
+        JsonObject jObj = new JsonParser().parse(config).getAsJsonObject();
+
+        //check if all necessary channel params are presented
+        CHANNELS.get(this.getClass()).getConfigExampleAsJson().entrySet().forEach(e -> {
+            UtilsResource.getRequiredValue(jObj, e.getKey());
+        });
+
+        super.setConfig(config);
     }
 
-    protected JsonObject config() {
-        return new JsonParser().parse(getConfig());
+    public JsonObject getConfigAsJson() {
+        return new JsonParser().parse(this.getConfig()).getAsJsonObject();
     }
 
-    @atomic
-    setConfigUpdate
-
-
-    //TODO: apagar,certo?
-    //protected abstract String[] configFields();
+    //TODO: NEM TODOS OS CANAIS TÊM URL (EXEMPLO: ENTRAR MENSAGEM POR CORREIO)
+    //public abstract String getUri();
 
     public Canal() {
         super();
         this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
     }
 
-    ///
-    /*
-    @Atomic
-    public static Canal createChannel(final String email, final String password) {
-        Canal canal = new Canal();
-        canal.setEmail(email);
-        canal.setPassword(password);
-        return canal;
-    }
-    */
-
-    public abstract void sendMessage(Mensagem msg); //{ System.out.println("\n\nshould not see this"); }
+    public abstract void sendMessage(Mensagem msg);
 
     public abstract void checkIsMessageAdequateForChannel(Mensagem msg);
 
     public abstract UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request);
-
-    //TODO: NEM TODOS OS CANAIS TÊM URL (EXEMPLO: ENTRAR MENSAGEM POR CORREIO)
-    //public abstract String getUri();
 
     @Atomic
     public void delete() {
@@ -103,9 +93,10 @@ public abstract class Canal extends Canal_Base {
             c.delete();
         }
 
-        for (UserMessageDeliveryStatus e : this.getUserMessageDeliveryStatusSet()) {
+        //TODO: right?
+        /*for (UserMessageDeliveryStatus e : this.getUserMessageDeliveryStatusSet()) {
             e.delete();
-        }
+        }*/
 
         this.getSistemaNotificacoes().removeCanais(this);
         this.setSistemaNotificacoes(null);

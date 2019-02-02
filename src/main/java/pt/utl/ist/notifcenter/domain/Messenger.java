@@ -22,8 +22,8 @@ POST https://graph.facebook.com/v2.6/me/messages?access_token=%s (%s = PAGE_ACCE
 */
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.springframework.http.HttpHeaders;
@@ -32,54 +32,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.async.DeferredResult;
-import pt.ist.fenixframework.Atomic;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.utils.AnotherNotifcenterException;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
-import pt.utl.ist.notifcenter.utils.Utils;
 
 import javax.servlet.http.HttpServletRequest;
 
-@AnotacaoCanal
 public class Messenger extends Messenger_Base {
 
-    public Messenger() {
+    static {
+        final JsonObject example = new JsonObject();
+        example.addProperty("access_token", "example access_token");
+        CanalProvider provider = new CanalProvider(example.toString(), (config) -> new Messenger(config));
+        Canal.CHANNELS.put(Messenger.class, provider);
+    }
+
+    private static String URL = "https://graph.facebook.com/v2.6/me/messages?access_token=%s";
+
+    public Messenger(final String config) {
         super();
-    }
-
-    @Override
-    public String getUri() {
-        return "https://graph.facebook.com/v2.6/me/messages?access_token=%s";
-    }
-
-    @Atomic
-    public static Messenger createChannel(String access_token /*, String uri*/) {
-
-        Messenger messenger = new Messenger();
-        messenger.setAccess_token(access_token);
-        /*messenger.setUri(uri);*/
-
-        //Debug
-        ///messenger.setEmail("messenger-" + messenger.getExternalId() + "@notifcenter.com");
-
-        return messenger;
-    }
-
-    @Atomic
-    public Messenger updateChannel(@Nullable final String access_token /*, @Nullable final String uri*/) {
-
-        if (Utils.isValidString(access_token)) {
-            this.setAccess_token(access_token);
-        }
-
-        /*
-        if (Utils.isValidString(uri)) {
-            this.setUri(uri);
-        }*/
-
-        return this;
+        this.setConfig(config);
     }
 
     @Override
@@ -116,7 +90,7 @@ public class Messenger extends Messenger_Base {
                             //Debug
                             //System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
-                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "none_yet", "none_yet");
+                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "none_yet", "none_yet");
 
                             HttpHeaders httpHeaders = new HttpHeaders();
                             httpHeaders.set("Content-type", "application/json");
@@ -125,13 +99,7 @@ public class Messenger extends Messenger_Base {
                             //debug:
                             //System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
 
-                            String url;
-                            try {
-                                url = String.format(this.getUri(), this.getAccess_token());
-                            } catch (Exception e) {
-                                throw new NotifcenterException(ErrorsAndWarnings.INTERNAL_SERVER_ERROR, "Please contact system administration. URL error on channel " + this.getExternalId());
-                            }
-
+                            String url = String.format(URL, this.getConfigAsJson().get("access_token"));
 
                             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                             deferredResult.setResultHandler((Object responseEntity) -> {
@@ -151,7 +119,7 @@ public class Messenger extends Messenger_Base {
 
                 if (userHasNoContactForThisChannel) {
                     System.out.println("WARNING: user " + user.getUsername() + " has no contact for " + this.getClass().getSimpleName());
-                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(this, msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
+                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
                 }
 
             });

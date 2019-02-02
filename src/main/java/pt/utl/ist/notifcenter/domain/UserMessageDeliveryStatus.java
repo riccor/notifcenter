@@ -6,16 +6,16 @@ import pt.ist.fenixframework.Atomic;
 
 public class UserMessageDeliveryStatus extends UserMessageDeliveryStatus_Base {
 
-    private UserMessageDeliveryStatus(Canal canal, Mensagem msg, User utilizador) {
+    private UserMessageDeliveryStatus(Mensagem msg, User utilizador) {
         super();
-        this.setCanal(canal);
+        //this.setCanal(canal);
         this.setMensagem(msg);
         this.setUtilizador(utilizador);
     }
 
     @Atomic
-    public static UserMessageDeliveryStatus createUserMessageDeliveryStatus(Canal canal, Mensagem msg, User utilizador, String idExterno, String estadoEntrega) {
-        UserMessageDeliveryStatus UserMessageDeliveryStatus = new UserMessageDeliveryStatus(canal, msg, utilizador);
+    public static UserMessageDeliveryStatus createUserMessageDeliveryStatus(Mensagem msg, User utilizador, String idExterno, String estadoEntrega) {
+        UserMessageDeliveryStatus UserMessageDeliveryStatus = new UserMessageDeliveryStatus(msg, utilizador);
         UserMessageDeliveryStatus.setIdExterno(idExterno);
         UserMessageDeliveryStatus.setEstadoEntrega(estadoEntrega);
         return UserMessageDeliveryStatus;
@@ -39,8 +39,9 @@ public class UserMessageDeliveryStatus extends UserMessageDeliveryStatus_Base {
 
     @Atomic
     public void delete() {
-        this.getCanal().removeUserMessageDeliveryStatus(this);
+        /*this.getCanal().removeUserMessageDeliveryStatus(this);
         this.setCanal(null); ///
+        */
 
         this.getMensagem().removeUserMessageDeliveryStatus(this);
         this.setMensagem(null); ///
