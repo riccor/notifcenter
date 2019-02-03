@@ -10,6 +10,8 @@ Text sent must be UTF-8 and max. 2000 characters
 Access token aka "Page Access Token"
 https://developers.facebook.com/apps/<appId>/messenger/settings/
 
+my app id: 298908694309495
+
 dadosContacto = +351<phoneNumber>
 
 Rate limits:
@@ -195,7 +197,7 @@ public class Messenger extends Messenger_Base {
         MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);
 
         //NOTE: Not tested because "A secure Callback URL (https) is required"
-        //"verify token": hub_verify_token -> set by us on https://developers.facebook.com/apps/298908694309495/webhooks/
+        //"verify token": hub_verify_token -> set by us on https://developers.facebook.com/apps/<appId>/webhooks/
         String hub_challenge = UtilsResource.getRequiredValueFromMultiValueMapOrReturnNullInstead(requestParams, "hub_challenge");
         if (hub_challenge != null) {
             throw new AnotherNotifcenterException(ErrorsAndWarnings.SUCCESS, hub_challenge);

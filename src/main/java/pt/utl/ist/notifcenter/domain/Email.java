@@ -57,7 +57,7 @@ public class Email extends Email_Base {
 
             emailClient = Session.getInstance(props, new javax.mail.Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(Email.this.getConfigAsJson().get("smtpUsername").getAsString(), Email.this.getConfigAsJson().get("getSmtpPassword").getAsString());
+                    return new PasswordAuthentication(Email.this.getConfigAsJson().get("smtpUsername").getAsString(), Email.this.getConfigAsJson().get("smtpPassword").getAsString());
                 }
             });
         }
