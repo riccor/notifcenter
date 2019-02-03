@@ -4,6 +4,7 @@
     <title>Notifcenter - Channels</title>
 
     <c:set var="urlPrefix" value="/notifcenter/canais"/>
+    <c:set var="inputTextSize" value="${150}"/>
 
     <style>
         #table1 {
@@ -34,6 +35,10 @@
 
 <body>
     <h2><b>Channels manager</b></h2>
+
+    <div class="changes-notifications" id="div0">
+        <br><h4>${changesNotification}<h4>
+    </div>
 
     <div class="list-channels" id="div1">
 
@@ -70,7 +75,7 @@
                             <c:otherwise>
                                 <c:choose>
                                     <c:when test="${id != null}"> <%-- robustness --%>
-                                        <td><b><c:out value="${entry.key}"/>:</b> <input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
+                                        <td><%-- <b><c:out value="${entry.key}"/>:</b> --%><input type="text" size="${inputTextSize - 50}" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
                                     </c:when>
                                     <c:otherwise>
                                         <td><b><c:out value="${entry.key}"/>:</b> <c:out value="${entry.value}"/></td>
@@ -154,22 +159,45 @@ function onSelect() {
 
             <c:forEach var="currentValue" items="${entry.value}">
 
+                var tr0 = document.createElement("TR");
+                table2.appendChild(tr0);
+
+                var td0 = document.createElement("TD");
+                tr0.appendChild(td0);
+
+                var b = document.createElement("B");
+                b.innerHTML = "Example config:";
+                td0.appendChild(b);
+
                 var tr = document.createElement("TR");
                 table2.appendChild(tr);
 
                 var td1 = document.createElement("TD");
                 tr.appendChild(td1);
 
-                var k = document.createTextNode(capitalizeFirstLetter("<c:out value="${currentValue}"/>: "));
+                //var k = document.createTextNode("<c:out value="${currentValue}"/>");
+
+                var ttt = "<c:out value="${currentValue}"/>";
+                var rrr = ttt.replace(/&#034;/g,'"');
+                var k = document.createTextNode(rrr);
+                //k.setAttribute("value", "<c:out value="${currentValue}"/>");
+                //k.setAttribute("size", "<c:out value="${inputTextSize}"/>");
                 td1.appendChild(k);
 
+                var tr2 = document.createElement("TR");
+                table2.appendChild(tr2);
+
                 var td2 = document.createElement("TD");
-                tr.appendChild(td2);
+                tr2.appendChild(td2);
 
                 var v = document.createElement("INPUT");
+                //v.setAttribute("rows", "3");
+                //v.setAttribute("cols", "100");
+                v.setAttribute("size", "<c:out value="${inputTextSize}"/>");
                 v.setAttribute("type", "text");
-                v.setAttribute("name", "<c:out value="${currentValue}"/>"); //igual a usar "${currentValue}"!
-                //v.setAttribute("value", "${currentValue}"); //valor predefinido
+                //v.setAttribute("name", "<c:out value="${currentValue}"/>"); //igual a usar "${currentValue}"!
+                v.setAttribute("name", "config");
+                //v.setAttribute("value", "${currentValue}"); //predefined value
                 td2.appendChild(v);
                 //temp.appendChild(document.createElement("BR"));
 

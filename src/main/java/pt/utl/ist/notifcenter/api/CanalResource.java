@@ -3,13 +3,9 @@ package pt.utl.ist.notifcenter.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -27,10 +23,8 @@ import pt.utl.ist.notifcenter.ui.NotifcenterController;
 import pt.utl.ist.notifcenter.utils.AnotherNotifcenterException;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
-import pt.utl.ist.notifcenter.utils.Utils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -84,9 +78,9 @@ public class CanalResource extends BennuRestResource {
         MultiValueMap<String, String> list = new LinkedMultiValueMap<>();
 
         for (Map.Entry e : Canal.CHANNELS.entrySet()) {
-            Canal canal = (Canal) e.getKey();
+            Class classC = (Class) e.getKey();
             Canal.CanalProvider cprov = (Canal.CanalProvider) e.getValue();
-            list.put(canal.getClass().getSimpleName(), Arrays.asList(cprov.getConfigExample()));
+            list.put(classC.getSimpleName(), Collections.singletonList(cprov.getConfigExample()));
         }
 
         return list;

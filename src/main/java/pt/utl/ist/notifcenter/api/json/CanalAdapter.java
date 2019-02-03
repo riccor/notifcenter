@@ -2,6 +2,7 @@ package pt.utl.ist.notifcenter.api.json;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.json.JsonAdapter;
@@ -24,16 +25,19 @@ public class CanalAdapter implements JsonAdapter<Canal> {
             if (Canal.CHANNELS.get(clazz) == null) {
                 throw new Exception("error");
             }
+
         }
         catch (Exception e) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_NAME_ERROR);
         }
 
-        return Canal.createChannel(clazz, jsonElement.toString());
+        JsonObject config = UtilsResource.stringToJson(UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "config"));
+        return Canal.createChannel(clazz, config.toString());
     }
 
     public static Canal update2(JsonElement jsonElement, Canal canal) {
-        canal.setConfig(jsonElement.toString());
+        JsonObject config = UtilsResource.stringToJson(UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "config"));
+        canal.setConfig(config.toString());
         return canal;
     }
 

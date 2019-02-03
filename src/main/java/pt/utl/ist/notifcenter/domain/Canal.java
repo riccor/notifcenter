@@ -1,7 +1,6 @@
 package pt.utl.ist.notifcenter.domain;
 
 //import org.springframework.http.ResponseEntity;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import pt.ist.fenixframework.Atomic;
@@ -17,6 +16,7 @@ import java.util.function.Function;
 
 public abstract class Canal extends Canal_Base {
 
+    //LC - 31-1-2019
     public static Map<Class<?>, CanalProvider> CHANNELS = Collections.synchronizedMap(new HashMap<>());
 
     public static class CanalProvider {
@@ -54,7 +54,6 @@ public abstract class Canal extends Canal_Base {
     @Override
     @Atomic
     public void setConfig(final String config) { //equivalent to updateChannel()
-
         JsonObject jObj = new JsonParser().parse(config).getAsJsonObject();
 
         //check if all necessary channel params are presented
@@ -68,9 +67,6 @@ public abstract class Canal extends Canal_Base {
     public JsonObject getConfigAsJson() {
         return new JsonParser().parse(this.getConfig()).getAsJsonObject();
     }
-
-    //TODO: NEM TODOS OS CANAIS TÊM URL (EXEMPLO: ENTRAR MENSAGEM POR CORREIO)
-    //public abstract String getUri();
 
     public Canal() {
         super();
@@ -93,7 +89,6 @@ public abstract class Canal extends Canal_Base {
             c.delete();
         }
 
-        //TODO: right?
         /*for (UserMessageDeliveryStatus e : this.getUserMessageDeliveryStatusSet()) {
             e.delete();
         }*/
