@@ -47,6 +47,7 @@
             <tr>
                 <th>Id</th>
                 <th>Name</th>
+                <th>Approved</th>
                 <th>Notification Channels</th>
                 <th>Recipient Groups</th>
                 <th>Actions</th>
@@ -71,7 +72,29 @@
 
                         <c:choose>
                             <c:when test="${id != null && entry.key != 'id'}"> <%-- robustness AND disallow edit id --%>
-                                <td><input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
+
+                                <c:choose>
+                                    <c:when test="${entry.key == 'approved'}">
+                                        <td>
+                                            <select name="aguardandoAprovacao" form="<c:out value="${formPrefix}${id}"/>">
+                                                <c:choose>
+                                                    <c:when test="${entry.value == 'true'}">
+                                                        <option selected="selected" value="true">True</option>
+                                                        <option value="false">False</option>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <option selected="selected" value="false">False</option>
+                                                        <option value="true">True</option>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </select>
+                                        </td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td><input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>" form="<c:out value="${formPrefix}${id}"/>"></td>
+                                    </c:otherwise>
+                                 </c:choose>
+
                             </c:when>
                             <c:otherwise>
                                 <td><c:out value="${entry.value}"/></td>

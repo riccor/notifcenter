@@ -14,6 +14,7 @@ public class Remetente extends Remetente_Base {
     public static Remetente createRemetente(Aplicacao app, final String nameRemetente) {
         Remetente remetente = new Remetente(app);
         remetente.setNome(nameRemetente);
+        remetente.setAguardandoAprovacao(true); //default value
         return remetente;
     }
 
@@ -21,6 +22,20 @@ public class Remetente extends Remetente_Base {
     public Remetente update(final String nome) {
         this.setNome(nome);
         return this;
+    }
+
+    @Atomic
+    public void approveRemetente() {
+        this.setAguardandoAprovacao(false);
+    }
+
+    @Atomic
+    public void disapproveRemetente() {
+        this.setAguardandoAprovacao(true);
+    }
+
+    public boolean isApproved() {
+        return !this.getAguardandoAprovacao();
     }
 
     @Atomic

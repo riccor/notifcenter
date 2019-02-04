@@ -8,6 +8,7 @@ import org.fenixedu.bennu.oauth.domain.ApplicationUserSession;
 import org.fenixedu.bennu.oauth.domain.ExternalApplication;
 import org.fenixedu.bennu.oauth.domain.ExternalApplicationScope;
 import org.fenixedu.bennu.oauth.util.OAuthUtils;
+import org.fenixedu.bennu.spring.security.CSRFInterceptor;
 import org.fenixedu.bennu.spring.security.CSRFTokenRepository;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -20,10 +21,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 
-public class NotifcenterInterceptor implements HandlerInterceptor {
 
-    final static boolean isAccessTokenRequired = true; //apenas para debug
+public class NotifcenterInterceptor extends CSRFInterceptor/*implements HandlerInterceptor*/ {
 
+    private final static boolean isAccessTokenRequired = true; //apenas para debug
+
+    public NotifcenterInterceptor(CSRFTokenRepository tokenBean) {
+        super(tokenBean);
+    }
+
+    /* ///
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
@@ -32,6 +39,7 @@ public class NotifcenterInterceptor implements HandlerInterceptor {
     @Override public void afterCompletion( HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 
     }
+    */
 
     //Importado de https://github.com/FenixEdu/bennu/blob/master/bennu-oauth/src/main/java/org/fenixedu/bennu/oauth/jaxrs/BennuOAuthAuthorizationFilter.java
     private Optional<ApplicationUserSession> extractUserSession(String accessToken) {
@@ -67,6 +75,8 @@ public class NotifcenterInterceptor implements HandlerInterceptor {
     //Adaptado de https://github.com/FenixEdu/bennu/blob/master/bennu-oauth/src/main/java/org/fenixedu/bennu/oauth/jaxrs/BennuOAuthAuthorizationFilter.java
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        super.preHandle(request, response, handler);
 
         /*
         link: https://github.com/FenixEdu/bennu/tree/master/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security

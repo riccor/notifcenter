@@ -64,6 +64,7 @@ class Aplicacao extends .org.fenixedu.bennu.oauth.domain.ExternalApplication {
 
 class Remetente {
     String nome;
+    boolean aguardandoAprovacao;
 }
 
 /*

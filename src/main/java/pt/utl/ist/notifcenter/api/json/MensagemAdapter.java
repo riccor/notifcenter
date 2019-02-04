@@ -47,6 +47,11 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         if (!FenixFramework.isDomainObjectValid(canalNotificacao) || !app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "Such canalnotificacao doesnt exist.");
         }
+
+        if (!canalNotificacao.getRemetente().isApproved()) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_REMETENTE_ERROR, "Remetente id " + canalNotificacao.getRemetente().getExternalId() + " is awaiting approval by system administrators.");
+        }
+
         if (!canalNotificacao.isApproved()) {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR, "Canalnotificacao id " + canalNotificacao.getExternalId() + " is awaiting approval by system administrators.");
         }

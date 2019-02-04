@@ -230,7 +230,10 @@ public class AplicacaoResource extends BennuRestResource {
 
     //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security
     //@SkipAccessTokenValidation //diz ao método preHandler em "NotifcenterInterceptor.java" para aceitar pedidos sem access_token
-    @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
+    ///INDIFERENTE ANOTACAO SkipCSRF SE USAR O MEU INTERCEPTOR
+
+    //NOTA: Apps are added by the notifcenter administrators (LC)
+    /*@SkipCSRF
     @RequestMapping(value = "/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addAplicacao(@RequestParam(value = "description") String description,
                                     @RequestParam(value = "name") String name,
@@ -251,7 +254,7 @@ public class AplicacaoResource extends BennuRestResource {
     public JsonElement addAplicacao2(@RequestBody JsonElement body) {
 
         return view(create(body, Aplicacao.class), AplicacaoAdapter.class);
-    }
+    }*/
 
     @RequestMapping(value = "/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement viewAplicacao(@PathVariable("app") Aplicacao app) {
@@ -276,6 +279,10 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
+        }
+
         Aplicacao foundApp;
         if ((foundApp = Aplicacao.findByAplicacaoName(name)) != null) {
             if (!app.equals(foundApp)) {
@@ -294,6 +301,10 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
+        }
+
         return view(update(body, app, AplicacaoAdapter.class), AplicacaoAdapter.class);
     }
 
@@ -305,7 +316,6 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
-        //TODO: what to do with RREQUIRES_APPROVAL case?
         if (!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
         }
@@ -343,19 +353,46 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
-        Remetente remetente = Remetente.createRemetente(app, nomeRemetente);
-        return view(remetente, RemetenteAdapter.class);
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
+        }
+
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("app", app.getExternalId());
+        jObj.addProperty("name", nomeRemetente);
+
+        Remetente r = create(jObj, Remetente.class);
+
+        if (app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
+            r.approveRemetente();
+        }
+
+        return view(r, RemetenteAdapter.class);
     }
 
     @SkipCSRF
     @RequestMapping(value = "/{app}/addremetente2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addRemetente2(@PathVariable("app") Aplicacao app, @RequestBody JsonElement body) {
 
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
+        }
+
         JsonObject jObj = body.getAsJsonObject();
         UtilsResource.deletePropertyFromJsonObject(jObj, "app"); //avoid hacks
         jObj.addProperty("app", app.getExternalId());
 
-        return view(create(jObj, Remetente.class), RemetenteAdapter.class);
+        Remetente r = create(jObj, Remetente.class);
+
+        if (app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
+            r.approveRemetente();
+        }
+
+        return view(r, RemetenteAdapter.class);
     }
 
     @RequestMapping(value = "/{app}/{remetente}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -381,6 +418,10 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
+        }
+
         if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
@@ -397,6 +438,10 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
+        }
+
         if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
@@ -410,6 +455,10 @@ public class AplicacaoResource extends BennuRestResource {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
         }
 
         if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
@@ -433,6 +482,10 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
+        }
+
         if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
@@ -441,7 +494,7 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION_ERROR, "Remetente " + remetente.getExternalId() + " already contains group " + group.getExternalId() + "!");
         }
 
-        //TODO: what to do with RREQUIRES_APPROVAL case?
+        //RREQUIRES_APPROVAL case was not implemented
         if (!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
         }
@@ -466,6 +519,10 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
+        }
+
         if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
@@ -474,7 +531,7 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.NON_EXISTING_RELATION, "Remetente " + remetente.getExternalId() + " does not have group id " + group.getExternalId() + " permissions!");
         }
 
-        //TODO: what to do with RREQUIRES_APPROVAL case?
+        //RREQUIRES_APPROVAL case was not implemented
         if (!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
         }
@@ -554,6 +611,10 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
+        }
+
         if (!FenixFramework.isDomainObjectValid(remetente)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
@@ -629,34 +690,6 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
 
-    //debug purposes:
-    @SkipCSRF
-    @RequestMapping(value = "/approvecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement approveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
-
-        if (!FenixFramework.isDomainObjectValid(cn)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
-        }
-
-        cn.approveCanalNotificacao();
-
-        return view(cn, CanalNotificacaoAdapter.class);
-    }
-
-    @SkipCSRF
-    @RequestMapping(value = "/disapprovecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement disapproveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
-
-        if (!FenixFramework.isDomainObjectValid(cn)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
-        }
-
-        cn.disapproveCanalNotificacao();
-
-        return view(cn, CanalNotificacaoAdapter.class);
-    }
-
-
     //Notifcenter callback (NOT BEING USED)
 
     @SkipCSRF
@@ -675,8 +708,7 @@ public class AplicacaoResource extends BennuRestResource {
 
     //SUB-AGRUPAMENTO: APLICACOES->MENSAGENS
 
-    //COMO GERAR TOKEN CSRF VALIDO?
-    //notes:
+    //CSRF notes:
     //header for token: X-CSRF-TOKEN (taken from CSRFToken)
     //body param for token: _csrf
     //link: https://github.com/FenixEdu/bennu/tree/master/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security
@@ -688,6 +720,10 @@ public class AplicacaoResource extends BennuRestResource {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
         }
 
         JsonObject jObj = UtilsResource.stringToJson(json);
@@ -921,6 +957,33 @@ public class AplicacaoResource extends BennuRestResource {
 
 
     //SUB-AGRUPAMENTO: FUNCOES DEBUG
+
+    //debug purposes:
+    @SkipCSRF
+    @RequestMapping(value = "/approvecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement approveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
+
+        if (!FenixFramework.isDomainObjectValid(cn)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
+        }
+
+        cn.approveCanalNotificacao();
+
+        return view(cn, CanalNotificacaoAdapter.class);
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/disapprovecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement disapproveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
+
+        if (!FenixFramework.isDomainObjectValid(cn)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
+        }
+
+        cn.disapproveCanalNotificacao();
+
+        return view(cn, CanalNotificacaoAdapter.class);
+    }
 
     //Debug
     @RequestMapping(value = "/groupdebug", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

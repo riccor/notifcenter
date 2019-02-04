@@ -230,6 +230,18 @@ public class AplicacoesController {
             String id = request.getParameter("editRemetente");
             if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Remetente.class, id))) {
                 RemetenteAdapter.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Remetente.class, id));
+                //approve/disapprove only here in admin panel
+                if (!Strings.isNullOrEmpty(request.getParameter("aguardandoAprovacao"))) {
+                    String aguardandoAprovacao = request.getParameter("aguardandoAprovacao");
+
+                    if (aguardandoAprovacao.equalsIgnoreCase("true")) {
+                        UtilsResource.getDomainObject(Remetente.class, id).approveRemetente();
+                    }
+                    else if (aguardandoAprovacao.equalsIgnoreCase("false")) {
+                        UtilsResource.getDomainObject(Remetente.class, id).disapproveRemetente();
+                    }
+                }
+
             }
         }
 
@@ -248,6 +260,7 @@ public class AplicacoesController {
             HashMap<String, String> map = new LinkedHashMap<>();
             map.put("id", r.getExternalId());
             map.put("name", r.getNome());
+            map.put("approved", r.isApproved() ? "true" : "false");
             list.add(map);
         }
 
