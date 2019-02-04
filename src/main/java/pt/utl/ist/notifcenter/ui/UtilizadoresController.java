@@ -43,7 +43,7 @@ public class UtilizadoresController {
 
         User user1 = UtilsResource.getAuthenticatedUser();
         UtilsResource.checkIsUserValid(user1);
-        UtilsResource.checkAdminPermissions(user1);
+        UtilsResource.checkNotifcenterAdminsGroupPermissions(user1);
 
         if (!FenixFramework.isDomainObjectValid(user)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
@@ -105,7 +105,7 @@ public class UtilizadoresController {
 
         User user = UtilsResource.getAuthenticatedUser();
         UtilsResource.checkIsUserValid(user);
-        UtilsResource.checkAdminPermissions(user);
+        UtilsResource.checkNotifcenterAdminsGroupPermissions(user);
 
         model.addAttribute("users", getExistingUtilizadores());
 

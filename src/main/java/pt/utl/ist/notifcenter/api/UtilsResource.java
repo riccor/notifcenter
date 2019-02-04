@@ -3,6 +3,7 @@ package pt.utl.ist.notifcenter.api;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.bennu.core.groups.Group;
@@ -135,15 +136,28 @@ public class UtilsResource {
         }
     }
 
-    public static void checkAdminPermissions(User user) {
+    public static void checkBennuManagersGroupPermissions(User user) {
 
-        DynamicGroup g = Group.managers();
+        DynamicGroup gm = Group.managers();
 
         //debug
         //g.getMembers().forEach(e -> System.out.println("admin member: " + e.getUsername()));
 
-        if (!g.isMember(user)) {
-            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR, "You are not a system admin.");
+        if (!gm.isMember(user)) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR, "You are not a Bennu manager.");
+        }
+    }
+
+    public static void checkNotifcenterAdminsGroupPermissions(User user) {
+
+        DynamicGroup gm = Group.managers(); //managers can do anything
+
+        if (!gm.isMember(user)) { //if not a manager, check if user is a notifcenter administrator
+            DynamicGroup ga = Group.dynamic(NotifcenterSpringConfiguration.getConfiguration().notifcenterAdminsGroupName());
+
+            if (!ga.isMember(user)) {
+                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR, "You are not a Notifcenter administrator.");
+            }
         }
     }
 

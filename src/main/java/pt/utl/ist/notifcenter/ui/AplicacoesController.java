@@ -42,7 +42,7 @@ public class AplicacoesController {
 
         User user = UtilsResource.getAuthenticatedUser();
         UtilsResource.checkIsUserValid(user);
-        UtilsResource.checkAdminPermissions(user);
+        UtilsResource.checkNotifcenterAdminsGroupPermissions(user);
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -126,7 +126,7 @@ public class AplicacoesController {
 
         User user = UtilsResource.getAuthenticatedUser();
         UtilsResource.checkIsUserValid(user);
-        UtilsResource.checkAdminPermissions(user);
+        UtilsResource.checkNotifcenterAdminsGroupPermissions(user);
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -204,7 +204,7 @@ public class AplicacoesController {
 
         User user = UtilsResource.getAuthenticatedUser();
         UtilsResource.checkIsUserValid(user);
-        UtilsResource.checkAdminPermissions(user);
+        UtilsResource.checkNotifcenterAdminsGroupPermissions(user);
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -264,7 +264,7 @@ public class AplicacoesController {
 
         User user = UtilsResource.getAuthenticatedUser();
         UtilsResource.checkIsUserValid(user);
-        UtilsResource.checkAdminPermissions(user);
+        UtilsResource.checkNotifcenterAdminsGroupPermissions(user);
 
         if (!Strings.isNullOrEmpty(request.getParameter("createApp"))) {
             Aplicacao newApp = AplicacaoAdapter.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));

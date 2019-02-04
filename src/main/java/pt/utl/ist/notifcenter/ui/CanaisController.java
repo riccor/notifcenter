@@ -17,7 +17,6 @@ import pt.utl.ist.notifcenter.api.json.CanalAdapter;
 import pt.utl.ist.notifcenter.domain.Canal;
 import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
-import pt.utl.ist.notifcenter.utils.Utils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ public class CanaisController {
 
         User user = UtilsResource.getAuthenticatedUser();
         UtilsResource.checkIsUserValid(user);
-        UtilsResource.checkAdminPermissions(user);
+        UtilsResource.checkBennuManagersGroupPermissions(user);
 
         //System.out.println("tipo: " + request.getParameter());
 

@@ -45,7 +45,7 @@ public class MensagensController {
 
         User user = UtilsResource.getAuthenticatedUser();
         UtilsResource.checkIsUserValid(user);
-        UtilsResource.checkAdminPermissions(user);
+        UtilsResource.checkNotifcenterAdminsGroupPermissions(user);
 
         //it would need a predefined system app + sender + notification channel:
         /*if (!Strings.isNullOrEmpty(request.getParameter("createMensagem"))) {
@@ -119,7 +119,7 @@ public class MensagensController {
 
         User user = UtilsResource.getAuthenticatedUser();
         UtilsResource.checkIsUserValid(user);
-        UtilsResource.checkAdminPermissions(user);
+        UtilsResource.checkNotifcenterAdminsGroupPermissions(user);
 
         model.addAttribute("message", msg);
         model.addAttribute("deliverystatuses", getExistingDeliveryStatusesFromMessage(msg));

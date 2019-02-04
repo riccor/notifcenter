@@ -32,6 +32,9 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport
     @ConfigurationManager(description = "Notifcenter Configuration")
     public interface ConfigurationProperties {
 
+        @ConfigurationProperty(key = "notifcenter.group.admins.name", defaultValue = "notifcenterAdmins")
+        public String notifcenterAdminsGroupName();
+
         @ConfigurationProperty(key = "notifcenter.url", defaultValue = "localhost:8080/notifcenter")
         public String notifcenterUrl();
 

@@ -1,5 +1,7 @@
 package pt.utl.ist.notifcenter.servlet;
 
+import org.fenixedu.bennu.NotifcenterSpringConfiguration;
+import org.fenixedu.bennu.core.groups.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.utl.ist.notifcenter.domain.Aplicacao;
@@ -13,6 +15,26 @@ import javax.servlet.annotation.WebListener;
 public class NotifcenterInitializer implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(NotifcenterInitializer.class);
+
+    @Override
+    public void contextInitialized(ServletContextEvent event) {
+        logger.info( "Starting application..." );
+        String id = SistemaNotificacoes.getInstance().getExternalId();
+        System.out.println("################################################# SistemaNotificacoes external id:" + id);
+
+        //carregar cache de Aplicacoes (usada para pesquisa rápida de Aplicacoes por nome):
+        Aplicacao.loadCacheAplicacoes();
+
+        ///carregar scopes:
+        ///bootUpMyScopes();
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent event){
+
+    }
+}
+
 
     /*
     //My scopes:
@@ -35,21 +57,3 @@ public class NotifcenterInitializer implements ServletContextListener {
         }
     }*/
 
-    @Override
-    public void contextInitialized(ServletContextEvent event) {
-        logger.info( "Starting application..." );
-        String id = SistemaNotificacoes.getInstance().getExternalId();
-        System.out.println("################################################# SistemaNotificacoes external id:" + id);
-
-        //carregar cache de Aplicacoes (usada para pesquisa rápida de Aplicacoes por nome):
-        Aplicacao.loadCacheAplicacoes();
-
-        ///carregar scopes:
-        ///bootUpMyScopes();
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent event){
-
-    }
-}
