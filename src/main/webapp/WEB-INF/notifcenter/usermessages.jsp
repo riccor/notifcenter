@@ -1,11 +1,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
-    <title>Notifcenter - Users</title>
+    <title>Notifcenter - Messages</title>
 
-    <c:set var="urlPrefix" value="/notifcenter/utilizadores/"/>
+    <c:set var="urlPrefix" value="/notifcenter/mensagens"/>
     <c:set var="slash" value="/"/>
-    <c:set var="messages" value="messages"/>
+    <c:set var="status" value="deliverystatuses"/>
 
     <style>
         #table1 {
@@ -35,55 +36,47 @@
 </head>
 
 <body>
-    <h2><b>Users</b></h2>
+    <h2><b>Messages manager</b></h2>
 
-    <div class="list-users" id="div1">
+    <div class="list-users-contacts" id="div1">
 
-        <br><h3>Existing users</h3>
+        <br><h3>Messages sent to user ${utilizador}</h3>
 
         <table id="table1" style="width: 100%, box-sizing: border-box">
             <tr>
                 <th>Id</th>
-                <th>Username</th>
-                <th>Display Name</th>
-                <th>Contacts</th>
-                <th>Messages</th>
+                <th>Sender</th>
+                <th>Subject</th>
+                <th>Short text</th>
+                <th>Long text</th>
+                <th>Attachments</th>
+                <th>Actions</th>
             </tr>
 
             <c:set var="formPrefix" value="form-"/>
-            <c:forEach var="user" items="${users}">
+            <c:forEach var="mgs" items="${messages}">
 
                 <c:if test="${id != null}">
                      <c:remove var="id"/>
                 </c:if>
 
                 <tr>
-                    <c:forEach var="entry" items="${user}">
-                        <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingUtilizadores() --%>
+                    <c:forEach var="entry" items="${mgs}">
+
+                        <c:if test="${entry.key == 'id'}"> <%-- field id must come first on getExistingMensagens() --%>
                             <c:set var="id" value="${entry.value}"/>
                         </c:if>
 
                         <td><c:out value="${entry.value}"/></td>
+
                     </c:forEach>
 
                     <td>
-                        <c:choose>
-                            <c:when test="${id != null}"> <%-- robustness --%>
-                                <form action="<c:out value="${urlPrefix}${id}"/>" method="get">
-                                    <input type="submit" value="Go">
-                                </form>
-                            </c:when>
-                            <c:otherwise>
-                                id error
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
 
-                    <td>
                         <c:choose>
                             <c:when test="${id != null}"> <%-- robustness --%>
-                                <form action="<c:out value="${urlPrefix}${id}${slash}${messages}"/>" method="get">
-                                    <input type="submit" value="Go">
+                                <form action="<c:out value="${urlPrefix}${slash}${id}"/>" method="get">
+                                    <input type="submit" value="View">
                                 </form>
                             </c:when>
                             <c:otherwise>

@@ -1,7 +1,6 @@
 package pt.utl.ist.notifcenter.ui;
 
 import com.google.common.base.Strings;
-import com.google.gson.JsonObject;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
@@ -16,9 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import pt.ist.fenixframework.FenixFramework;
-import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
-import pt.utl.ist.notifcenter.api.json.MensagemAdapter;
 import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
@@ -52,7 +49,6 @@ public class MensagensController {
             JsonObject jsonObject = HTTPClient.getHttpServletRequestParamsAsJson(request, "app"); //avoid hacks
             jsonObject.addProperty("app", app.getExternalId());
             MensagemAdapter.create2(jsonObject);
-
         }
         else */
         if (!Strings.isNullOrEmpty(request.getParameter("deleteMensagem"))) {
@@ -82,20 +78,7 @@ public class MensagensController {
         for (Canal c: SistemaNotificacoes.getInstance().getCanaisSet()) {
             for (CanalNotificacao cn : c.getCanalNotificacaoSet()) {
                 for (Mensagem m : cn.getMensagemSet()) {
-                    HashMap<String, String> map = new LinkedHashMap<>();
-                    map.put("id", m.getExternalId());
-                    map.put("canalnotificacao", m.getCanalNotificacao().getExternalId());
-                    map.put("remetente", m.getCanalNotificacao().getRemetente().getExternalId());
-                    map.put("gruposDestinatarios", m.getGruposDestinatariosSet().stream().map(PersistentGroup::getExternalId).collect(Collectors.joining(",")));
-                    map.put("assunto", m.getAssunto());
-                    map.put("textoCurto", m.getTextoCurto());
-                    map.put("textoLongo", m.getTextoLongo());
-                    map.put("dataEntrega", m.getDataEntrega().toString("dd.MM.yyyy HH:mm:ss.SSS"));
-                    map.put("callbackUrlEstadoEntrega", m.getCallbackUrlEstadoEntrega());
-                    map.put("attachments", m.getAttachmentsSet().stream().map(Attachment::getExternalId).collect(Collectors.joining(",")));
-                    //map.put("link", NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + m.getExternalId());
-
-                    list.add(map);
+                    list.add(MessageToHashMap(m));
                 }
             }
         }
@@ -103,6 +86,44 @@ public class MensagensController {
         return list;
     }
 
+    public static List<HashMap<String, String>> getExistingUserMensagens(User user) {
+
+        List<HashMap<String, String>> list = new ArrayList<>();
+
+        for (UserMessageDeliveryStatus umds: user.getUserMessageDeliveryStatusSet()) {
+            list.add(UserMessageToHashMap(umds.getMensagem()));
+        }
+
+        return list;
+    }
+
+    public static HashMap<String, String> MessageToHashMap(Mensagem m){
+        HashMap<String, String> map = new LinkedHashMap<>();
+        map.put("id", m.getExternalId());
+        map.put("canalnotificacao", m.getCanalNotificacao().getExternalId());
+        map.put("remetente", m.getCanalNotificacao().getRemetente().getExternalId());
+        map.put("gruposDestinatarios", m.getGruposDestinatariosSet().stream().map(PersistentGroup::getExternalId).collect(Collectors.joining(",")));
+        map.put("assunto", m.getAssunto());
+        map.put("textoCurto", m.getTextoCurto());
+        map.put("textoLongo", m.getTextoLongo());
+        map.put("dataEntrega", m.getDataEntrega().toString("dd.MM.yyyy HH:mm:ss.SSS"));
+        map.put("callbackUrlEstadoEntrega", m.getCallbackUrlEstadoEntrega());
+        map.put("attachments", m.getAttachmentsSet().stream().map(Attachment::getExternalId).collect(Collectors.joining(",")));
+        //map.put("link", NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + m.getExternalId());
+        return map;
+    }
+
+    public static HashMap<String, String> UserMessageToHashMap(Mensagem m){
+        HashMap<String, String> map = new LinkedHashMap<>();
+        map.put("id", m.getExternalId());
+        map.put("remetente", m.getCanalNotificacao().getRemetente().getNome());
+        map.put("assunto", m.getAssunto());
+        map.put("textoCurto", m.getTextoCurto());
+        map.put("textoLongo", m.getTextoLongo());
+        map.put("attachments", m.getAttachmentsSet().stream().map(Attachment::getExternalId).collect(Collectors.joining(",")));
+        //map.put("link", NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + m.getExternalId());
+        return map;
+    }
 
     //Message delivery status
     @RequestMapping("/{msg}/deliverystatuses")

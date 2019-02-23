@@ -21,6 +21,7 @@ import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.api.json.ContactoAdapter;
 import pt.utl.ist.notifcenter.domain.Canal;
 import pt.utl.ist.notifcenter.domain.Contacto;
+import pt.utl.ist.notifcenter.domain.Mensagem;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import pt.utl.ist.notifcenter.utils.Utils;
@@ -43,10 +44,18 @@ public class UtilizadoresController {
 
         User user1 = UtilsResource.getAuthenticatedUser();
         UtilsResource.checkIsUserValid(user1);
-        UtilsResource.checkNotifcenterAdminsGroupPermissions(user1);
+        //UtilsResource.checkNotifcenterAdminsGroupPermissions(user1);
 
         if (!FenixFramework.isDomainObjectValid(user)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
+        }
+
+        //avoid hacks (if user is not notifcenter admin or bennu manager, they can only edit their own contacts)
+        if (!UtilsResource.isUserBennuManager(user1) && !UtilsResource.isUserNotifcenterAdmin(user1)) {
+            if (!user.equals(user1)) {
+                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR);
+            }
+            user = user1; //to avoid hacks
         }
 
         if (!Strings.isNullOrEmpty(request.getParameter("createContacto"))) {
@@ -68,7 +77,12 @@ public class UtilizadoresController {
         else if (!Strings.isNullOrEmpty(request.getParameter("editContacto"))) {
             String id = request.getParameter("editContacto");
             if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Contacto.class, id))) {
-                ContactoAdapter.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Contacto.class, id));
+                if (!user.getContactosSet().contains(UtilsResource.getDomainObject(Contacto.class, id))) {
+                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_CONTACT_ERROR);
+                }
+                else {
+                    ContactoAdapter.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Contacto.class, id));
+                }
             }
         }
 
@@ -93,6 +107,30 @@ public class UtilizadoresController {
         }
 
         return list;
+    }
+
+    @RequestMapping("/{user}/messages")
+    public String userMensagens(Model model, HttpServletRequest request, @PathVariable("user") User user) {
+
+        if (!UtilsResource.isUserLoggedIn()) {
+            ///throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
+            return "redirect:/login?callback=" + request.getRequestURL();
+        }
+
+        User user1 = UtilsResource.getAuthenticatedUser();
+        UtilsResource.checkIsUserValid(user1);
+        //UtilsResource.checkNotifcenterAdminsGroupPermissions(user);
+
+        if (!UtilsResource.isUserBennuManager(user1) && !UtilsResource.isUserNotifcenterAdmin(user1)) {
+            if (!user.equals(user1)) {
+                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR);
+            }
+        }
+
+        model.addAttribute("utilizador", user.getUsername());
+        model.addAttribute("messages", MensagensController.getExistingUserMensagens(user));
+
+        return "notifcenter/usermessages";
     }
 
     @RequestMapping

@@ -148,6 +148,29 @@ public class UtilsResource {
         }
     }
 
+    public static boolean isUserBennuManager(User user) {
+
+        DynamicGroup gm = Group.managers();
+
+        if (gm.isMember(user)) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    public static boolean isUserNotifcenterAdmin(User user) {
+
+        DynamicGroup ga = Group.dynamic(NotifcenterSpringConfiguration.getConfiguration().notifcenterAdminsGroupName());
+
+        if (ga.isMember(user)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static void checkNotifcenterAdminsGroupPermissions(User user) {
 
         DynamicGroup gm = Group.managers(); //managers can do anything
