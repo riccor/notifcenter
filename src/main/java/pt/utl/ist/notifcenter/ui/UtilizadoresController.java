@@ -55,7 +55,6 @@ public class UtilizadoresController {
             if (!user.equals(user1)) {
                 throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR);
             }
-            user = user1; //to avoid hacks
         }
 
         if (!Strings.isNullOrEmpty(request.getParameter("createContacto"))) {
