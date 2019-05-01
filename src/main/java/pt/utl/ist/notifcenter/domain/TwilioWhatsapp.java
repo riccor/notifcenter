@@ -64,6 +64,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         body.put("From", Collections.singletonList(this.getConfigAsJson().get("fromPhoneNumber").getAsString()));
         body.put("Body", Collections.singletonList(msg.createSimpleMessageNotificationWithLink()));
 
+        //Get all user contacts for this channel
         for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
             group.getMembers().forEach(user -> {
 
@@ -99,6 +100,8 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                             });
 
                             String uri = String.format(URL, this.getConfigAsJson().get("accountSID").getAsString());
+
+                            //send message
                             HTTPClient.restASyncClient(HttpMethod.POST, uri, header, body, deferredResult);
 
                             userHasNoContactForThisChannel = false;

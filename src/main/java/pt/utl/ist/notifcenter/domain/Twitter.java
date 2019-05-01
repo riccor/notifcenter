@@ -65,6 +65,7 @@ public class Twitter extends Twitter_Base {
 
         checkIsMessageAdequateForChannel(msg);
 
+        //Get all user contacts for this channel
         for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
             group.getMembers().forEach(user -> {
 
@@ -101,6 +102,7 @@ public class Twitter extends Twitter_Base {
 
                             });
 
+                            //send message
                             HTTPClient.restASyncClientBody(HttpMethod.POST, URL, httpHeaders, bodyContent, deferredResult);
 
                             userHasNoContactForThisChannel = false;
