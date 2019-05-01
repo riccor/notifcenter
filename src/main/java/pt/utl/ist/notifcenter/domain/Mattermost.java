@@ -1,3 +1,7 @@
+/*
+*   Note: Mattermost channel was not implemented yet.
+*/
+
 package pt.utl.ist.notifcenter.domain;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +21,6 @@ public class Mattermost extends Mattermost_Base {
     public void sendMessage(Mensagem msg) {
 
         checkIsMessageAdequateForChannel(msg);
-
     }
 
     @Override

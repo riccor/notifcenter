@@ -36,5 +36,4 @@ public class PersistentGroupAdapter implements JsonAdapter<PersistentGroup> {
         return jObj;
     }
 
-
 }

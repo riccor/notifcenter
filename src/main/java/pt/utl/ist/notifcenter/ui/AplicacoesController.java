@@ -55,11 +55,6 @@ public class AplicacoesController {
         if (!Strings.isNullOrEmpty(request.getParameter("addGrupoDestinatario"))) {
             if (!Strings.isNullOrEmpty(request.getParameter("group"))) {
                 PersistentGroup gd = UtilsResource.getDomainObject(PersistentGroup.class, request.getParameter("group"));
-
-                //not needed
-                /*if (remetente.getGruposSet().contains(gd)) {
-                    throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION_ERROR);
-                }*/
                 remetente.addGroupToSendMesssages(gd);
             }
             else {
@@ -68,10 +63,6 @@ public class AplicacoesController {
         }
         else if (!Strings.isNullOrEmpty(request.getParameter("removeGrupoDestinatario"))) {
             PersistentGroup gd = UtilsResource.getDomainObject(PersistentGroup.class, request.getParameter("removeGrupoDestinatario"));
-            //not needed
-            /*if (!remetente.getGruposSet().contains(gd)) {
-                throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR);
-            }*/
             remetente.removeGroupToSendMesssages(gd);
         }
 
@@ -353,5 +344,5 @@ public class AplicacoesController {
         }
     }
 
-
 }
+

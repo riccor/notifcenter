@@ -52,7 +52,7 @@ public class Remetente extends Remetente_Base {
     public void delete() {
         for (PersistentGroup pg : this.getGruposSet()) {
             pg.removeRemetente(this);
-            this.removeGrupos(pg); ///
+            this.removeGrupos(pg);
         }
 
         for (CanalNotificacao cn : this.getCanaisNotificacaoSet()) {
@@ -60,7 +60,7 @@ public class Remetente extends Remetente_Base {
         }
 
         this.getAplicacao().removeRemetentes(this);
-        this.setAplicacao(null); ///
+        this.setAplicacao(null);
 
         this.deleteDomainObject();
     }

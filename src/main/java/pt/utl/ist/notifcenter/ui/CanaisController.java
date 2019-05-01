@@ -67,7 +67,7 @@ public class CanaisController {
         return "notifcenter/canais";
     }
 
-    //returns a list of hashmaps with channels names and respective params
+    //Returns a list of hashmaps with channels names and respective params
     public static List<HashMap<String, String>> getExistingChannels() {
 
         List<HashMap<String, String>> list = new ArrayList<>();

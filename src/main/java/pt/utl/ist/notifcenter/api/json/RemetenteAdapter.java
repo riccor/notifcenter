@@ -12,7 +12,7 @@ import pt.utl.ist.notifcenter.domain.Remetente;
 @DefaultJsonAdapter(Remetente.class)
 public class RemetenteAdapter implements JsonAdapter<Remetente> {
 
-    //used for admin panel
+    //Allows creating this entity via website
     public static Remetente create2(JsonElement jsonElement) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         Aplicacao app = UtilsResource.getDomainObjectFromJsonProperty(jsonElement, Aplicacao.class, "app");
@@ -20,6 +20,7 @@ public class RemetenteAdapter implements JsonAdapter<Remetente> {
         return Remetente.createRemetente(app, name);
     }
 
+    //Allows modifying this entity via website
     public static Remetente update2(JsonElement jsonElement, Remetente remetente) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String nome = UtilsResource.getRequiredValue(jObj, "name");

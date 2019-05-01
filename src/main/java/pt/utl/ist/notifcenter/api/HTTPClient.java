@@ -1,3 +1,7 @@
+/*
+    Synchronous and asynchronous web client methods and other utilities
+*/
+
 package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonArray;
@@ -104,22 +108,13 @@ public class HTTPClient {
         }};
     }
 
-
     //SYNC client
-
     public static ResponseEntity<String> restSyncClientHeaders(final HttpMethod method,
                                                               final String uri,
                                                               final HttpHeaders headers,
                                                               final MultiValueMap<String, String> bodyParameters) {
-        ///HttpHeaders headers = new HttpHeaders();
-        //headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        //headers.setAccept(Arrays.asList(headerAcceptParameters));
-
-        ///HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headers);
-        //instead of:
-        //HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headerParameters);
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -131,28 +126,15 @@ public class HTTPClient {
         });
 
         ResponseEntity<String> response = restTemplate.exchange(uri, method, entity, String.class);
-        //String result = restTemplate.getForObject(uri, String.class);
-        //System.out.println(result);
-
-        //JsonParser parser = new JsonParser();
-        //JsonObject jObj = parser.parse(response.getBody()).getAsJsonObject();
-        //return jObj;
 
         return response;
     }
 
-
     //SYNC client
-
     public static ResponseEntity<String> restSyncClient(final HttpMethod method,
                                               final String uri,
                                               final MultiValueMap<String, String> headerParameters,
                                               final MultiValueMap<String, String> bodyParameters) {
-        ///HttpHeaders headers = new HttpHeaders();
-        //headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        //headers.setAccept(Arrays.asList(headerAcceptParameters));
-
-        ///HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headerParameters);
 
@@ -166,29 +148,17 @@ public class HTTPClient {
         });
         
         ResponseEntity<String> response = restTemplate.exchange(uri, method, entity, String.class);
-        //String result = restTemplate.getForObject(uri, String.class);
-        //System.out.println(result);
-
-        //JsonParser parser = new JsonParser();
-        //JsonObject jObj = parser.parse(response.getBody()).getAsJsonObject();
-        //return jObj;
 
         return response;
     }
 
-
     //ASYNC client
-
     public static void restASyncClient(final HttpMethod method,
                                         final String uri,
                                         final MultiValueMap<String, String> headerParameters,
                                         final MultiValueMap<String, String> bodyParameters,
                                         DeferredResult<ResponseEntity<String>> deferredResult) {
-        ///HttpHeaders headers = new HttpHeaders();
-        //headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        //headers.setAccept(Arrays.asList(headerAcceptParameters));
 
-        ///HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headerParameters);
 
         AsyncRestTemplate restTemplate = new AsyncRestTemplate();
@@ -215,7 +185,6 @@ public class HTTPClient {
             }
         });
     }
-
 
     public static void restASyncClientBody(final HttpMethod method,
                                            final String uri,
@@ -292,93 +261,5 @@ public class HTTPClient {
         return list;
     }
 
-
 }
 
-
-/*
-
-//ASYNC client 2
-
-private static void restASyncClient2(final HttpMethod method,
-                                     final String uri,
-                                     final MultiValueMap<String, String> headerParameters,
-                                     final MultiValueMap<String, String> bodyParameters,
-                                     final String callbackURL,
-                                     final AsyncResponseHandler asyncResponseHandler) {
-    ///HttpHeaders headers = new HttpHeaders();
-    //headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-    //headers.setAccept(Arrays.asList(headerAcceptParameters));
-
-    ///HttpEntity<String> entity = new HttpEntity<String>(bodyParameters, headers);
-    HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyParameters, headerParameters);
-
-    AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-    
-    ListenableFuture<ResponseEntity<String>> futureEntity = restTemplate.exchange(uri, method, entity, String.class);
-    futureEntity.addCallback(new ListenableFutureCallback<ResponseEntity<String>>() {
-        @Override
-        public void onSuccess(ResponseEntity<String> result) {
-            //System.out.println(" ");
-            //System.out.println("GOT A RESPONSE:");
-            //System.out.println("response status code: " + result.getStatusCode());
-            //System.out.println("response header: " + result.getHeaders());
-            //System.out.println("response body: " + result.getBody());
-            //System.out.println(" ");
-            asyncResponseHandler.setResponseEntity(result);
-        }
-
-        @Override
-        public void onFailure(Throwable ex) {
-            asyncResponseHandler.setError(ex.getMessage());
-            System.out.println("erro no onFailure(): " + ex.getMessage());
-        }
-    });
-}
-
-
-//AsyncResponseHandler.java (para o cliente restASyncClient2):
-
-package pt.utl.ist.notifcenter.api;
-
-import org.springframework.http.ResponseEntity;
-
-public class AsyncResponseHandler {
-
-    public void setResponseEntity(ResponseEntity<String> responseEntity) {
-        this.OnAsyncResponseSuccess(responseEntity);
-    }
-
-    public void setError(String error) {
-        this.OnAsyncResponseFailure(error);
-    }
-
-    public void OnAsyncResponseSuccess(ResponseEntity<String> result){
-
-    }
-
-    public void OnAsyncResponseFailure(Object error){
-
-    }
-}
-
-*/
-
-/*
-        JsonObject jHeaders = new JsonObject();
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            jHeaders.addProperty(headerName, request.getHeader(headerName));
-        }
-
-        jObj.add("headers", jHeaders);
-
-        JsonObject jParams = new JsonObject();
-        List<String> parameterNames = new ArrayList<>(request.getParameterMap().keySet());
-        for (String name : parameterNames) {
-            jParams.addProperty(name, request.getParameter(name));
-        }
-
-        jObj.add("body", jParams);
-*/

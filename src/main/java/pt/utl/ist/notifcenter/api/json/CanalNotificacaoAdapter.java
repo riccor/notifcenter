@@ -52,6 +52,5 @@ public class CanalNotificacaoAdapter implements JsonAdapter<CanalNotificacao> {
         return jObj;
     }
 
-
 }
 

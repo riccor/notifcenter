@@ -1,3 +1,7 @@
+/*
+    Used to deal with thrown exceptions due to errors and warnings
+*/
+
 package pt.utl.ist.notifcenter.utils;
 
 import com.google.gson.JsonElement;
@@ -42,10 +46,6 @@ public enum ErrorsAndWarnings {
     ALREADY_EXISTING_RESOURCE ("resourceAlreadyExists", "Resource already exists.", HttpStatus.CONFLICT),
     ALREADY_EXISTING_RELATION_ERROR ("relationAlreadyExists", "Such relation already exists.", HttpStatus.CONFLICT),
     NON_EXISTING_RELATION ("nonExistingRelation", "Such relation does not exist.", HttpStatus.CONFLICT);
-
-
-    //add new errors/warnings above this line
-    //INVALID_ACCESS_TOKEN_ERROR ("invalidAccessToken", "Invalid access token.")
 
     private final String codeId;
     private final String errorDescription;
@@ -98,5 +98,4 @@ public enum ErrorsAndWarnings {
         str = str + "<br>details: " + details + "</br>";
         return str;
     }
-
 }

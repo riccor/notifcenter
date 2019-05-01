@@ -1,13 +1,12 @@
-package pt.utl.ist.notifcenter.domain;
-
 /*
 Email - using Gmail SMTP server
 
 Tutorial on how to authorize a third-party app (like this project) to send mails via Gmail:
 1. https://support.google.com/accounts/answer/185833
 2. Take note of the password generated for the app
-
 */
+
+package pt.utl.ist.notifcenter.domain;
 
 import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
@@ -77,8 +76,9 @@ public class Email extends Email_Base {
             //A way to try to get delivery status
             //mailToSend.setHeader("Disposition-Notification-To", "notifcentremail@gmail.com");
 
+            //Get all user contacts for this channel
             ArrayList<InternetAddress> listOfToAddresses = new ArrayList<>();
-            //listOfToAddresses.add(new InternetAddress("notifcentremail@gmail.com")); //dadosContacto
+            //listOfToAddresses.add(new InternetAddress("notifcentremail@gmail.com")); //debug
             for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
                 group.getMembers().forEach(user -> {
 
@@ -123,7 +123,6 @@ public class Email extends Email_Base {
                 });
             }
 
-            //mailToSend.addRecipients(Message.RecipientType.BCC, InternetAddress.parse("abc@abc.com,abc@def.com,ghi@abc.com"));
             mailToSend.setRecipients(Message.RecipientType.BCC, listOfToAddresses.toArray(new InternetAddress[0]));
 
             mailToSend.setSubject(msg.getAssunto());
@@ -135,9 +134,6 @@ public class Email extends Email_Base {
             messageBodyPart.setContent(msg.getTextoLongo(), "text/html");
             multipart.addBodyPart(messageBodyPart);
 
-            //MimeBodyPart attachPart = new MimeBodyPart();
-            //attachPart.attachFile("/home/cr/imgg.png");
-            //multipart.addBodyPart(attachPart);
             for (Attachment a : msg.getAttachmentsSet()) {
                 MimeBodyPart attachPart = new MimeBodyPart();
                 ByteArrayDataSource bds = new ByteArrayDataSource(a.getContent(), a.getContentType());
@@ -147,12 +143,13 @@ public class Email extends Email_Base {
             }
 
             mailToSend.setContent(multipart);
+
+            //Send message
             Transport.send(mailToSend);
         }
         catch (AddressException e) {
             e.printStackTrace();
             System.out.println("AddressException");
-            //throw new Exception();
         }
         catch (MessagingException e) {
             e.printStackTrace();

@@ -4,34 +4,16 @@ import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.oauth.domain.*;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
-import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
-import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import pt.utl.ist.notifcenter.utils.Utils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-//TEST:
-//List<ExternalApplicationScope> mainList = new ArrayList<>(FenixFramework.getDomainRoot().getBennu().getScopesSet());
-//app.updateAplicacaoScopes(mainList);
-
 public class Aplicacao extends Aplicacao_Base {
 
-    //cache de Aplicacoes
+    //Applications cache
     private static Map<String, Aplicacao> map = new ConcurrentHashMap<>();
-
-    /* DML:
-    public class ExternalApplication  {
-        public String name (REQUIRED);
-        protected String secret (REQUIRED);
-        public String redirectUrl (REQUIRED);
-        public String description (REQUIRED);
-        public String siteUrl;
-        public bytearray logo;
-        protected ExternalApplicationState state;
-        public String authorName;
-    }*/
 
     private Aplicacao() {
         super();
@@ -79,7 +61,6 @@ public class Aplicacao extends Aplicacao_Base {
         return this;
     }
 
-
     @Atomic
     public Aplicacao setAppPermissions(final AppPermissions appPermissions) {
         this.setPermissoesAplicacao(appPermissions);
@@ -92,8 +73,6 @@ public class Aplicacao extends Aplicacao_Base {
         return this;
     }
 
-
-    // para otimizacao da pesquisa de determinada Aplicacao por nome (retirado de ../bennu/core/domain/User):
     public static Aplicacao findByAplicacaoName(final String aplicacaoName) {
         if (aplicacaoName == null) {
             return null;
@@ -130,19 +109,6 @@ public class Aplicacao extends Aplicacao_Base {
         }
     }
 
-    /*
-    public Remetente doesHaveRemetente(final String remetente) {
-
-        for (final Remetente r: this.getRemetentesSet()) {
-            if(r.getNome().equals(remetente)) {
-                return r;
-            }
-        }
-
-        return null;
-    }
-    */
-
     @Atomic
     public void delete() {
         map.remove(this.getName(), this);
@@ -151,7 +117,6 @@ public class Aplicacao extends Aplicacao_Base {
             r.delete();
         }
 
-        //needed because of ExternalApplication (note: Aplicacao extends ExternalApplication)
         this.getBennu().removeApplications(this);
         this.setBennu(null);
 

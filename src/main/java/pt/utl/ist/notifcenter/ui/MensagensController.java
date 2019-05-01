@@ -36,7 +36,7 @@ public class MensagensController {
     public String mensagens(Model model, HttpServletRequest request) {
 
         if (!UtilsResource.isUserLoggedIn()) {
-            ///throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
+            //throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
             return "redirect:/login?callback=" + request.getRequestURL();
         }
 
@@ -44,26 +44,12 @@ public class MensagensController {
         UtilsResource.checkIsUserValid(user);
         UtilsResource.checkNotifcenterAdminsGroupPermissions(user);
 
-        //it would need a predefined system app + sender + notification channel:
-        /*if (!Strings.isNullOrEmpty(request.getParameter("createMensagem"))) {
-            JsonObject jsonObject = HTTPClient.getHttpServletRequestParamsAsJson(request, "app"); //avoid hacks
-            jsonObject.addProperty("app", app.getExternalId());
-            MensagemAdapter.create2(jsonObject);
-        }
-        else */
         if (!Strings.isNullOrEmpty(request.getParameter("deleteMensagem"))) {
             String id = request.getParameter("deleteMensagem");
             if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Mensagem.class, id))) {
                 UtilsResource.getDomainObject(Mensagem.class, id).delete();
             }
         }
-        //messages get updated?
-        /*else if (!Strings.isNullOrEmpty(request.getParameter("editMensagem"))) {
-            String id = request.getParameter("editMensagem");
-            if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Mensagem.class, id))) {
-                MensagemAdapter.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Mensagem.class, id));
-            }
-        }*/
 
         model.addAttribute("messages", getExistingMensagens());
 
@@ -130,7 +116,7 @@ public class MensagensController {
     public String mensagemDeliveryStatus(@PathVariable("msg") Mensagem msg, Model model, HttpServletRequest request) {
 
         if (!UtilsResource.isUserLoggedIn()) {
-            ///throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
+            //throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
             return "redirect:/login?callback=" + request.getRequestURL();
         }
 
@@ -167,12 +153,12 @@ public class MensagensController {
         return list;
     }
 
-    //View message:
+    //View message
     @RequestMapping("/{msg}")
     public String mensagem(@PathVariable("msg") Mensagem msg, Model model, HttpServletRequest request) {
 
         if (!UtilsResource.isUserLoggedIn()) {
-            ///throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
+            //throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
             return "redirect:/login?callback=" + request.getRequestURL();
         }
 
@@ -188,11 +174,6 @@ public class MensagensController {
         }
 
         model.addAttribute("message", msg);
-
-        //tambem funciona mas não é necessario aqui (pois basta usar message.attachments):
-        //List<Attachment> atl = new ArrayList<>(msg.getAttachmentsSet());
-        //model.addAttribute("anexos", atl);
-
         model.addAttribute("attachments_links", getUserFriendlyMessageAttachments(msg));
 
         return "notifcenter/view-message";
@@ -205,8 +186,6 @@ public class MensagensController {
         }
         return attachmentsLinks;
     }
-
-
 
     @RequestMapping(value = "/attachments/{fileId}", method = RequestMethod.GET)
     public HttpEntity<byte[]> downloadAttachment(@PathVariable("fileId") Attachment attachment) {
@@ -230,8 +209,7 @@ public class MensagensController {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_ATTACHMENT_ERROR);
         }
 
-        //debug
-        /*
+        /* Debug
         System.out.println("#############content key: "+ attachment.getContentKey());
         System.out.println("#############checksum algorithm: "+ attachment.getChecksumAlgorithm());
         System.out.println("#############checksum: "+ attachment.getChecksum());
@@ -243,8 +221,6 @@ public class MensagensController {
         header.add("Content-Type", attachment.getContentType());
         header.add("Content-Disposition", "attachment; filename=" + attachment.getDisplayName().replace(" ", "_"));
         header.add("Content-Length", String.valueOf(fileContent.length));
-        ///header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + attachment.getDisplayName().replace(" ", "_"));
-        ///header.setContentLength(fileContent.length);
 
         return new HttpEntity<>(fileContent, header);
     }
@@ -261,6 +237,5 @@ public class MensagensController {
             return new ResponseEntity<>(ex.getErrorsAndWarnings().toHTML(), header, ex.getErrorsAndWarnings().getHttpStatus());
         }
     }
-
 
 }

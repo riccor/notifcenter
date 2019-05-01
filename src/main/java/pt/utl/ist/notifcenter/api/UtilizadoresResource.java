@@ -1,3 +1,18 @@
+/*
+   API Utilizador (/apiutilizadores):
+
+   /listutilizadores
+   /{utilizador}
+   /{utilizador}/addcontacto
+   /{utilizador}/{contacto}
+   /{utilizador}/{contacto}/delete
+   /{utilizador}/{contacto}/update
+   /{utilizador}/listcontactos
+
+   NOTE: Some resources are just for debugging purposes and must be deleted before implementing this module in production environment.
+
+*/
+
 package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonArray;
@@ -24,8 +39,6 @@ import org.fenixedu.bennu.core.rest.BennuRestResource;
 @RequestMapping("/apiutilizadores")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api.utilizadores")
 public class UtilizadoresResource extends BennuRestResource {
-
-    //AGRUPAMENTO: Utilizador e respetivos contactos para canais
 
     @RequestMapping(value = "/{utilizador}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement showUtilizador(@PathVariable("utilizador") User utilizador) {
@@ -74,6 +87,7 @@ public class UtilizadoresResource extends BennuRestResource {
         return view(create(jObj, Contacto.class), ContactoAdapter.class);
     }
 
+    //Insert user contact data via JSON
     @SkipCSRF
     @RequestMapping(value = "/{utilizador}/addcontacto2", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addContactoUtilizador2(@PathVariable("utilizador") User utilizador, @RequestBody JsonElement body) {
@@ -192,6 +206,6 @@ public class UtilizadoresResource extends BennuRestResource {
         }
     }
 
-
 }
+
 

@@ -1,3 +1,16 @@
+/*
+   API Canal (/apicanais):
+
+   /addcanal
+   /listcanais
+   /listclassescanais
+   /{canal}
+   /{canal}/update
+   /{canal}/delete
+
+   NOTE: Some resources are just for debugging purposes and must be deleted before implementing this module in production environment.
+*/
+
 package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonArray;
@@ -33,13 +46,9 @@ import java.util.Map;
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api.canais")
 public class CanalResource extends BennuRestResource {
 
-    //AGRUPAMENTO: Canais
-
     @SkipCSRF
     @RequestMapping(value = "/addcanal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addCanal(@RequestBody JsonElement body) {
-
-        //TwilioWhatsapp.createTwilioWhatsApp(accountSID, authToken, fromPhoneNumber, uri);
 
         return view(CanalAdapter.create2(body), CanalAdapter.class);
     }
@@ -86,28 +95,6 @@ public class CanalResource extends BennuRestResource {
         return list;
     }
 
-    /*public static MultiValueMap<String, String> getAvailableChannelsNamesAndParams() {
-        MultiValueMap<String, String> list = new LinkedMultiValueMap<>();
-
-        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-        scanner.addIncludeFilter(new AnnotationTypeFilter(AnotacaoCanal.class));
-
-        for (BeanDefinition bd : scanner.findCandidateComponents(NotifcenterSpringConfiguration.getConfiguration().notifcenterDomain())) {
-            try {
-                Class<?> clazz = Class.forName(bd.getBeanClassName());
-                //AnotacaoCanal annotation = clazz.getAnnotation(AnotacaoCanal.class);
-                String name = clazz.getSimpleName(); //bd.getBeanClassName().substring(bd.getBeanClassName().lastIndexOf('.') + 1);
-                //String[] params = annotation.classFields();
-                String[] params = Utils.getDomainClassSlots(clazz);
-                list.put(name, Arrays.asList(params));
-            } catch (Exception e) {
-                System.out.println("error on getting a channel class params");
-            }
-        }
-
-        return list;
-    }*/
-
     @RequestMapping(value = "/{canal}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement viewCanal(@PathVariable(value = "canal") Canal canal) {
 
@@ -148,7 +135,6 @@ public class CanalResource extends BennuRestResource {
         return jObj;
     }
 
-    //vários canais têm diferentes parâmetros -> portanto uso apenas este /update que recebe um objecto json no body do pedido
     @SkipCSRF
     @RequestMapping(value = "/{canal}/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateCanal(@PathVariable("canal") Canal canal, @RequestBody JsonElement body) {
@@ -160,8 +146,7 @@ public class CanalResource extends BennuRestResource {
         return view(CanalAdapter.update2(body, canal), CanalAdapter.class);
     }
 
-
-    //RECEBER NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS:
+    //Receive message delivery status notifications from channels
     @SkipCSRF
     @RequestMapping(value = "/{canal}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, HttpServletRequest request) {
@@ -189,12 +174,12 @@ public class CanalResource extends BennuRestResource {
 
                 header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
                 body.put("MessageId", Collections.singletonList(ede.getMensagem().getExternalId()));
-                body.put("User", Collections.singletonList(ede.getUtilizador().getUsername())); ///?
+                body.put("User", Collections.singletonList(ede.getUtilizador().getUsername()));
                 body.put("MessageStatus", Collections.singletonList(ede.getEstadoEntrega()));
 
                 DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                 deferredResult.setResultHandler((Object responseEntity) -> {
-                    HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity); ///anything else to do?
+                    HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity);
                 });
 
                 HTTPClient.restASyncClient(HttpMethod.POST, ede.getMensagem().getCallbackUrlEstadoEntrega(), header, body, deferredResult);
@@ -204,6 +189,7 @@ public class CanalResource extends BennuRestResource {
         }
     }
 
+    //Called when NotifcenterException is thrown due to some error
     @ExceptionHandler({NotifcenterException.class})
     public ResponseEntity<JsonElement> errorHandler(NotifcenterException ex) {
 
@@ -217,13 +203,12 @@ public class CanalResource extends BennuRestResource {
         }
     }
 
-    //String returned, not JSON
+    //Here, a string is returned, instead of a JSON
     @ExceptionHandler({AnotherNotifcenterException.class})
     public ResponseEntity<String> errorHandler2(NotifcenterException ex) {
 
         HttpHeaders header = new HttpHeaders();
 
-        //For Facebook Messenger to confirm my webhook (https://developers.facebook.com/apps/298908694309495/webhooks/)
         if (ex.getMoreDetails().equalsIgnoreCase("definable")) {
             return new ResponseEntity<>(ex.getMoreDetails(), header, ex.getErrorsAndWarnings().getHttpStatus());
         }

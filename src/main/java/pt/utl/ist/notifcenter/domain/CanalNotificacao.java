@@ -8,27 +8,14 @@ public class CanalNotificacao extends CanalNotificacao_Base {
         super();
     }
 
-    //3.1.6
     @Atomic
     public static CanalNotificacao createCanalNotificacao(Canal canal, Remetente remetente) {
         CanalNotificacao canalNotificacao = new CanalNotificacao();
         canalNotificacao.setCanal(canal);
         canalNotificacao.setRemetente(remetente);
-        canalNotificacao.setAguardandoAprovacao(true); //default value //3.1.4
+        canalNotificacao.setAguardandoAprovacao(true);
         return canalNotificacao;
     }
-
-    //3.1.4
-    /*@Atomic
-    public static CanalNotificacao createPedidoCriacaoCanalNotificacao(Canal canal, Remetente remetente) {
-        CanalNotificacao canalNotificacao = new CanalNotificacao();
-        canalNotificacao.setCanal(canal);
-        canalNotificacao.setRemetente(remetente);
-
-        canalNotificacao.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
-        return canalNotificacao;
-    }
-    */
 
     @Atomic
     public void approveCanalNotificacao() {
@@ -52,13 +39,11 @@ public class CanalNotificacao extends CanalNotificacao_Base {
         this.getCanal().removeCanalNotificacao(this);
         this.setCanal(null); ///
 
-        //NOTA: ao eliminar canal de notificacao todas as mensagens associadas a ele sao também eliminadas
         for (Mensagem m : this.getMensagemSet()) {
             m.delete();
         }
 
         this.deleteDomainObject();
     }
-
 
 }

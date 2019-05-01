@@ -2,7 +2,6 @@ package pt.utl.ist.notifcenter.api.json;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.json.JsonAdapter;
@@ -15,6 +14,7 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 @DefaultJsonAdapter(Canal.class)
 public class CanalAdapter implements JsonAdapter<Canal> {
 
+    //Allows creating this entity via website
     public static Canal create2(JsonElement jsonElement) {
         String channelType = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "createChannel");
         Class<?> clazz;
@@ -35,6 +35,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         return Canal.createChannel(clazz, config.toString());
     }
 
+    //Allows modifying this entity via website
     public static Canal update2(JsonElement jsonElement, Canal canal) {
         JsonObject config = UtilsResource.stringToJson(UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "config"));
         canal.setConfig(config.toString());

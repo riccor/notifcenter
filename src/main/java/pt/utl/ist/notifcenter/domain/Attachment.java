@@ -56,21 +56,8 @@ public class Attachment extends Attachment_Base {
     @Atomic
     @Override
     public void delete() {
-
-
         this.setMensagem(null);
-
-        //TODO how to delete file from filesystem ???
-        ///Files.deleteIfExists("awd");
-        /*
-        final File existingFile = new File(getFilePath());
-        if (!existingFile.exists() || existingFile.delete()) {
-            setFileSupport(null);
-            deleteDomainObject();
-        }*/
-
         super.delete();
-
     }
 
 }

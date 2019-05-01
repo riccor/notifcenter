@@ -1,67 +1,28 @@
-/**
-* Sendo um trabalho académico, a utilização do dominio pt.utl.ist parece-me mais adequado.
-*/
 package pt.utl.ist.notifcenter.domain;
 
 /*
- *  NOTAS:
- *  1.  No e-mail vai em anexo uma fotografia do diagrama com as relacoes entre entidades que você desenhou.
- *  2.  "Configuracao Canal Remetente" é tomado como "CanalNotificacao";
- *  3.  Não acrescentei o prefixo "org.fenixedu.notifcenter-core.domain" a cada classe apenas para simplificar.
- *  4.  Se identificar algum erro sistemático que eu esteja a cometer, por favor, diga-me. Muito obrigado pelo seu tempo!
- * 
- *  DUVIDAS: 
- *  1.  O sistema de notificacoes tem utilizadores e alguns destes sao administradores. 
- *      Dado que a classe Administrador é uma extensao de Utilizador, é necessário criar as relacoes
- *      sistemaTemAdministadores e sistemaTemUtilizadores OU 
- *      basta criar a relacao sistemaTemUtilizadores, apagar "class Administrador extends Utilizador {}" 
- *      e a classe Utilizador fica com um field "boolean isAdministrador" ?  
- *
- *      Resposta: Não me parece ser necessário haver uma class para representar o Administrador.
- *                Quem vai administrar o sistema é simplesmente um grupo específico de utilizadores.
- *                A dependência do package org.fenixedu.bennu já trata destes conceitos. Não tem que 
- *                fazer nada específico no seu módulo. https://confluence.fenixedu.org/display/BENNU/Users+and+Security
- *  
- *  2.  No exemplo de um dml que me sugeriu no e-mail está:
- *      "class module.organization.domain.groups.PersistentUnitGroup extends org.fenixedu.bennu.core.domain.groups.PersistentGroup {}".
- *      ->Posso descrever a minha classe Grupo como "class Grupo extends extends org.fenixedu.bennu.core.domain.groups.PersistentGroup{}"?
- *      ->E também posso fazer "class Utilizador extends org.fenixedu.bennu.core.domain.User{}"?
- *
- *      Resposta: Neste momento não me parece necessário criar novos grupos. Os grupos já existentes, em particular o
- *                DynamicGroup já servem para testar este módulo. https://confluence.fenixedu.org/display/BENNU/Access+Groups
- *  
- *  3.  Adicionei o field "bytearray anexos" na classe Mensagem, mas nao sei se é pratico para o caso em que há mais 
- *      do que um ficheiro enviado como anexo - alguma sugestao?
- *
- *      Resposta: Pois, tipicamente guardar ficheiros na base de dados não é boa ideia. A depdendência do módulo:
- *                org.fenixedu.bennu-io já resolve esta questão e faculta o conceito de GenericFile que pode utilizar
- *                no seu domínio para guardar ficheiros. https://confluence.fenixedu.org/display/BENNU/Transactional+IO
- *      
- **/
-
+*   Application permissions
+*/
 enum AppPermissions as AppPermissions;
 
 /** Classes **/
 
 /*
-*    Sendo esta a peça central da sua aplicação, deve ser logo a primeira entidade a representar.
-*    Pode não parecer relevante, mas para alguem que vai olhar para o código pela primeira vez,
-*    esta entidade central será um melhor "ponto de partida" para conhecer a aplicação.
-*
+*   Main class of the module
 */
-class SistemaNotificacoes{
+class SistemaNotificacoes {
 }
 
-/* Esta class pode ser quase toda substituida pela ExternalApplication do módulo bennu-oauth.
-*  assim fica já com toda a parte de OAuth resolvida e é menos uma preocupação para o seu módulo.
-*  O que fica a faltar, é a questão das permissões. Para isto, em vez de números, sugiro um 
-*  enumerado; fica mais semântico, e os programadores não têm que lembrar o que é que cada número 
-*  representa. Tipicamente isto ajuda a evitar erros de programação.
+/*
+*   Application class extends ExternalApplication class, which already implements OAuth
 */
 class Aplicacao extends .org.fenixedu.bennu.oauth.domain.ExternalApplication {
     AppPermissions permissoesAplicacao;
 }
 
+/*
+*   Sender class
+*/
 class Remetente {
     String nome;
     boolean aguardandoAprovacao;
@@ -72,93 +33,65 @@ class Remetente {
 * dados.
 */
 class Mensagem{
-    String sid;
-    String assunto;
-    String textoCurto;
-    String textoLongo;
-    // bytearray anexos;
-    DateTime dataEntrega; /* opcional; apenas para o caso em que o remetente queira que a 
-                              mensagem seja entregue no futuro */    
-    String callbackUrlEstadoEntrega; /*para o caso da aplicacao querer receber os varios estados de entrega
-                                          da mensagem através de uma callback*/
-}
-
-class Attachment extends .org.fenixedu.bennu.io.domain.GenericFile{
+    String assunto; //Message subject
+    String textoCurto; //This parameter allows to simulate "message content adaptation to a channel" feature
+    String textoLongo; //Message body
+    DateTime dataEntrega; /*This paramater will allow implementing a feature to send a message in a future date (not implemented yet)*/
+    String callbackUrlEstadoEntrega; //This parameter allows an application to define where it wants to receive a message delivery status via a webhook
 }
 
 /*
-*  Não compreendi o propósito dos atributos email e password nesta entidde.
+*   Message attachment extends GenericFile, which already implements transactional memory functionality
 */
-class Canal {
-    String config;
-    //String email;
-    //String password;
+class Attachment extends .org.fenixedu.bennu.io.domain.GenericFile {
 }
 
-    class Email extends Canal{
-        //String smtpServer;
-        //String smtpPort;
-        //String smtpUsername;
-        //String smtpPassword;
+/*
+*   Communication Channel
+*/
+class Canal {
+    String config; /* where all channel configuration parameters are saved (e.g. server address, credentials, etc.) */
+}
+
+    class Email extends Canal {
     }
 
-    class Telegram extends Canal{
-        ////String uri;
-        //String access_token;
-        //EXAMPLE PARAMS THAT COULD BE ADDED:
-        ///int messageCount;
-        ///String lastUser;
+    class Telegram extends Canal {
     }
 
-    class Mattermost extends Canal{
-        //String oauth2IdCliente;
-        //String oauth2Secredo;
+    class Mattermost extends Canal {
     }
 
     class Twitter extends Canal {
-        ////String numeroTelemovel;
-        //String oauth_consumer_key;
-        //String oauth_consumer_secret;
-        //String oauth_token;
-        //String oauth_token_secret;
-        ////String uri;
     }
 
-    // Assumo que isto também é um canal
     class Messenger extends Canal {
-        ////String numeroTelemovel;
-        //String access_token;
-        ////String uri;
     }
 
     class TwilioWhatsapp extends Canal {
-        //String accountSID;
-        //String authToken;
-        //String fromPhoneNumber;
-        ////String uri;
     }
 
-
-class CanalNotificacao { /*o mesmo que "Configuracao Canal Remetente"*/
+/*
+*   Notification channel
+*/
+class CanalNotificacao {
     boolean aguardandoAprovacao;
 }
 
+/*
+*   Channel contact data
+*/
 class Contacto {
     String dadosContacto;
 }
 
-class ExemploIdentidade {
-    String param1;
-    String param2;
-	Integer int1;
-}
-
-
+/*
+*   Message delivery status
+*/
 class UserMessageDeliveryStatus {
     String idExterno;
     String estadoEntrega;
 }
-
 
 
 /** Relations **/
@@ -183,18 +116,6 @@ relation SistemaNotificacoesTemCanais {
     Canal playsRole canais { multiplicity 0..*; }
 }
 
-
-/*
-relation SistemaNotificacoesTemPedidosCriacaoCanalNotificacao {
-    SistemaNotificacoes playsRole sistemaNotificacoes { multiplicity 1..1; }
-    CanalNotificacao playsRole pedidosCriacaoCanalNotificacao { multiplicity 0..*; }
-}
-*/
-
-
-/* Sendo o CanalNotificacao uma relação trenária, então ele associa-se a um
-*  remetente e a um canal
-*/
 relation RemetenteUsaCanaisNotificacao {
     Remetente playsRole remetente { multiplicity 1..1; }
     CanalNotificacao playsRole canaisNotificacao { multiplicity 0..*; }
@@ -230,50 +151,17 @@ relation MensagemEnviadaParaGrupos {
     .org.fenixedu.bennu.core.domain.groups.PersistentGroup playsRole gruposDestinatarios { multiplicity 1..*; }
 }
 
-/* Relação para evitar byteArrays na base de dados */
 relation MensagemAttachments {
     Mensagem playsRole mensagem { multiplicity 1..1; }
     Attachment playsRole attachments { multiplicity *; }
 }
-
-
-/* Se quiser impedir o acesso indevido a attachments:
-relation AttachmentGroup {
-    Attachment playsRole attachment { multiplicity *; }
-    .org.fenixedu.bennu.core.domain.groups.PersistentGroup playsRole group { multiplicity 1..*; }
-}
-*/
-
-/*relation MensagemNaoEntregueAUtilizador {
-    Mensagem playsRole mensagem { multiplicity 1..1; }
-    .org.fenixedu.bennu.core.domain.User playsRole utilizadoresQueNaoReceberamMensagem { multiplicity 0..*; }
-}
-*/
-
-
-/* ////redundante (TODO: confirmar!)
-relation CanalTemEstadosDeEntregaDeMensagensEnviadasAUtilizadores {
-    Canal playsRole canal { multiplicity 1..1; }
-    UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
-}
-*/
 
 relation EstadoDeEntregaDeMensagemTemMensagem {
     Mensagem playsRole mensagem { multiplicity 1..1; }
     UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
 }
 
-/*relation EstadoDeEntregaDeMensagemTemContacto {
-    Contacto playsRole contacto { multiplicity 1..1; }
-    UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
-}*/
-
 relation EstadoDeEntregaDeMensagemTemUtilizador {
     .org.fenixedu.bennu.core.domain.User playsRole utilizador { multiplicity 1..1; }
     UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
 }
-
-
-
-
-

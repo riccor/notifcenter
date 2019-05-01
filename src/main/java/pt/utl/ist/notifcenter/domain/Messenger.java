@@ -72,6 +72,7 @@ public class Messenger extends Messenger_Base {
 
         checkIsMessageAdequateForChannel(msg);
 
+        //Get all user contacts for this channel
         for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
             group.getMembers().forEach(user -> {
 
@@ -110,6 +111,7 @@ public class Messenger extends Messenger_Base {
 
                             });
 
+                            //send message
                             HTTPClient.restASyncClientBody(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
 
                             userHasNoContactForThisChannel = false;
@@ -205,6 +207,5 @@ public class Messenger extends Messenger_Base {
 
         return null;
     }
-
 
 }

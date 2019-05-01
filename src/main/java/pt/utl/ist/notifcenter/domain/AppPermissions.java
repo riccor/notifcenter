@@ -1,11 +1,12 @@
 package pt.utl.ist.notifcenter.domain;
 
 public enum AppPermissions {
-
+	/*
+		NONE - API access for application is blocked
+		RREQUIRES_APPROVAL - application requests to add sender, recipient groups permissions and notification channels require administration approval
+		ALLOW_ALL - all application requests are accepted immediately
+	*/
 	NONE, RREQUIRES_APPROVAL, ALLOW_ALL;
-//TODO - NONE = BLOQUEADA
-//TODO - REQUIERES_APPROVAL	= requires approvate to create remetente, grupos_destinatarios, canais_notificacao (ver GUI e rest api)
-    //NONE("None"), REQUIRES_APPROVAL("Requires approval"), ALLOW_ALL("Allow all")
 
 	public static AppPermissions getAppPermissionsFromString(String str) {
 		for (AppPermissions ap : AppPermissions.values()) {

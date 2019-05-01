@@ -1,3 +1,8 @@
+/*
+*   Due to incompatibilities between Spring and FenixEdu, this class was created to allow API access tokens to work
+*   BUG: Website won't work properly while using this class
+*/
+
 package pt.utl.ist.notifcenter.security;
 
 import com.google.common.base.Strings;
@@ -21,27 +26,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 
+public class NotifcenterInterceptor extends CSRFInterceptor /*implements HandlerInterceptor*/ {
 
-public class NotifcenterInterceptor extends CSRFInterceptor/*implements HandlerInterceptor*/ {
-
-    private final static boolean isAccessTokenRequired = true; //apenas para debug
+    private final static boolean isAccessTokenRequired = true; //debugging purposes
 
     public NotifcenterInterceptor(CSRFTokenRepository tokenBean) {
         super(tokenBean);
     }
 
-    /* ///
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-
-    }
-
-    @Override public void afterCompletion( HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-
-    }
-    */
-
-    //Importado de https://github.com/FenixEdu/bennu/blob/master/bennu-oauth/src/main/java/org/fenixedu/bennu/oauth/jaxrs/BennuOAuthAuthorizationFilter.java
+    //Imported from https://github.com/FenixEdu/bennu/blob/master/bennu-oauth/src/main/java/org/fenixedu/bennu/oauth/jaxrs/BennuOAuthAuthorizationFilter.java
     private Optional<ApplicationUserSession> extractUserSession(String accessToken) {
         if (Strings.isNullOrEmpty(accessToken)) {
             return Optional.empty();
@@ -59,7 +52,7 @@ public class NotifcenterInterceptor extends CSRFInterceptor/*implements HandlerI
         }
     }
 
-    //Adaptado de https://github.com/FenixEdu/bennu/blob/master/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security/CSRFInterceptor.java
+    //Taken from https://github.com/FenixEdu/bennu/blob/master/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security/CSRFInterceptor.java
     private boolean doesHandlerHasAnnotation(Object handler, Class<? extends Annotation> clazz) {
         return ((HandlerMethod) handler).getMethod().isAnnotationPresent(clazz);
     }
@@ -72,26 +65,11 @@ public class NotifcenterInterceptor extends CSRFInterceptor/*implements HandlerI
         return value;
     }
 
-    //Adaptado de https://github.com/FenixEdu/bennu/blob/master/bennu-oauth/src/main/java/org/fenixedu/bennu/oauth/jaxrs/BennuOAuthAuthorizationFilter.java
+    //Taken from https://github.com/FenixEdu/bennu/blob/master/bennu-oauth/src/main/java/org/fenixedu/bennu/oauth/jaxrs/BennuOAuthAuthorizationFilter.java
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         super.preHandle(request, response, handler);
-
-        /*
-        link: https://github.com/FenixEdu/bennu/tree/master/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security
-
-        CSRFTokenRepository ctr = new CSRFTokenRepository();
-        ctr.getToken(request);
-        (...)
-
-        //Debug:
-        CSRFTokenRepository ctr = new CSRFTokenRepository();
-        System.out.println("token: "+ ctr.getToken(request).getToken());
-        System.out.println("headername: "+ ctr.getToken(request).getHeaderName());
-        System.out.println("parametertoken: "+ ctr.getToken(request).getParameterName());
-
-        */
 
         if (isAccessTokenRequired && !doesHandlerHasAnnotation(handler, SkipAccessTokenValidation.class)) {
             String accessToken = findToken(OAuthUtils.ACCESS_TOKEN, request);
@@ -117,7 +95,7 @@ public class NotifcenterInterceptor extends CSRFInterceptor/*implements HandlerI
                     return false;
                 }
 
-                //My scopes:
+                //Module scopes (not used)
                 if (doesHandlerHasAnnotation(handler, OAuthEndpoint.class)) {
                     final OAuthEndpoint endpoint = ((HandlerMethod) handler).getMethod().getAnnotation(OAuthEndpoint.class);
                     Optional<ExternalApplicationScope> scope = ExternalApplicationScope.forKey(endpoint.value());
@@ -152,13 +130,8 @@ public class NotifcenterInterceptor extends CSRFInterceptor/*implements HandlerI
 
                 Authenticate.mock(foundUser, "OAuth Access Token");
             }
-
-
         }
 
         return true;
     }
 }
-
-//como fazer forward de um pedido:
-//request.getRequestDispatcher("/apiaplicacoes/redirect").forward(request, response);

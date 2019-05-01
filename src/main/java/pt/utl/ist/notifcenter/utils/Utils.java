@@ -1,3 +1,7 @@
+/*
+    Some methods that might be useful
+*/
+
 package pt.utl.ist.notifcenter.utils;
 
 import org.apache.avro.reflect.Nullable;
@@ -6,14 +10,11 @@ import pt.ist.fenixframework.FenixFramework;
 import pt.ist.fenixframework.dml.DomainClass;
 import pt.ist.fenixframework.dml.Slot;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Utils {
     
-    //colors
+    //Colors
     public static final String RED = "\033[0;31m";     // RED
     public static final String GREEN = "\033[0;32m";   // GREEN
     public static final String WHITE = "\033[0;37m";   // WHITE
@@ -52,14 +53,6 @@ public class Utils {
         return str;
     }
 
-    /*
-    public static <T> boolean isClassAChannel(Class<T> clazz) {
-        if (clazz.isAnnotationPresent(AnotacaoCanal.class)) {
-            return true;
-        }
-        return false;
-    }*/
-
     public static <T> String[] getDomainClassSlots(Class <T> clazz){
         ArrayList<String> arrayList = new ArrayList<>();
         for (DomainClass dc : FenixFramework.getDomainModel().getDomainClasses()) {
@@ -78,7 +71,6 @@ public class Utils {
         return (str != null && !str.isEmpty());
     }
 
-    //might be useful ...or not:
     public static <E> void removeElementFromSet(java.util.Set<E> set, E element) {
 
         if (CollectionUtils.isEmpty(set)) {
@@ -112,55 +104,6 @@ public class Utils {
         return true;
     }
 
-    public static <T> Map<String, String>  loadPropertiesFromPropertiesFile(Class<T> clazz, final String filename, final String... params) {
-        Properties prop = new Properties();
-        InputStream input = null;
-        Map<String, String> propertiesMap = new ConcurrentHashMap<>();
-
-        for (String s : params) {
-            propertiesMap.put(s, "null");
-        }
-
-        try {
-            //clazz.getResourceAsStream() - procura o resource no mesmo diretorio do ficheiro .class
-            //clazz.getClassLoader().getResourceAsStream() - procura no CLASSPATH
-            input = clazz.getClassLoader().getResourceAsStream(filename);
-
-            //System.out.println("clazz.getClassLoader().getResource(filename): " + clazz.getClassLoader().getResource(filename));
-
-            if (input == null) {
-                System.out.println("Error: Unable to find file " + filename + "!");
-                return null;
-            }
-
-            // load a properties file
-            prop.load(input);
-
-            // get the property values
-            for(Map.Entry<String, String> entry : propertiesMap.entrySet()) {
-                if (!entry.getKey().isEmpty()) {
-                    //System.out.println("key: " + entry.getKey());
-                    propertiesMap.put(entry.getKey(), prop.getProperty(entry.getKey()));
-                }
-            }
-        }
-        catch (NullPointerException | IOException ex) {
-            ex.printStackTrace();
-        }
-        finally {
-            if (input != null) {
-                try {
-                    input.close();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return propertiesMap;
-    }
-
     public static void printMap(Map<String, String> map, String title) {
         System.out.println();
         System.out.println(Utils.MAGENTA + title + Utils.CYAN);
@@ -171,14 +114,3 @@ public class Utils {
     }
 
 }
-
-/*
-for (Map.Entry<String, List<String>> a : CanalResource.getAvailableChannelsNamesAndParams().entrySet()) {
-        System.out.println(a.getKey());
-
-        for (String c : a.getValue()) {
-        System.out.println(c);
-        }
-        }
-*/
-

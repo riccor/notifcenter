@@ -1,3 +1,7 @@
+/*
+    Useful methods for API and website
+*/
+
 package pt.utl.ist.notifcenter.api;
 
 import com.google.gson.JsonElement;

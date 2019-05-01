@@ -50,7 +50,7 @@ public class UtilizadoresController {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
         }
 
-        //avoid hacks (if user is not notifcenter admin or bennu manager, they can only edit their own contacts)
+        //Avoid hacks (if user is not notifcenter admin or bennu manager, they can only edit their own contacts)
         if (!UtilsResource.isUserBennuManager(user1) && !UtilsResource.isUserNotifcenterAdmin(user1)) {
             if (!user.equals(user1)) {
                 throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR);
@@ -146,17 +146,6 @@ public class UtilizadoresController {
 
         model.addAttribute("users", getExistingUtilizadores());
 
-        //HMMMM!
-        /*
-        for (DomainClass u : FenixFramework.getDomainModel().getDomainClasses()) {
-            //if (u.getClass().getSuperclass().equals(Canal.class)) { //always DomainObject
-            for (Slot s : u.getSlotsList()) {
-                System.out.println("Class: " + u.getName() + ": " + Utils.splitAndGetLastIndex(s.getTypeName(), "\\.") + " " + s.getName() + ";");
-            }
-            //}
-        }
-        */
-
         return "notifcenter/utilizadores";
     }
 
@@ -188,7 +177,5 @@ public class UtilizadoresController {
         }
     }
 
-
 }
-
 

@@ -9,7 +9,6 @@ import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import org.joda.time.DateTime;
-import org.springframework.web.multipart.MultipartFile;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.domain.*;
@@ -116,6 +115,4 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         return jObj;
     }
 
-
 }
-

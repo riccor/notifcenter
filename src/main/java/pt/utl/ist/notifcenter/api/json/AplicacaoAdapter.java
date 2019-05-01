@@ -13,6 +13,7 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 @DefaultJsonAdapter(Aplicacao.class)
 public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
 
+    //Allows creating this entity via website
     public static Aplicacao create2(JsonElement jsonElement) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String name = UtilsResource.getRequiredValue(jObj, "name");
@@ -28,6 +29,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         return Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
     }
 
+    //Allows modifying this entity via website
     public static Aplicacao update2(JsonElement jsonElement, Aplicacao app) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String name = UtilsResource.getRequiredValueOrReturnNullInstead(jObj, "name");

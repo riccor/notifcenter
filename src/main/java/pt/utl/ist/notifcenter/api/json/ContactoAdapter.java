@@ -15,6 +15,7 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 @DefaultJsonAdapter(Contacto.class)
 public class ContactoAdapter implements JsonAdapter<Contacto> {
 
+    //Allows creating this entity via website
     public static Contacto create2(JsonElement jsonElement) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         User utilizador = UtilsResource.getDomainObjectFromJsonProperty(jsonElement, User.class, "utilizador");
@@ -33,6 +34,7 @@ public class ContactoAdapter implements JsonAdapter<Contacto> {
         return Contacto.createContacto(utilizador, canal, dadosContacto);
     }
 
+    //Allows modifying this entity via website
     public static Contacto update2(JsonElement jsonElement, Contacto contacto) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String dadosContacto = UtilsResource.getRequiredValue(jObj, "data");
@@ -58,6 +60,5 @@ public class ContactoAdapter implements JsonAdapter<Contacto> {
         jObj.addProperty("dados", obj.getDadosContacto());
         return jObj;
     }
-
 
 }

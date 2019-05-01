@@ -66,6 +66,7 @@ public class Telegram extends Telegram_Base {
 
         checkIsMessageAdequateForChannel(msg);
 
+        //Get all user contacts for this channel
         for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
             group.getMembers().forEach(user -> {
 
@@ -104,8 +105,8 @@ public class Telegram extends Telegram_Base {
 
                             });
 
+                            //send message
                             HTTPClient.restASyncClientBody(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
-
 
                             userHasNoContactForThisChannel = false;
 

@@ -154,7 +154,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         String idExterno = UtilsResource.getRequiredValueFromMultiValueMap(requestParams, "MessageSid");
         String estadoEntrega = UtilsResource.getRequiredValueFromMultiValueMap(requestParams, "MessageStatus");
 
-        /* NOTA: REMOVED BECAUSE OF UML DISCONNECTION BETWEEN ENTITIES USERDELIVERYSTATUS AND CANAL
+        /* NOTE: REMOVED BECAUSE OF UML DISCONNECTION BETWEEN ENTITIES USERDELIVERYSTATUS AND CANAL
         for (UserMessageDeliveryStatus e : this.getUserMessageDeliveryStatusSet()) {
             if (e.getIdExterno().equals(idExterno)) {
                 e.changeEstadoEntrega(estadoEntrega);
@@ -162,7 +162,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
             }
         }*/
 
-        //NOTA: LESS EFFICIENT BUT SIMPLIFIES UML
+        //NOTE: LESS EFFICIENT BUT SIMPLIFIES UML
         for (CanalNotificacao cn : this.getCanalNotificacaoSet()) {
             for (Mensagem m : cn.getMensagemSet()) {
                 for (UserMessageDeliveryStatus e : m.getUserMessageDeliveryStatusSet()) {
@@ -178,17 +178,3 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
     }
 
 }
-
-
-    /*
-    public static TwilioWhatsapp createTwilioWhatsappFromPropertiesFile(final String file) {
-        String filename = String.format(NotifcenterSpringConfiguration.getConfiguration().notifcenterChannelsCredentials(), file);
-        Map<String, String> propertiesMap = Utils.loadPropertiesFromPropertiesFile(TwilioWhatsapp.class, filename, "accountSID", "authToken", "fromPhoneNumber", "uri");
-
-        if (!Utils.isMapFilled(propertiesMap)) {
-            System.out.println("Error: Cannot create entity from file.");
-            return null;
-        }
-
-        return createChannel//TwilioWhatsApp//(propertiesMap.get("accountSID"), propertiesMap.get("authToken"), propertiesMap.get("fromPhoneNumber")//, propertiesMap.get("uri")//);
-    }*/

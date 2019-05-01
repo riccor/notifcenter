@@ -1,3 +1,7 @@
+/*
+    This annotation may be used in API methods in order to disable OAuth authentication (NotifcenterInterceptor must be enabled!)
+*/
+
 package pt.utl.ist.notifcenter.security;
 
 import java.lang.annotation.ElementType;

@@ -210,7 +210,6 @@ public class Twitter extends Twitter_Base {
         map.put(HTTPClient.percentEncode("oauth_token"), HTTPClient.percentEncode(oauth_token));
         map.put(HTTPClient.percentEncode("oauth_version"), HTTPClient.percentEncode("1.0"));
 
-        //WARNING1:
         //RECREATING TWITTER EXAMPLE:
         //map.put(HTTPClient.percentEncode("status"), HTTPClient.percentEncode("Hello Ladies + Gentlemen, a signed OAuth request!"));
         //map.put(HTTPClient.percentEncode("include_entities"), HTTPClient.percentEncode("true"));
@@ -247,7 +246,6 @@ public class Twitter extends Twitter_Base {
 
     public String createHeaderString(Map<String, String> map, String signature) {
 
-        //WARNING2:
         //RECREATING TWITTER EXAMPLE:
         //map.remove("status");
         //map.remove("include_entities");
@@ -338,7 +336,7 @@ public class Twitter extends Twitter_Base {
         sb.append(HTTPClient.percentEncode(HTTPClient.percentEncode(oauth_token_secret)));
 
         //debug
-        //////System.out.println(">>>>>signingKey: " + sb.toString());
+        //System.out.println(">>>>>signingKey: " + sb.toString());
 
         return sb.toString();
     }
@@ -358,18 +356,18 @@ public class Twitter extends Twitter_Base {
             return "error";
         }
 
-        //////System.out.println(">>>>>>>>>signature: " + bytesToString(signature));
+        //System.out.println(">>>>>>>>>signature: " + bytesToString(signature));
 
         String signatureBase64 = HTTPClient.bytesBase64Encode(signature);
 
-        //////System.out.println(Utils.WHITE + ">>>>>>>>>signature_Base64: " + signatureBase64);
+        //ystem.out.println(Utils.WHITE + ">>>>>>>>>signature_Base64: " + signatureBase64);
 
         return signatureBase64;
     }
 
-
 }
 
+//IGNORE FROM HERE
 
 //example response:
 
@@ -465,39 +463,3 @@ response:
 
     */
 
-
-/*
-    //Values taken from https://developer.twitter.com/en/docs/basics/authentication/guides/creating-a-signature.html :
-    private final static String urlA = "https://api.twitter.com/1.1/statuses/update.json";
-    private final static String postMethodA = "POST";
-    private final static String oauth_consumer_keyA = "xvz1evFS4wEEPTGEFPHBog";
-    private final static String oauth_tokenA = "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb";
-    private final static String oauth_consumer_secretA = "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw";
-    private final static String oauth_token_secretA = "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE";
-    private final static String nonceA = "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg";
-    private final static String epochA = "1318622958";
-
-    //results from Twitter example to compare with my results:
-    private final static String twitterSignatureResultExample = "hCtSmYh+iHYCEqBWrE7C7hYmtUk=";
-    private final static String twitterBaseStringExample = "POST&https%3A%2F%2Fapi.twitter.com%2F1.1%2Fstatuses%2Fupdate.json&include_entities%3Dtrue%26oauth_consumer_key%3Dxvz1evFS4wEEPTGEFPHBog%26oauth_nonce%3DkYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1318622958%26oauth_token%3D370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb%26oauth_version%3D1.0%26status%3DHello%2520Ladies%2520%252B%2520Gentlemen%252C%2520a%2520signed%2520OAuth%2520request%2521";
-*/
-
-/*
-    //Values taken from https://developer.twitter.com/en/docs/basics/authentication/guides/authorizing-a-request :
-    private final static String urlA = "https://api.twitter.com/1.1/statuses/update.json";
-    private final static String postMethodA = "POST";
-    private final static String oauth_consumer_keyA = "xvz1evFS4wEEPTGEFPHBog";
-    private final static String oauth_tokenA = "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb";
-    private final static String nonceA = "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg";
-    private final static String epochA = "1318622958";
-
-    //WARNING: assumed values, because these values are not presented in https://developer.twitter.com/en/docs/basics/authentication/guides/authorizing-a-request
-    private final static String oauth_consumer_secretA = "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw";
-    private final static String oauth_token_secretA = "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE";
-
-    //results from Twitter example to compare with my results:
-    private final static String twitterSignatureResultExample = "tnnArxj06cWHq44gCs1OSKk/jLY=";
-    private final static String twitterSignatureResultExampleENCODED = "tnnArxj06cWHq44gCs1OSKk%2FjLY%3D";
-    private final static String twitteHeaderStringExample = "OAuth oauth_consumer_key=\"xvz1evFS4wEEPTGEFPHBog\", oauth_nonce=\"kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg\", oauth_signature=\"tnnArxj06cWHq44gCs1OSKk%2FjLY%3D\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp=\"1318622958\", oauth_token=\"370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb\", oauth_version=\"1.0\"";
-
-*/

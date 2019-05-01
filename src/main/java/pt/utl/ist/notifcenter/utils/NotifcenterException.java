@@ -1,6 +1,8 @@
-package pt.utl.ist.notifcenter.utils;
+/*
+    Used to deal with thrown exceptions due to errors and warnings
+*/
 
-//import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
+package pt.utl.ist.notifcenter.utils;
 
 public class NotifcenterException extends RuntimeException {
 
@@ -26,3 +28,4 @@ public class NotifcenterException extends RuntimeException {
     }
 
 }
+
