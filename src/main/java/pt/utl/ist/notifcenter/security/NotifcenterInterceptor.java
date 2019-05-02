@@ -26,13 +26,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 
-public class NotifcenterInterceptor extends CSRFInterceptor /*implements HandlerInterceptor*/ {
+public class NotifcenterInterceptor implements HandlerInterceptor {
 
     private final static boolean isAccessTokenRequired = true; //debugging purposes
-
-    public NotifcenterInterceptor(CSRFTokenRepository tokenBean) {
-        super(tokenBean);
-    }
 
     //Imported from https://github.com/FenixEdu/bennu/blob/master/bennu-oauth/src/main/java/org/fenixedu/bennu/oauth/jaxrs/BennuOAuthAuthorizationFilter.java
     private Optional<ApplicationUserSession> extractUserSession(String accessToken) {
@@ -69,7 +65,7 @@ public class NotifcenterInterceptor extends CSRFInterceptor /*implements Handler
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        super.preHandle(request, response, handler);
+        ///super.preHandle(request, response, handler);
 
         if (isAccessTokenRequired && !doesHandlerHasAnnotation(handler, SkipAccessTokenValidation.class)) {
             String accessToken = findToken(OAuthUtils.ACCESS_TOKEN, request);
@@ -133,5 +129,15 @@ public class NotifcenterInterceptor extends CSRFInterceptor /*implements Handler
         }
 
         return true;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
+
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
+
     }
 }

@@ -70,7 +70,7 @@ public class Twitter extends Twitter_Base {
             group.getMembers().forEach(user -> {
 
                 //Debug
-                System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
+                ///System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
 
                 boolean userHasNoContactForThisChannel = true;
 
@@ -84,7 +84,7 @@ public class Twitter extends Twitter_Base {
                         if (contacto.getCanal().equals(this)) {
 
                             //Debug
-                            System.out.println("has dadosContacto " + contacto.getDadosContacto());
+                            ///System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
                             UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "none_yet", "none_yet");
 
@@ -152,7 +152,7 @@ public class Twitter extends Twitter_Base {
 
         if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
             estadoEntrega = "Delivered";
-            System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            ///System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
         else {
             estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "errors");

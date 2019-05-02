@@ -71,7 +71,7 @@ public class Telegram extends Telegram_Base {
             group.getMembers().forEach(user -> {
 
                 //Debug
-                System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
+                ///System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
 
                 boolean userHasNoContactForThisChannel = true;
 
@@ -150,7 +150,7 @@ public class Telegram extends Telegram_Base {
 
         if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
             estadoEntrega = "Delivered";
-            System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            ///System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
         else {
             estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "error_code") + " " + UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "description");

@@ -76,6 +76,7 @@ public abstract class Canal extends Canal_Base {
     //This method allows making restrictions on messages to be sent by a channel (e.g. forbidding message subject lengths greater than 100 characters)
     public abstract void checkIsMessageAdequateForChannel(Mensagem msg);
 
+    //Called from CanalResource.java resource method "/{canal}/messagedeliverystatus" when a message delivery status is received from a channel
     public abstract UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request);
 
     @Atomic

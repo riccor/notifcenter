@@ -83,7 +83,7 @@ public class Email extends Email_Base {
                 group.getMembers().forEach(user -> {
 
                     //Debug
-                    System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
+                    ///System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
 
                     boolean userHasNoContactForThisChannel = true;
 

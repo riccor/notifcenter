@@ -77,7 +77,7 @@ public class Messenger extends Messenger_Base {
             group.getMembers().forEach(user -> {
 
                 //Debug
-                System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
+                ///System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
 
                 boolean userHasNoContactForThisChannel = true;
 
@@ -168,7 +168,7 @@ public class Messenger extends Messenger_Base {
         }
         else {
             estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "error");
-            System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            ///System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
 
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);

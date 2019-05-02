@@ -6,7 +6,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RequestMapping("/notifcenter")
 @SpringApplication(group = "anyone", path = "notifcenter", title = "title.Notifcenter")
@@ -14,9 +19,10 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 public class NotifcenterController {
 
     @RequestMapping
-    public String home(Model model) {
-        model.addAttribute("world", "World");
-        return "notifcenter/home";
+    public String home(Model model, HttpServletResponse response) {
+        //model.addAttribute("world", "World");
+        //return "notifcenter/home";
+        return "redirect:/meuscontactos";
     }
 
     @ExceptionHandler({NotifcenterException.class})

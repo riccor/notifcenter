@@ -55,6 +55,7 @@ import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.*;
 
 import pt.utl.ist.notifcenter.domain.*;
+import pt.utl.ist.notifcenter.security.SkipAccessTokenValidation;
 import pt.utl.ist.notifcenter.ui.NotifcenterController;
 
 import org.fenixedu.bennu.core.domain.User;
@@ -64,6 +65,7 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import javax.naming.SizeLimitExceededException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.stream.Collectors;
 
 @RestController
@@ -71,7 +73,7 @@ import java.util.stream.Collectors;
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api.aplicacoes")
 public class AplicacaoResource extends BennuRestResource {
 
-    //@SkipAccessTokenValidation //to be used with NotifcenterInterceptor class in order to disable OAuth authentication
+    //@SkipAccessTokenValidation //to be used with NotifcenterInterceptor class in order to enable OAuth authentication
     //(SkipCSRF annotation is ignored when using @SkipAccessTokenValidation)
     @SkipCSRF //Used due to a incompatibility issue with Spring (/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security)
     @RequestMapping(value = "/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -89,8 +91,9 @@ public class AplicacaoResource extends BennuRestResource {
         return view(app, AplicacaoAdapter.class);
     }
 
-    //Every resource ending in "...2" just means it is just an alternative to insert/modify data through JSON
+    //@SkipAccessTokenValidation
     @SkipCSRF
+    //Every resource ending in "...2" just means it is just an alternative to insert/modify data through JSON
     @RequestMapping(value = "/addaplicacao2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addAplicacao2(@RequestBody JsonElement body) {
         return view(create(body, Aplicacao.class), AplicacaoAdapter.class);
@@ -157,7 +160,7 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         if (!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
-            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR, "Please contact system administrators.");
         }
 
         JsonObject jObj = new JsonObject();
@@ -317,7 +320,7 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION_ERROR, "Remetente " + remetente.getExternalId() + " already contains group " + group.getExternalId() + "!");
         }
 
-        if (!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
         }
 
@@ -328,6 +331,9 @@ public class AplicacaoResource extends BennuRestResource {
         jObj.addProperty("appId", app.getExternalId());
         jObj.addProperty("remetenteId", remetente.getExternalId());
         jObj.add("added group", view(group, PersistentGroupAdapter.class));
+
+        //TODO - missing RREQUIRES APPROVAL!!
+
 
         return jObj;
     }
@@ -353,7 +359,7 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.NON_EXISTING_RELATION, "Remetente " + remetente.getExternalId() + " does not have group id " + group.getExternalId() + " permissions!");
         }
 
-        if (!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
         }
 
@@ -904,6 +910,19 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         return toReturn;
+    }
+
+    //Debug
+    @RequestMapping(value = "/urlencode", method = RequestMethod.GET)
+    public String urlEncode(@RequestParam(value = "string") String string) {
+        try {
+            String r = URLEncoder.encode(string, "UTF-8");
+            r = r.replace("+", "%2B");
+            return r;
+        }
+        catch (Exception e) {
+            return "error!";
+        }
     }
 
     /*Debug

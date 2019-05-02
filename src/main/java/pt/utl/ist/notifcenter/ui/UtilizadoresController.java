@@ -93,7 +93,7 @@ public class UtilizadoresController {
         return "notifcenter/contactos";
     }
 
-    public List<HashMap<String, String>> getExistingUserContactos(User user) {
+    public static List<HashMap<String, String>> getExistingUserContactos(User user) {
 
         List<HashMap<String, String>> list = new ArrayList<>();
 

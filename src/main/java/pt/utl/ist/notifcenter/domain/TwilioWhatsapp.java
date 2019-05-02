@@ -69,7 +69,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
             group.getMembers().forEach(user -> {
 
                 //Debug
-                System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
+                ///System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
 
                 boolean userHasNoContactForThisChannel = true;
 
@@ -83,7 +83,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                         if (contacto.getCanal().equals(this)) {
 
                             //Debug
-                            System.out.println("has dadosContacto " + contacto.getDadosContacto());
+                            ///System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
                             //responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));
                             body.remove("To");
@@ -141,7 +141,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
-            System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            ///System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
         else {
             System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
