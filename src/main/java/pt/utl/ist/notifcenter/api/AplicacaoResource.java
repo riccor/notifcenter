@@ -332,8 +332,7 @@ public class AplicacaoResource extends BennuRestResource {
         jObj.addProperty("remetenteId", remetente.getExternalId());
         jObj.add("added group", view(group, PersistentGroupAdapter.class));
 
-        //TODO - missing RREQUIRES APPROVAL!!
-
+        //TODO - missing RREQUIRES APPROVAL ...or simply remove this feature since it needs another entity to be created...
 
         return jObj;
     }

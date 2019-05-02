@@ -123,29 +123,32 @@ public class Email extends Email_Base {
                 });
             }
 
-            mailToSend.setRecipients(Message.RecipientType.BCC, listOfToAddresses.toArray(new InternetAddress[0]));
+            if (listOfToAddresses.size() > 0) { //it's needed at least 1 email recipient to send the message
 
-            mailToSend.setSubject(msg.getAssunto());
-            mailToSend.setSentDate(new Date());
+                mailToSend.setRecipients(Message.RecipientType.BCC, listOfToAddresses.toArray(new InternetAddress[0]));
 
-            Multipart multipart = new MimeMultipart();
+                mailToSend.setSubject(msg.getAssunto());
+                mailToSend.setSentDate(new Date());
 
-            MimeBodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setContent(msg.getTextoLongo(), "text/html");
-            multipart.addBodyPart(messageBodyPart);
+                Multipart multipart = new MimeMultipart();
 
-            for (Attachment a : msg.getAttachmentsSet()) {
-                MimeBodyPart attachPart = new MimeBodyPart();
-                ByteArrayDataSource bds = new ByteArrayDataSource(a.getContent(), a.getContentType());
-                attachPart.setDataHandler(new DataHandler(bds));
-                attachPart.setFileName(a.getDisplayName());
-                multipart.addBodyPart(attachPart);
+                MimeBodyPart messageBodyPart = new MimeBodyPart();
+                messageBodyPart.setContent(msg.getTextoLongo(), "text/html");
+                multipart.addBodyPart(messageBodyPart);
+
+                for (Attachment a : msg.getAttachmentsSet()) {
+                    MimeBodyPart attachPart = new MimeBodyPart();
+                    ByteArrayDataSource bds = new ByteArrayDataSource(a.getContent(), a.getContentType());
+                    attachPart.setDataHandler(new DataHandler(bds));
+                    attachPart.setFileName(a.getDisplayName());
+                    multipart.addBodyPart(attachPart);
+                }
+
+                mailToSend.setContent(multipart);
+
+                //Send message
+                Transport.send(mailToSend);
             }
-
-            mailToSend.setContent(multipart);
-
-            //Send message
-            Transport.send(mailToSend);
         }
         catch (AddressException e) {
             e.printStackTrace();

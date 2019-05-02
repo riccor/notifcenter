@@ -103,6 +103,7 @@ public class Messenger extends Messenger_Base {
                             //System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
 
                             String url = String.format(URL, this.getConfigAsJson().get("access_token"));
+                            url = url.replace("\"", "");
 
                             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                             deferredResult.setResultHandler((Object responseEntity) -> {
@@ -110,6 +111,9 @@ public class Messenger extends Messenger_Base {
                                 handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, user);
 
                             });
+
+                            System.out.println(">>>>>url: " + url);
+
 
                             //send message
                             HTTPClient.restASyncClientBody(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);

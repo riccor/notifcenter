@@ -47,11 +47,11 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "Such canalnotificacao doesnt exist.");
         }
 
-        if (!canalNotificacao.getRemetente().isApproved()) {
+        if (app.getPermissoesAplicacao().equals(AppPermissions.RREQUIRES_APPROVAL) && !canalNotificacao.getRemetente().isApproved()) {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_REMETENTE_ERROR, "Remetente id " + canalNotificacao.getRemetente().getExternalId() + " is awaiting approval by system administrators.");
         }
 
-        if (!canalNotificacao.isApproved()) {
+        if (app.getPermissoesAplicacao().equals(AppPermissions.RREQUIRES_APPROVAL) && !canalNotificacao.isApproved()) {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR, "Canalnotificacao id " + canalNotificacao.getExternalId() + " is awaiting approval by system administrators.");
         }
 
@@ -64,6 +64,12 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
                 if (canalNotificacao.getRemetente().getGruposSet().stream().noneMatch(e -> e.equals(group))) {
                     throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "No permissions to send messages to group id " + group.getExternalId() + " !");
                 }
+
+                //TODO - check if "Pedido Para Enviar para Grupo" Was Approved (or simply remove this feature since it needs another entity to be created...)
+                /*if () {
+                    throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "Remetente id " + canalNotificacao.getRemetente().getExternalId() + " is awaiting approval to send messages to group id " + group.getExternalId() + " by system administrators.");
+                }
+                */
             }
         }
 

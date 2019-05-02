@@ -26,12 +26,12 @@ public class PersistentGroupAdapter implements JsonAdapter<PersistentGroup> {
     @Override
     public JsonElement view(PersistentGroup obj, JsonBuilder ctx) {
         JsonArray jArrayMembers = new JsonArray();
-        obj.getMembers().forEach(m -> jArrayMembers.add(m.getExternalId()));
+        obj.getMembers().forEach(m -> jArrayMembers.add(m.getUsername()));
 
         JsonObject jObj = new JsonObject();
         jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("name", obj.getPresentationName());
-        jObj.add("members", jArrayMembers);
+        jObj.add("DEBUGmembers", jArrayMembers); //DEBUG
 
         return jObj;
     }

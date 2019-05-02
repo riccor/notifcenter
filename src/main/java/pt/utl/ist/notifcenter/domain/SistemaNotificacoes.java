@@ -11,15 +11,16 @@ public class SistemaNotificacoes extends SistemaNotificacoes_Base {
         super();
         this.setRoot(FenixFramework.getDomainRoot());
 
-        //LC 31-1-2019
-        //"notifcenterAdmins" group only manages apps (app permissions, grupos destinatarios, canais notificacao, remetentes) and users contacts via GUI
+        //"notifcenterAdmins" manage everything except channels
         //"managers" group from Bennu can do anything, specially compiling code and editing/adding/removing channels
         Group.dynamic(NotifcenterSpringConfiguration.getConfiguration().notifcenterAdminsGroupName()).toPersistentGroup();
+
+        //Debug (example group for users with no administration role)
+        Group.dynamic(NotifcenterSpringConfiguration.getConfiguration().notifcenterExampleGroup()).toPersistentGroup();
     }
 
     @Atomic
     public static SistemaNotificacoes getInstance() {
-        //LC 8-10-2018
         final SistemaNotificacoes sistema = FenixFramework.getDomainRoot().getSistemaNotificacoes();
         return sistema == null ? new SistemaNotificacoes() : sistema;
     }
