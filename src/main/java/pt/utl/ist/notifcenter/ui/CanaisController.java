@@ -1,16 +1,20 @@
 package pt.utl.ist.notifcenter.ui;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import pt.ist.fenixframework.FenixFramework;
-import pt.utl.ist.notifcenter.api.CanalResource;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.api.json.CanalAdapter;
@@ -19,10 +23,7 @@ import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 @RequestMapping("/canais")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.ui.canais")
@@ -62,10 +63,46 @@ public class CanaisController {
         }
 
         model.addAttribute("canais", getExistingChannels());
-        model.addAttribute("classes_canais", CanalResource.getAvailableChannelsNamesAndParams());
+        model.addAttribute("classes_canais", getAvailableChannelsNamesAndParams());
 
         return "notifcenter/canais";
     }
+
+    public static MultiValueMap<String, String> getAvailableChannelsNamesAndParams() {
+        MultiValueMap<String, String> list = new LinkedMultiValueMap<>();
+
+        for (Map.Entry e : Canal.CHANNELS.entrySet()) {
+            Class classC = (Class) e.getKey();
+            Canal.CanalProvider cprov = (Canal.CanalProvider) e.getValue();
+            list.put(classC.getSimpleName(), Collections.singletonList(cprov.getConfigExample()));
+        }
+
+        return list;
+    }
+
+    public static JsonElement getAvailableChannelsNamesAndParamsAsJson() {
+        MultiValueMap<String, String> list = getAvailableChannelsNamesAndParams();
+        JsonArray jArray = new JsonArray();
+
+        list.forEach((k, v) -> {
+            //System.out.println("class: " + k);
+
+            JsonArray jA = new JsonArray();
+            v.forEach(i -> {
+                //System.out.println("param: " + i);
+                jA.add(i);
+            });
+
+            JsonObject jO = new JsonObject();
+            jO.addProperty("createChannel", k);
+            jO.add("params", jA);
+
+            jArray.add(jO);
+        });
+
+        return jArray;
+    }
+
 
     //Returns a list of hashmaps with channels names and respective params
     public static List<HashMap<String, String>> getExistingChannels() {

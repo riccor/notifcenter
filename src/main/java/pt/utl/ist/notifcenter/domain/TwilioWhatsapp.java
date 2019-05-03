@@ -45,14 +45,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
     }
 
     @Override
-    public void checkIsMessageAdequateForChannel(Mensagem msg) {
-
-    }
-
-    @Override
     public void sendMessage(Mensagem msg){
-
-        checkIsMessageAdequateForChannel(msg);
 
         MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
@@ -149,7 +142,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
     }
 
     @Override
-    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request){
+    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request){
 
         MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);
 

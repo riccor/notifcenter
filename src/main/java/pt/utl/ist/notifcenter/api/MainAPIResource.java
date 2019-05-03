@@ -1,8 +1,22 @@
 /*
-    API Aplicacao (/apiaplicacoes):
+
+
+
+200 - SUCESS
+404 - RESOURCE NOT FOUND
+400 - BAD REQUEST
+201 - CREATED
+401 - UNAUTHORIZED
+415 - UNSUPPORTED TYPE - Representation not supported for the resource
+500 - SERVER ERROR
+
+
+
 
     /addaplicacao
-    /listaplicacoes
+    /listaplicacoes/
+
+
     /{app}
     /{app}/update
     /{app}/delete
@@ -49,7 +63,10 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
 import org.fenixedu.bennu.spring.security.CSRFTokenRepository;
 import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.*;
@@ -66,79 +83,73 @@ import javax.naming.SizeLimitExceededException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/apiaplicacoes")
-@SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api.aplicacoes")
-public class AplicacaoResource extends BennuRestResource {
+@RequestMapping("/apiv1")
+@SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api.main")
+public class MainAPIResource extends BennuRestResource {
 
-    //@SkipAccessTokenValidation //to be used with NotifcenterInterceptor class in order to enable OAuth authentication
-    //(SkipCSRF annotation is ignored when using @SkipAccessTokenValidation)
-    @SkipCSRF //Used due to a incompatibility issue with Spring (/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security)
-    @RequestMapping(value = "/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addAplicacao(@RequestParam(value = "description") String description,
-                                    @RequestParam(value = "name") String name,
-                                    @RequestParam(value = "redirect_uri") String redirectUrl,
-                                    @RequestParam(value = "author") String authorName,
-                                    @RequestParam(value = "site_url") String siteUrl) {
+    @RequestMapping(value = "/channels",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement getChannelsList() {
 
-        if (Aplicacao.findByAplicacaoName(name) != null) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        for (Canal c : SistemaNotificacoes.getInstance().getCanaisSet()) {
+            jArray.add(view(c, CanalAdapter.class));
         }
 
-        Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
-        return view(app, AplicacaoAdapter.class);
+        jObj.add("channels", jArray);
+        return jObj;
     }
 
-    //@SkipAccessTokenValidation
-    @SkipCSRF
-    //Every resource ending in "...2" just means it is just an alternative to insert/modify data through JSON
-    @RequestMapping(value = "/addaplicacao2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addAplicacao2(@RequestBody JsonElement body) {
-        return view(create(body, Aplicacao.class), AplicacaoAdapter.class);
-    }
+    @SkipCSRF //Used due to a incompatibility issue with Spring that is making server to reject POST and DELETE requests (/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security)
+    @RequestMapping(value = "/channels/{channelId}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement messageDeliveryStatusUpdate(@PathVariable("channelId") Canal canal, HttpServletRequest request) {
+        //Received content might not be JSON, so we do not use "@RequestBody JsonElement body"
 
-    @RequestMapping(value = "/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement viewAplicacao(@PathVariable("app") Aplicacao app) {
-
-        if (!FenixFramework.isDomainObjectValid(app)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        if (!FenixFramework.isDomainObjectValid(canal)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
         }
 
-        return view(app, AplicacaoAdapter.class);
-    }
+        //Debug
+        System.out.println("Got new message delivery status message!!");
+        System.out.println(HTTPClient.getHttpServletRequestParamsAsJson(request).toString());
 
-    @SkipCSRF
-    @RequestMapping(value = "/{app}/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement updateAplicacao(@PathVariable("app") Aplicacao app,
-                                       @RequestParam(value = "description", required = false) String description,
-                                       @RequestParam(value = "name", required = false) String name,
-                                       @RequestParam(value = "redirect_uri", required = false) String redirectUrl,
-                                       @RequestParam(value = "author", required = false) String authorName,
-                                       @RequestParam(value = "site_url", required = false) String siteUrl) {
+        UserMessageDeliveryStatus ede = canal.dealWithMessageDeliveryStatusNotificationsFromChannel(request);
 
-        if (!FenixFramework.isDomainObjectValid(app)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        if (ede == null) {
+            throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_ID);
         }
+        else {
 
-        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
-            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
-        }
+            //If message parameter callbackUrlEstadoEntrega is not "none", then send message delivery status to the application
+            if (!ede.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
 
-        Aplicacao foundApp;
-        if ((foundApp = Aplicacao.findByAplicacaoName(name)) != null) {
-            if (!app.equals(foundApp)) {
-                throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
+                MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+                MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+
+                header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                body.put("MessageId", Collections.singletonList(ede.getMensagem().getExternalId()));
+                body.put("User", Collections.singletonList(ede.getUtilizador().getUsername()));
+                body.put("MessageStatus", Collections.singletonList(ede.getEstadoEntrega()));
+
+                DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+                deferredResult.setResultHandler((Object responseEntity) -> {
+                    HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity);
+                });
+
+                HTTPClient.restASyncClient(HttpMethod.POST, ede.getMensagem().getCallbackUrlEstadoEntrega(), header, body, deferredResult);
             }
-        }
 
-        return view(app.updateAplicacao(name, redirectUrl, description, authorName, siteUrl), AplicacaoAdapter.class);
+            throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
+        }
     }
 
-    @SkipCSRF
-    @RequestMapping(value = "/{app}/update2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement updateAplicacao2(@PathVariable("app") Aplicacao app, @RequestBody JsonElement body) {
+    @RequestMapping(value = "/applications/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement viewApplication(@PathVariable("applicationId") Aplicacao app) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -146,59 +157,48 @@ public class AplicacaoResource extends BennuRestResource {
 
         if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
             throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
-        }
-
-        return view(update(body, app, AplicacaoAdapter.class), AplicacaoAdapter.class);
-    }
-
-    @SkipCSRF
-    @RequestMapping(value = "/{app}/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement deleteAplicacao(@PathVariable("app") Aplicacao app) {
-
-        if (!FenixFramework.isDomainObjectValid(app)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
-        }
-
-        if (!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
-            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR, "Please contact system administrators.");
         }
 
         JsonObject jObj = new JsonObject();
-        jObj.add("deleted_app", view(app, AplicacaoAdapter.class));
+        JsonArray jArray = new JsonArray();
 
-        app.delete();
+        for (Remetente r : app.getRemetentesSet()) {
+            jArray.add(r.getExternalId());
+        }
+
+        jObj.addProperty("applicationId", app.getExternalId());
+        jObj.add("senders", jArray);
+
+        return view(app, AplicacaoAdapter.class);
+    }
+
+    @RequestMapping(value = "/applications/{applicationId}/senders", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement getSendersList(@PathVariable("applicationId") Aplicacao app) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
+        }
+
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        for (Remetente r : app.getRemetentesSet()) {
+            jArray.add(view(r, RemetenteAdapter.class));
+        }
+
+        jObj.addProperty("applicationId", app.getExternalId());
+        jObj.add("senders", jArray);
 
         return jObj;
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/{app}/addremetente", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addRemetente(@PathVariable("app") Aplicacao app, @RequestParam(value = "name") String nomeRemetente) {
-
-        if (!FenixFramework.isDomainObjectValid(app)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
-        }
-
-        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
-            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
-        }
-
-        JsonObject jObj = new JsonObject();
-        jObj.addProperty("app", app.getExternalId());
-        jObj.addProperty("name", nomeRemetente);
-
-        Remetente r = create(jObj, Remetente.class);
-
-        if (app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
-            r.approveRemetente();
-        }
-
-        return view(r, RemetenteAdapter.class);
-    }
-
-    @SkipCSRF
-    @RequestMapping(value = "/{app}/addremetente2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addRemetente2(@PathVariable("app") Aplicacao app, @RequestBody JsonElement body) {
+    @RequestMapping(value = "/applications/{applicationId}/senders", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addSender(@PathVariable("applicationId") Aplicacao app, @RequestBody JsonElement body) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -221,11 +221,15 @@ public class AplicacaoResource extends BennuRestResource {
         return view(r, RemetenteAdapter.class);
     }
 
-    @RequestMapping(value = "/{app}/{remetente}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement showRemetente(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente) {
+    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement viewSender(@PathVariable("applicationId") Aplicacao app, @PathVariable(value = "senderId") Remetente remetente) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
+            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
         }
 
         if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
@@ -236,48 +240,8 @@ public class AplicacaoResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/{app}/{remetente}/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement updateRemetente(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente,
-                                       @RequestParam(value = "name") String name) {
-
-        if (!FenixFramework.isDomainObjectValid(app)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
-        }
-
-        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
-            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
-        }
-
-        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
-        }
-
-        return view(remetente.update(name), RemetenteAdapter.class);
-    }
-
-    @SkipCSRF
-    @RequestMapping(value = "/{app}/{remetente}/update2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement updateRemetente2(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente,
-                                        @RequestBody JsonElement body) {
-
-        if (!FenixFramework.isDomainObjectValid(app)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
-        }
-
-        if (app.getPermissoesAplicacao().equals(AppPermissions.NONE)) {
-            throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
-        }
-
-        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
-        }
-
-        return view(update(body, remetente, RemetenteAdapter.class), RemetenteAdapter.class);
-    }
-
-    @SkipCSRF
-    @RequestMapping(value = "/{app}/{remetente}/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement deleteRemetente(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente) {
+    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement deleteSender(@PathVariable("applicationId") Aplicacao app, @PathVariable(value = "senderId") Remetente remetente) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -292,12 +256,29 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         JsonObject jObj = new JsonObject();
-        jObj.add("deleted_remetente", view(remetente, RemetenteAdapter.class));
+        jObj.add("deletedSender", view(remetente, RemetenteAdapter.class));
 
         remetente.delete();
 
         return jObj;
     }
+
+            /*
+API v1
+
+TODO api:
+    GET /channels - get a list of existing channels
+    GET /applications/{applicationId}- show application data
+    GET /applications/{applicationId}/senders - get a list of senders of an application
+    POST /applications/{applicationId}/senders - add a new sender to the application (fields required: name)
+    GET /applications/{applicationId}/senders/{senderId} - show sender data
+    DELETE /applications/{applicationId}/senders/{senderId} - deletes a sender
+
+    OTHER:
+    POST /channels/{channelId}/messagedeliverystatus - a channel may invoke this endpoint in order to notify notification center of a message delivery status update
+*/
+
+
 
     @SkipCSRF
     @RequestMapping(value = "/{app}/{remetente}/addgrupodestinario", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -405,25 +386,6 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
-    @RequestMapping(value = "/{app}/listremetentes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement listRemetentes(@PathVariable("app") Aplicacao app) {
-
-        if (!FenixFramework.isDomainObjectValid(app)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
-        }
-
-        JsonObject jObj = new JsonObject();
-        JsonArray jArray = new JsonArray();
-
-        for (Remetente r : app.getRemetentesSet()) {
-            jArray.add(view(r, RemetenteAdapter.class));
-        }
-
-        jObj.addProperty("appId", app.getExternalId());
-        jObj.add("remetentes", jArray);
-
-        return jObj;
-    }
 
     @SkipCSRF
     @RequestMapping(value = "/{app}/{remetente}/pedidocanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)

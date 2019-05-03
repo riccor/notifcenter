@@ -40,11 +40,6 @@ public class Email extends Email_Base {
         this.setConfig(config);
     }
 
-    @Override
-    public void checkIsMessageAdequateForChannel(Mensagem msg) {
-
-    }
-
     private void createEmailClient() {
         if (emailClient == null) {
             Properties props = new Properties();
@@ -64,8 +59,6 @@ public class Email extends Email_Base {
 
     @Override
     public void sendMessage(Mensagem msg) {
-
-        checkIsMessageAdequateForChannel(msg);
 
         createEmailClient();
 
@@ -161,7 +154,7 @@ public class Email extends Email_Base {
     }
 
     @Override
-    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request) {
 
         return null;
     }

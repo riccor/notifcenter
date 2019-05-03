@@ -56,8 +56,8 @@ public class CanalAdapter implements JsonAdapter<Canal> {
     public JsonElement view(Canal obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("id", obj.getExternalId());
-        jObj.addProperty("type", obj.getClass().getSimpleName());
-        jObj.add("DEBUGconfig", obj.getConfigAsJson()); //DEBUG
+        jObj.addProperty("class", obj.getClass().getSimpleName());
+        //jObj.add("DEBUGconfig", obj.getConfigAsJson()); //DEBUG
         return jObj;
     }
 

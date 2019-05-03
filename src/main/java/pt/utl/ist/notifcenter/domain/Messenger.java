@@ -1,9 +1,12 @@
 package pt.utl.ist.notifcenter.domain;
 
 /*
-Facebook messenger
 
-NOTE: We can only send messages to users after they sent our Facebook page a message.
+Facebook Messenger
+
+IMPORTANT NOTE: Currently not working due to Facebook policy changes at February 2018. The following error message is received when trying to send a message:
+"Access to the Customer Matching API and Customer Matching via the Send API is currently available in limited release. To learn more, contact your Facebook partner manager or representative."
+For more information, check this link: https://developers.facebook.com/docs/messenger-platform/identity/customer-matching
 
 Text sent must be UTF-8 and max. 2000 characters
 
@@ -21,6 +24,8 @@ should you hit our rate limits."
 
 API:
 POST https://graph.facebook.com/v2.6/me/messages?access_token=%s (%s = PAGE_ACCESS_TOKEN)
+
+NOTE: We can only send messages to users after they sent our Facebook page a message.
 */
 
 import com.google.gson.JsonElement;
@@ -36,7 +41,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.async.DeferredResult;
 import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
-import pt.utl.ist.notifcenter.utils.AnotherNotifcenterException;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
@@ -59,18 +63,12 @@ public class Messenger extends Messenger_Base {
     }
 
     @Override
-    public void checkIsMessageAdequateForChannel(Mensagem msg) {
-        if (msg.createSimpleMessageNotificationWithLink().length() > 2000) {
-            ///IllegalArgumentException
-            //" Check localhost:8080/notifcenter/mensagens/281681135140901".length() = 59
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto must be at most " + (2000-59) + " characters long.");
-        }
-    }
-
-    @Override
     public void sendMessage(Mensagem msg){
 
-        checkIsMessageAdequateForChannel(msg);
+        //No proper "message adaption to the channel" feature is implemented, so, at least, verify message params length restrictions to this channel
+        if (msg.createSimpleMessageNotificationWithLink().length() > 2000) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto must be at most " + (2000-59) + " characters long.");
+        }
 
         //Get all user contacts for this channel
         for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
@@ -198,7 +196,7 @@ public class Messenger extends Messenger_Base {
     }
 
     @Override
-    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request) {
 
         MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);
 
@@ -206,7 +204,7 @@ public class Messenger extends Messenger_Base {
         //"verify token": hub_verify_token -> set by us on https://developers.facebook.com/apps/<appId>/webhooks/
         String hub_challenge = UtilsResource.getRequiredValueFromMultiValueMapOrReturnNullInstead(requestParams, "hub_challenge");
         if (hub_challenge != null) {
-            throw new AnotherNotifcenterException(ErrorsAndWarnings.SUCCESS, hub_challenge);
+            throw new NotifcenterException(ErrorsAndWarnings.SUCCESS, hub_challenge);
         }
 
         return null;

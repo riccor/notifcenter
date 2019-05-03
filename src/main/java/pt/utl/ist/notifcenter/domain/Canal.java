@@ -33,7 +33,7 @@ public abstract class Canal extends Canal_Base {
             return contructor;
         }
 
-        public CanalProvider(final String configExample, Function<String, Canal> contructor) {
+            public CanalProvider(final String configExample, Function<String, Canal> contructor) {
             this.configExample = configExample;
             this.contructor = contructor;
         }
@@ -71,13 +71,11 @@ public abstract class Canal extends Canal_Base {
         this.setSistemaNotificacoes(SistemaNotificacoes.getInstance());
     }
 
+    //This method must send a message to a group via this channel
     public abstract void sendMessage(Mensagem msg);
 
-    //This method allows making restrictions on messages to be sent by a channel (e.g. forbidding message subject lengths greater than 100 characters)
-    public abstract void checkIsMessageAdequateForChannel(Mensagem msg);
-
-    //Called from CanalResource.java resource method "/{canal}/messagedeliverystatus" when a message delivery status is received from a channel
-    public abstract UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request);
+    //This method is invoked when a message delivery status is received from a channel via HTTP
+    public abstract UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request);
 
     @Atomic
     public void delete() {

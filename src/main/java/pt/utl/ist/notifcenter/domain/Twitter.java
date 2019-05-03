@@ -50,20 +50,14 @@ public class Twitter extends Twitter_Base {
         this.setConfig(config);
     }
 
-    @Override
-    public void checkIsMessageAdequateForChannel(Mensagem msg) /*throws NotifcenterException*/ {
-        if (msg.createSimpleMessageNotificationWithLink().length() > 10000) {
-            ///IllegalArgumentException
-            //" Check localhost:8080/notifcenter/mensagens/281681135140901".length() = 59
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto must be at most " + (10000-59) + " characters long.");
-        }
-    }
-
     //Note: only one recipient per message!
     @Override
     public void sendMessage(Mensagem msg){
 
-        checkIsMessageAdequateForChannel(msg);
+        //No proper "message adaption to the channel" feature is implemented, so, at least, verify message params length restrictions to this channel
+        if (msg.createSimpleMessageNotificationWithLink().length() > 10000) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto must be at most " + (10000-59) + " characters long.");
+        }
 
         //Get all user contacts for this channel
         for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
@@ -163,7 +157,7 @@ public class Twitter extends Twitter_Base {
     }
 
     @Override
-    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request) {
 
         return null;
     }

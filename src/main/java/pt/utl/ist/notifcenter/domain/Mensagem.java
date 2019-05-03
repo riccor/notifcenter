@@ -5,11 +5,7 @@ import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
-import org.springframework.http.ResponseEntity;
 import pt.ist.fenixframework.Atomic;
-import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
-import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 public class Mensagem extends Mensagem_Base {
 
@@ -29,14 +25,6 @@ public class Mensagem extends Mensagem_Base {
 
     @Atomic
     public static Mensagem createMensagem(final CanalNotificacao canalNotificacao, final PersistentGroup[] gruposDestinatarios, final String assunto, final String textoCurto, final String textoLongo, @Nullable final DateTime dataEntrega, @Nullable final String callbackUrlEstadoEntrega) {
-
-        //Imposing a maximum length for TextoCurto
-        /*
-        if (textoCurto.length() > Integer.parseInt(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize())) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "TextoCurto must be at most " +
-                    NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize() + " characters long.");
-        }
-         */
 
         Mensagem mensagem = new Mensagem();
         mensagem.setCanalNotificacao(canalNotificacao);
@@ -74,7 +62,7 @@ public class Mensagem extends Mensagem_Base {
 
     //Simulating "message content adaptation to a channel" feature
     public String createSimpleMessageNotificationWithLink() {
-        String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + this.getExternalId();
+        String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/messages/" + this.getExternalId();
         String simple = this.getTextoCurto() + linkForMessage;
         return simple;
     }

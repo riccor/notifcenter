@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
+import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import org.joda.time.DateTime;
@@ -31,6 +32,7 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         CanalNotificacao canalNotificacao = UtilsResource.getDomainObjectFromJsonProperty(jsonElement, CanalNotificacao.class, "canalnotificacao");
 
         String[] gd = UtilsResource.getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
+
         PersistentGroup[] gruposDestinatarios = UtilsResource.getDomainObjectsArray(PersistentGroup.class, gd).toArray(new PersistentGroup[0]);
 
         String assunto = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "assunto");
@@ -56,6 +58,8 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         }
 
         for (PersistentGroup group : gruposDestinatarios) {
+            ///////group.toGroup().toPersistentGroup().toGroup().toPersistentGroup();
+
             if (!FenixFramework.isDomainObjectValid(group)) {
                 throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group id " + group.toString() + " doesnt exist.");
             }
@@ -73,6 +77,7 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
             }
         }
 
+        //Imposing a maximum length for assunto and textoCurto
         if (assunto.length() > Integer.parseInt(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemAssuntoMaxSize())) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Assunto must be at most " +
                     NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemAssuntoMaxSize() + " characters long.");

@@ -61,14 +61,14 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
     @Override
     public JsonElement view(Aplicacao obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("name", obj.getName());
         jObj.addProperty("clientId", obj.getExternalId());
+        jObj.addProperty("name", obj.getName());
         jObj.addProperty("author", obj.getAuthorName());
         jObj.addProperty("permissoes", obj.getPermissoesAplicacao().name());
         jObj.addProperty("description", obj.getDescription());
         jObj.addProperty("site_url", obj.getSiteUrl());
         jObj.addProperty("redirect_uri", obj.getRedirectUrl());
-        jObj.addProperty("client_secret", obj.getSecret());
+        jObj.addProperty("clientSecret", obj.getSecret());
         return jObj;
     }
 

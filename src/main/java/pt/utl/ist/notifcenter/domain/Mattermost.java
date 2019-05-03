@@ -11,20 +11,15 @@ public class Mattermost extends Mattermost_Base {
     public Mattermost() {
         super();
     }
-
-    @Override
-    public void checkIsMessageAdequateForChannel(Mensagem msg) {
-
-    }
-
+    
     @Override
     public void sendMessage(Mensagem msg) {
 
-        checkIsMessageAdequateForChannel(msg);
     }
 
+    //This method is invoked when a message delivery status is received from a channel via HTTP
     @Override
-    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request) {
 
         return null;
     }
