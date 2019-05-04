@@ -50,6 +50,40 @@ public class Twitter extends Twitter_Base {
         this.setConfig(config);
     }
 
+
+    //Note: only one recipient per message!
+    @Override
+    public void sendMessage(Mensagem msg){
+
+        //No proper "message adaption to the channel" feature is implemented, so, at least, verify message params length restrictions to this channel
+        if (msg.createSimpleMessageNotificationWithLink().length() > 10000) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto must be at most " + (10000-59) + " characters long.");
+        }
+
+        for (Contacto contact : getContactsFromMessageRecipientUsers(msg)) {
+
+            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, contact.getUtilizador(), "none_yet", "none_yet");
+
+            HttpHeaders httpHeaders = createTwitterOAuthHeader("POST", edm.getExternalId());
+            httpHeaders.set("Content-type", "application/json");
+            String bodyContent = HTTPClient.stringToJson(createTwitterBody(msg.createSimpleMessageNotificationWithLink(), contact.getDadosContacto())).toString();
+
+            //debug:
+            ///System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
+
+            DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+            deferredResult.setResultHandler((Object responseEntity) -> {
+
+                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, contact.getUtilizador());
+
+            });
+
+            //send message
+            HTTPClient.restASyncClientBody(HttpMethod.POST, URL, httpHeaders, bodyContent, deferredResult);
+        }
+    }
+
+    /*
     //Note: only one recipient per message!
     @Override
     public void sendMessage(Mensagem msg){
@@ -113,7 +147,7 @@ public class Twitter extends Twitter_Base {
 
             });
         }
-    }
+    }*/
 
     public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm, User user) {
 

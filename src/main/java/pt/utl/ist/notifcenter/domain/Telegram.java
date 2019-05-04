@@ -62,7 +62,7 @@ public class Telegram extends Telegram_Base {
     @Override
     public void sendMessage(Mensagem msg) {
 
-        for (Contacto contact : getContactsFromMessageRecipientGroup(msg)) {
+        for (Contacto contact : getContactsFromMessageRecipientUsers(msg)) {
             UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, contact.getUtilizador(), "none_yet", "none_yet");
 
             HttpHeaders httpHeaders = new HttpHeaders();

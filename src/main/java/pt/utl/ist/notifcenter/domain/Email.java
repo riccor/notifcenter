@@ -69,6 +69,69 @@ public class Email extends Email_Base {
             //A way to try to get delivery status
             //mailToSend.setHeader("Disposition-Notification-To", "notifcentremail@gmail.com");
 
+            ArrayList<InternetAddress> listOfToAddresses = new ArrayList<>();
+            //listOfToAddresses.add(new InternetAddress("notifcentremail@gmail.com")); //debug
+
+            for (Contacto contact : getContactsFromMessageRecipientUsers(msg)) {
+                try {
+                    listOfToAddresses.add(new InternetAddress(contact.getDadosContacto()));
+                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, contact.getUtilizador(), "unavailable", "unavailable");
+                }
+                catch (AddressException e) {
+                    System.out.println("WARNING: Wrong Email address " + contact.getDadosContacto() + " for user id " + contact.getUtilizador().getExternalId());
+                }
+            }
+
+            if (listOfToAddresses.size() > 0) { //it's needed at least 1 email recipient to send the message
+
+                mailToSend.setRecipients(Message.RecipientType.BCC, listOfToAddresses.toArray(new InternetAddress[0]));
+
+                mailToSend.setSubject(msg.getAssunto());
+                mailToSend.setSentDate(new Date());
+
+                Multipart multipart = new MimeMultipart();
+
+                MimeBodyPart messageBodyPart = new MimeBodyPart();
+                messageBodyPart.setContent(msg.getTextoLongo(), "text/html");
+                multipart.addBodyPart(messageBodyPart);
+
+                for (Attachment a : msg.getAttachmentsSet()) {
+                    MimeBodyPart attachPart = new MimeBodyPart();
+                    ByteArrayDataSource bds = new ByteArrayDataSource(a.getContent(), a.getContentType());
+                    attachPart.setDataHandler(new DataHandler(bds));
+                    attachPart.setFileName(a.getDisplayName());
+                    multipart.addBodyPart(attachPart);
+                }
+
+                mailToSend.setContent(multipart);
+
+                //Send message
+                Transport.send(mailToSend);
+            }
+        }
+        catch (AddressException e) {
+            e.printStackTrace();
+            System.out.println("AddressException");
+        }
+        catch (MessagingException e) {
+            e.printStackTrace();
+            System.out.println("MessagingException");
+        }
+    }
+
+    /*
+    @Override
+    public void sendMessage(Mensagem msg) {
+
+        createEmailClient();
+
+        try {
+            Message mailToSend = new MimeMessage(emailClient);
+            mailToSend.setFrom(new InternetAddress(this.getConfigAsJson().get("smtpUsername").getAsString(), false));
+
+            //A way to try to get delivery status
+            //mailToSend.setHeader("Disposition-Notification-To", "notifcentremail@gmail.com");
+
             //Get all user contacts for this channel
             ArrayList<InternetAddress> listOfToAddresses = new ArrayList<>();
             //listOfToAddresses.add(new InternetAddress("notifcentremail@gmail.com")); //debug
@@ -152,6 +215,7 @@ public class Email extends Email_Base {
             System.out.println("MessagingException");
         }
     }
+    */
 
     @Override
     public UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request) {

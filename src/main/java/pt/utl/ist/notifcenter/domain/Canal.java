@@ -79,8 +79,12 @@ public abstract class Canal extends Canal_Base {
     //This method is invoked when a message delivery status is received from a channel via HTTP
     public abstract UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request);
 
-    //Collects all contacts from message recipient users (IMPORTANT: can only be called from inside sendMessage())
-    public ArrayList<Contacto> getContactsFromMessageRecipientGroup(Mensagem msg){
+    //IMPORTANT: the following method can only be called from inside sendMessage()
+    //This method:
+    // - Collects all contacts from message recipient users;
+    // - prevents duplicated messages sent for the same user;
+    // - automatically create UserMessageDeliveryStatus entities for users who don't have contacts for the message channel
+    public ArrayList<Contacto> getContactsFromMessageRecipientUsers(Mensagem msg){
 
         ArrayList<Contacto> contacts = new ArrayList<>();
 

@@ -65,6 +65,40 @@ public class Messenger extends Messenger_Base {
     @Override
     public void sendMessage(Mensagem msg){
 
+        //No proper "message adaption to the channel" feature is implemented, so, at least, we verify message params length restrictions to this channel
+        if (msg.createSimpleMessageNotificationWithLink().length() > 2000) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto must be at most " + (2000-59) + " characters long.");
+        }
+
+        for (Contacto contact : getContactsFromMessageRecipientUsers(msg)) {
+            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, contact.getUtilizador(), "none_yet", "none_yet");
+
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.set("Content-type", "application/json");
+            String bodyContent = HTTPClient.stringToJson(createMessengerBodyPhoneNumber(msg.createSimpleMessageNotificationWithLink(), contact.getDadosContacto())).toString();
+
+            //debug:
+            //System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
+
+            String url = String.format(URL, this.getConfigAsJson().get("access_token"));
+            url = url.replace("\"", ""); //remove double quotes
+
+            DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+            deferredResult.setResultHandler((Object responseEntity) -> {
+
+                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, contact.getUtilizador());
+
+            });
+
+            //send message
+            HTTPClient.restASyncClientBody(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
+        }
+    }
+
+    /*
+    @Override
+    public void sendMessage(Mensagem msg){
+
         //No proper "message adaption to the channel" feature is implemented, so, at least, verify message params length restrictions to this channel
         if (msg.createSimpleMessageNotificationWithLink().length() > 2000) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto must be at most " + (2000-59) + " characters long.");
@@ -130,7 +164,8 @@ public class Messenger extends Messenger_Base {
 
             });
         }
-    }
+    }*/
+
 
     public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm, User user) {
 
