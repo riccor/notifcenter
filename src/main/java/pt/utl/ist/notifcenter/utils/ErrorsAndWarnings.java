@@ -21,7 +21,7 @@ public enum ErrorsAndWarnings {
     INVALID_APPNAME_ERROR ("applicationNameAlreadyInUse", "Such application name cannot be used.", HttpStatus.PRECONDITION_FAILED),
     INVALID_CHANNEL_ERROR ("invalidCanal", "Invalid channel ID.", HttpStatus.PRECONDITION_FAILED),
     INVALID_CHANNEL_NAME_ERROR ("invalidCanalName", "Invalid channel name.", HttpStatus.PRECONDITION_FAILED),
-    INVALID_REMETENTE_ERROR ("invalidRemetente", "Invalid remetente ID.", HttpStatus.PRECONDITION_FAILED),
+    INVALID_REMETENTE_ERROR ("invalidRemetente", "Invalid sender ID.", HttpStatus.PRECONDITION_FAILED),
     INVALID_CONTACT_ERROR ("invalidContacto", "Invalid contacto ID.", HttpStatus.PRECONDITION_FAILED),
     INVALID_USER_ERROR ("invalidUser", "Invalid user ID.", HttpStatus.PRECONDITION_FAILED),
     PLEASE_LOG_IN ("logInRequired", "You need to log in to access this content.", HttpStatus.FORBIDDEN),

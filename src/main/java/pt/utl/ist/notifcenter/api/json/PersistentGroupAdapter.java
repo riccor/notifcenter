@@ -31,7 +31,7 @@ public class PersistentGroupAdapter implements JsonAdapter<PersistentGroup> {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("name", obj.getPresentationName());
-        jObj.add("DEBUGmembers", jArrayMembers); //DEBUG
+        jObj.add("members", jArrayMembers);
 
         return jObj;
     }
