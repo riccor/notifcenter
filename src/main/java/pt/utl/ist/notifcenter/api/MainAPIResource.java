@@ -82,6 +82,21 @@ public class MainAPIResource extends BennuRestResource {
         return jObj;
     }
 
+    @RequestMapping(value = "/groups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement listGroups() {
+
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        for (PersistentGroup g : FenixFramework.getDomainRoot().getBennu().getGroupSet()) {
+            jArray.add(view(g, PersistentGroupAdapter.class));
+        }
+
+        jObj.add("groups", jArray);
+
+        return jObj;
+    }
+
     @SkipCSRF //Used due to a incompatibility issue with Spring that is making server to reject POST and DELETE requests (https://github.com/FenixEdu/bennu/tree/master/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security)
     @RequestMapping(value = "/channels/{channelId}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement messageDeliveryStatusUpdate(@PathVariable("channelId") Canal canal, HttpServletRequest request) {
@@ -336,21 +351,6 @@ public class MainAPIResource extends BennuRestResource {
         jObj.addProperty("appId", app.getExternalId());
         jObj.addProperty("senderId", remetente.getExternalId());
         jObj.add("grupos", jArray);
-
-        return jObj;
-    }
-
-    @RequestMapping(value = "/groups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement listGroups() {
-
-        JsonObject jObj = new JsonObject();
-        JsonArray jArray = new JsonArray();
-
-        for (PersistentGroup g : FenixFramework.getDomainRoot().getBennu().getGroupSet()) {
-            jArray.add(view(g, PersistentGroupAdapter.class));
-        }
-
-        jObj.add("groups", jArray);
 
         return jObj;
     }
