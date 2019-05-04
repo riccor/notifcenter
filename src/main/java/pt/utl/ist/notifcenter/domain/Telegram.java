@@ -30,6 +30,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
+import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,8 @@ import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Telegram extends Telegram_Base {
 
@@ -56,6 +59,34 @@ public class Telegram extends Telegram_Base {
         this.setConfig(config);
     }
 
+    @Override
+    public void sendMessage(Mensagem msg) {
+
+        for (Contacto contact : getContactsFromMessageRecipientGroup(msg)) {
+            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, contact.getUtilizador(), "none_yet", "none_yet");
+
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.set("Content-type", "application/json");
+            String bodyContent = HTTPClient.stringToJson(createTelegramBody(msg.createSimpleMessageNotificationWithLink(), contact.getDadosContacto())).toString();
+
+            //debug:
+            //System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
+
+            String url = String.format(URL, this.getConfigAsJson().get("access_token").getAsString());
+
+            DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+            deferredResult.setResultHandler((Object responseEntity) -> {
+
+                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, contact.getUtilizador());
+
+            });
+
+            //send message
+            HTTPClient.restASyncClientBody(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
+        }
+    }
+
+    /*
     @Override
     public void sendMessage(Mensagem msg){
 
@@ -115,7 +146,7 @@ public class Telegram extends Telegram_Base {
 
             });
         }
-    }
+    }*/
 
     public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm, User user) {
 

@@ -16,6 +16,8 @@ import pt.utl.ist.notifcenter.domain.*;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
+import java.util.ArrayList;
+
 @DefaultJsonAdapter(Mensagem.class)
 public class MensagemAdapter implements JsonAdapter<Mensagem> {
 
@@ -33,7 +35,13 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
 
         String[] gd = UtilsResource.getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
 
-        PersistentGroup[] gruposDestinatarios = UtilsResource.getDomainObjectsArray(PersistentGroup.class, gd).toArray(new PersistentGroup[0]);
+        //PersistentGroup[] gruposDestinatarios = UtilsResource.getDomainObjectsArray(PersistentGroup.class, gd).toArray(new PersistentGroup[0]);
+        ArrayList<PersistentGroup> al = new ArrayList<>();
+        for (String g : gd) {
+            //al.add(Group.parse("U("+ g + ")").toPersistentGroup());
+            al.add(Group.dynamic(g).toPersistentGroup());
+        }
+        PersistentGroup[] gruposDestinatarios = al.toArray(new PersistentGroup[0]);
 
         String assunto = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "assunto");
         String textoCurto = UtilsResource.getRequiredValue(jsonElement.getAsJsonObject(), "textocurto");
@@ -64,16 +72,8 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
                 throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group id " + group.toString() + " doesnt exist.");
             }
 
-            if (app.getPermissoesAplicacao().equals(AppPermissions.RREQUIRES_APPROVAL)) {
-                if (canalNotificacao.getRemetente().getGruposSet().stream().noneMatch(e -> e.equals(group))) {
-                    throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "No permissions to send messages to group id " + group.getExternalId() + " !");
-                }
-
-                //TODO - check if "Pedido Para Enviar para Grupo" Was Approved (or simply remove this feature since it needs another entity to be created...)
-                /*if () {
-                    throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "Remetente id " + canalNotificacao.getRemetente().getExternalId() + " is awaiting approval to send messages to group id " + group.getExternalId() + " by system administrators.");
-                }
-                */
+            if (canalNotificacao.getRemetente().getGruposSet().stream().noneMatch(e -> e.equals(group))) {
+                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "No permissions to send messages to group id " + group.getExternalId() + " ! Add them first.");
             }
         }
 

@@ -309,7 +309,8 @@ public class MainAPIResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
-        PersistentGroup group = Group.parse("U("+ groupName + ")").toPersistentGroup();
+        //PersistentGroup group = Group.parse("U("+ groupName + ")").toPersistentGroup();
+        PersistentGroup group = Group.dynamic(groupName).toPersistentGroup();
 
         if (!remetente.getGruposSet().contains(group)) {
             throw new NotifcenterException(ErrorsAndWarnings.NON_EXISTING_RELATION, "Remetente " + remetente.getExternalId() + " does not have group id " + group.getExternalId() + " permissions!");
