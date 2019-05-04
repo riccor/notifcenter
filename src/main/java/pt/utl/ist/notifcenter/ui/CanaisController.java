@@ -45,12 +45,12 @@ public class CanaisController {
 
         if (!Strings.isNullOrEmpty(request.getParameter("createChannel"))) {
             Canal c = CanalAdapter.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
-            model.addAttribute("changesNotification", "Channel " + c.getClass().getSimpleName() + " with id " + c.getExternalId() + " was successfully created!");
+            model.addAttribute("changesmessage", "Channel " + c.getClass().getSimpleName() + " with id " + c.getExternalId() + " was successfully created!");
         }
         else if (!Strings.isNullOrEmpty(request.getParameter("deleteChannel"))) {
             String id = request.getParameter("deleteChannel");
             if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Canal.class, id))) {
-                model.addAttribute("changesNotification", "Channel " + UtilsResource.getDomainObject(Canal.class, id).getClass().getSimpleName() + " with id " + id + " was successfully deleted.");
+                model.addAttribute("changesmessage", "Channel " + UtilsResource.getDomainObject(Canal.class, id).getClass().getSimpleName() + " with id " + id + " was successfully deleted.");
                 UtilsResource.getDomainObject(Canal.class, id).delete();
             }
         }
@@ -58,7 +58,7 @@ public class CanaisController {
             String id = request.getParameter("editChannel");
             if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Canal.class, id))) {
                 Canal c = CanalAdapter.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Canal.class, id));
-                model.addAttribute("changesNotification", "Channel " + c.getClass().getSimpleName() + " with id " + c.getExternalId() + " was successfully updated!");
+                model.addAttribute("changesmessage", "Channel " + c.getClass().getSimpleName() + " with id " + c.getExternalId() + " was successfully updated!");
             }
         }
 

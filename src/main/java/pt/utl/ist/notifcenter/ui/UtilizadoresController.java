@@ -57,10 +57,14 @@ public class UtilizadoresController {
             }
         }
 
+        String changesMessage = "";
+
         if (!Strings.isNullOrEmpty(request.getParameter("createContacto"))) {
             JsonObject jsonObject = HTTPClient.getHttpServletRequestParamsAsJson(request, "utilizador"); //avoid hacks
             jsonObject.addProperty("utilizador", user.getExternalId());
             ContactoAdapter.create2(jsonObject);
+
+            changesMessage = "Contact was added!";
         }
         else if (!Strings.isNullOrEmpty(request.getParameter("deleteContacto"))) {
             String id = request.getParameter("deleteContacto");
@@ -70,6 +74,7 @@ public class UtilizadoresController {
                 }
                 else {
                     UtilsResource.getDomainObject(Contacto.class, id).delete();
+                    changesMessage = "Contact was removed!";
                 }
             }
         }
@@ -81,6 +86,7 @@ public class UtilizadoresController {
                 }
                 else {
                     ContactoAdapter.update2(HTTPClient.getHttpServletRequestParamsAsJson(request), UtilsResource.getDomainObject(Contacto.class, id));
+                    changesMessage = "Contact was edited!";
                 }
             }
         }
@@ -89,6 +95,7 @@ public class UtilizadoresController {
         model.addAttribute("contacts", getExistingUserContactos(user));
         model.addAttribute("parametros_contacto", new String[]{"data"});
         model.addAttribute("canais", CanaisController.getExistingChannels());
+        model.addAttribute("changesmessage", changesMessage);
 
         return "notifcenter/contactos";
     }

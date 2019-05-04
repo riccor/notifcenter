@@ -27,7 +27,7 @@ public class ContactoAdapter implements JsonAdapter<Contacto> {
                 String a = "Contact data " + c.getDadosContacto() + " already exists for channel " + canal.getExternalId() + " and user " + utilizador.getExternalId() + "!";
                 //debug
                 //System.out.println(a);
-                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION_ERROR, a);
+                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_CONTACT_ERROR, a);
             }
         }
 

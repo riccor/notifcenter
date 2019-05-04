@@ -13,7 +13,7 @@
 
         #table1 td, #table1 th {
           border: 1px solid #ddd;
-          padding: 8px;
+          padding: 2px;
         }
 
         #table1 tr:nth-child(even){background-color: #f2f2f2;}
@@ -21,8 +21,8 @@
         #table1 tr:hover {background-color: #ddd;}
 
         #table1 th {
-          padding-top: 12px;
-          padding-bottom: 12px;
+          padding-top: 2px;
+          padding-bottom: 2px;
           text-align: left;
           background-color: #009FE3;
           color: white;

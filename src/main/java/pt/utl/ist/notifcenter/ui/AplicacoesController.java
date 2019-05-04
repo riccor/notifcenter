@@ -52,10 +52,14 @@ public class AplicacoesController {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
+        String changesMessage = "";
+
         if (!Strings.isNullOrEmpty(request.getParameter("addGrupoDestinatario"))) {
             if (!Strings.isNullOrEmpty(request.getParameter("group"))) {
                 PersistentGroup gd = UtilsResource.getDomainObject(PersistentGroup.class, request.getParameter("group"));
                 remetente.addGroupToSendMesssages(gd);
+
+                changesMessage = "Group permissions were added!";
             }
             else {
                 throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR);
@@ -64,6 +68,8 @@ public class AplicacoesController {
         else if (!Strings.isNullOrEmpty(request.getParameter("removeGrupoDestinatario"))) {
             PersistentGroup gd = UtilsResource.getDomainObject(PersistentGroup.class, request.getParameter("removeGrupoDestinatario"));
             remetente.removeGroupToSendMesssages(gd);
+
+            changesMessage = "Group permissions were removed!";
         }
 
         model.addAttribute("application", app);
@@ -71,6 +77,7 @@ public class AplicacoesController {
         model.addAttribute("gruposdestinatarios", getExistingGruposDestinatariosFromRemetente(remetente));
         //model.addAttribute("parametros_gruposdestinatarios", new String[]{});
         model.addAttribute("grupos", getExistingGruposDestinatarios());
+        model.addAttribute("changesmessage", changesMessage);
 
         return "notifcenter/gruposdestinatarios";
     }
@@ -83,7 +90,7 @@ public class AplicacoesController {
             HashMap<String, String> map = new LinkedHashMap<>();
             map.put("id", pg.getExternalId());
             map.put("name", pg.getPresentationName());
-            map.put("members", pg.getMembers().map(e -> e.getUsername() + " (" + e.getExternalId() + ")").collect(Collectors.joining(",")));
+            //map.put("members", pg.getMembers().map(e -> e.getUsername() + " (" + e.getExternalId() + ")").collect(Collectors.joining(",")));
             list.add(map);
         }
 
@@ -127,11 +134,15 @@ public class AplicacoesController {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
+        String changesMessage = "";
+
         if (!Strings.isNullOrEmpty(request.getParameter("createCanalNotificacao"))) {
             JsonObject jsonObject = HTTPClient.getHttpServletRequestParamsAsJson(request, "app", "remetente"); //avoid hacks
             jsonObject.addProperty("app", app.getExternalId());
             jsonObject.addProperty("remetente", remetente.getExternalId());
             CanalNotificacaoAdapter.create2(jsonObject);
+
+            changesMessage = "Channel permissions were added!";
         }
         else if (!Strings.isNullOrEmpty(request.getParameter("deleteCanalNotificacao"))) {
             String id = request.getParameter("deleteCanalNotificacao");
@@ -141,6 +152,8 @@ public class AplicacoesController {
                 }
                 else {
                     UtilsResource.getDomainObject(CanalNotificacao.class, id).delete();
+
+                    changesMessage = "Channel permissions were removed!";
                 }
             }
         }
@@ -157,6 +170,8 @@ public class AplicacoesController {
                     else if (aguardandoAprovacao.equalsIgnoreCase("false")) {
                         UtilsResource.getDomainObject(CanalNotificacao.class, id).disapproveCanalNotificacao();
                     }
+
+                    changesMessage = "Permissions were changed!";
                 }
             }
         }
@@ -166,6 +181,7 @@ public class AplicacoesController {
         model.addAttribute("canaisnotificacao", getExistingCanaisNotificacaoFromRemetente(remetente));
         ///model.addAttribute("parametros_canalnotificacao", new String[]{"canal"});
         model.addAttribute("canais", CanaisController.getExistingChannels());
+        model.addAttribute("changesmessage", changesMessage);
 
         return "notifcenter/canaisnotificacao";
     }
@@ -201,10 +217,14 @@ public class AplicacoesController {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
+        String changesMessage = "";
+
         if (!Strings.isNullOrEmpty(request.getParameter("createRemetente"))) {
             JsonObject jsonObject = HTTPClient.getHttpServletRequestParamsAsJson(request, "app"); //avoid hacks
             jsonObject.addProperty("app", app.getExternalId());
             RemetenteAdapter.create2(jsonObject);
+
+            changesMessage = "Sender was added!";
         }
         else if (!Strings.isNullOrEmpty(request.getParameter("deleteRemetente"))) {
             String id = request.getParameter("deleteRemetente");
@@ -214,6 +234,8 @@ public class AplicacoesController {
                 }
                 else {
                     UtilsResource.getDomainObject(Remetente.class, id).delete();
+
+                    changesMessage = "Sender was removed!";
                 }
             }
         }
@@ -231,14 +253,16 @@ public class AplicacoesController {
                     else if (aguardandoAprovacao.equalsIgnoreCase("false")) {
                         UtilsResource.getDomainObject(Remetente.class, id).disapproveRemetente();
                     }
-                }
 
+                    changesMessage = "Sender was edited!";
+                }
             }
         }
 
         model.addAttribute("application", app);
         model.addAttribute("remetentes", getExistingAppRemetentes(app));
         model.addAttribute("parametros_remetente", new String[]{"name"});
+        model.addAttribute("changesmessage", changesMessage);
 
         return "notifcenter/remetentes";
     }
@@ -270,6 +294,8 @@ public class AplicacoesController {
         UtilsResource.checkIsUserValid(user);
         UtilsResource.checkNotifcenterAdminsGroupPermissions(user);
 
+        String changesMessage = "";
+
         if (!Strings.isNullOrEmpty(request.getParameter("createApp"))) {
             Aplicacao newApp = AplicacaoAdapter.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
 
@@ -281,11 +307,15 @@ public class AplicacoesController {
                     newApp.setAppPermissions(AppPermissions.getAppPermissionsFromString(permissions));
                 }
             }
+
+            changesMessage = "Application was added!";
         }
         else if (!Strings.isNullOrEmpty(request.getParameter("deleteApp"))) {
             String id = request.getParameter("deleteApp");
             if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Aplicacao.class, id))) {
                 UtilsResource.getDomainObject(Aplicacao.class, id).delete();
+
+                changesMessage = "Application was removed!";
             }
         }
         else if (!Strings.isNullOrEmpty(request.getParameter("editApp"))) {
@@ -301,12 +331,15 @@ public class AplicacoesController {
                         UtilsResource.getDomainObject(Aplicacao.class, id).setAppPermissions(AppPermissions.getAppPermissionsFromString(permissions));
                     }
                 }
+
+                changesMessage = "Application was edited!";
             }
         }
 
         model.addAttribute("aplicacoes", getExistingApps());
         model.addAttribute("parametros_app", new String[]{"name", "redirect_uri", "description", "author", "site_url"});
         model.addAttribute("app_permissions_values", AppPermissions.values());
+        model.addAttribute("changesmessage", changesMessage);
 
         return "notifcenter/aplicacoes";
     }

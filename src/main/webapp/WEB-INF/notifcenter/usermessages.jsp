@@ -4,6 +4,10 @@
 <head>
     <title>Notifcenter - Messages</title>
 
+    <div class="changes-notifications" id="div0">
+        <br><h4 style="color:#FF8000">${changesmessage}<h4>
+    </div>
+
     <c:set var="urlPrefix" value="/notifcenter/mensagens"/>
     <c:set var="slash" value="/"/>
     <c:set var="status" value="deliverystatuses"/>
@@ -17,7 +21,7 @@
 
         #table1 td, #table1 th {
           border: 1px solid #ddd;
-          padding: 8px;
+          padding: 2px;
         }
 
         #table1 tr:nth-child(even){background-color: #f2f2f2;}
@@ -25,8 +29,8 @@
         #table1 tr:hover {background-color: #ddd;}
 
         #table1 th {
-          padding-top: 12px;
-          padding-bottom: 12px;
+          padding-top: 2px;
+          padding-bottom: 2px;
           text-align: left;
           background-color: #009FE3;
           color: white;
@@ -48,8 +52,6 @@
                 <th>Delivery date</th>
                 <th>Sender</th>
                 <th>Subject</th>
-                <th>Short text</th>
-                <th>Long text</th>
                 <th>Attachments</th>
                 <th>Actions</th>
             </tr>
@@ -68,7 +70,14 @@
                             <c:set var="id" value="${entry.value}"/>
                         </c:if>
 
-                        <td><c:out value="${entry.value}"/></td>
+                        <c:choose>
+                            <c:when test="${entry.key == 'attachments' }">
+                                <td><input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>"></td>
+                            </c:when>
+                            <c:otherwise>
+                                <td><c:out value="${entry.value}"/></td>
+                            </c:otherwise>
+                        </c:choose>
 
                     </c:forEach>
 

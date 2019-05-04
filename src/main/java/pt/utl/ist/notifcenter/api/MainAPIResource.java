@@ -1,5 +1,5 @@
 /*
-API v1:
+API
 
 GET /groups - get a list of existing (persistent) groups
 GET /channels - get a list of existing channels
@@ -10,13 +10,13 @@ POST /applications/{applicationId}/senders - add a new sender to the application
 GET /applications/{applicationId}/senders/{senderId} - show sender data
 DELETE /applications/{applicationId}/senders/{senderId} - deletes a sender
 
-POST /applications/{applicationId}/senders/{senderId}/groups - add permissions to allow a sender to send messages to a group (JSON fields required: name)
-GET /applications/{applicationId}/senders/{senderId}/groups - get a list of group permissions from a sender
-DELETE /applications/{applicationId}/senders/{senderId}/groups/{groupName} - delete group permissions from a sender
+POST /applications/{applicationId}/senders/{senderId}/grouppermissions - add permissions to allow a sender to send messages to a group (JSON fields required: name)
+GET /applications/{applicationId}/senders/{senderId}/grouppermissions - get a list of group permissions from a sender
+DELETE /applications/{applicationId}/senders/{senderId}/grouppermissions/{groupName} - delete group permissions from a sender
 
-POST /applications/{applicationId}/senders/{senderId}/channels - add permissions to allow a sender to send messages to a channel (JSON fields required: channelId)
-GET /applications/{applicationId}/senders/{senderId}/channels - get a list of channels permissions from a sender
-DELETE /applications/{applicationId}/senders/{senderId}/channels/{channelId} - delete channel permissions from a sender
+POST /applications/{applicationId}/senders/{senderId}/notificationchannels - add permissions to allow a sender to send messages to a channel (JSON fields required: channelId)
+GET /applications/{applicationId}/senders/{senderId}/notificationchannels - get a list of channels permissions from a sender
+DELETE /applications/{applicationId}/senders/{senderId}/notificationchannels/{notificationChannelId} - delete channel permissions from a sender
 
 POST /applications/{applicationId}/messages - send a message to a group via some channel
 Requests to this endpoint must include Multipart-FormData with the following parameters:
@@ -256,7 +256,7 @@ public class MainAPIResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}/groups", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}/grouppermissions", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addGroupPermissionsToSender(@PathVariable("applicationId") Aplicacao app,
                                                    @PathVariable(value = "senderId") Remetente remetente,
                                                    @RequestBody JsonElement body) {
@@ -278,7 +278,7 @@ public class MainAPIResource extends BennuRestResource {
         PersistentGroup group = Group.dynamic(name).toPersistentGroup();
 
         if (remetente.getGruposSet().contains(group)) {
-            throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION_ERROR, "Sender " + remetente.getExternalId() + " has already permissions to send messages to group " + group.getExternalId() + "!");
+            throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_PERMISSIONS_ERROR, "Sender " + remetente.getExternalId() + " has already permissions to send messages to group " + group.getExternalId() + "!");
         }
 
         remetente.addGroupToSendMesssages(group);
@@ -293,7 +293,7 @@ public class MainAPIResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}/groups/{groupName}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}/grouppermissions/{groupName}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement removeGroupPermissionsFromSender(@PathVariable("applicationId") Aplicacao app,
                                                         @PathVariable(value = "senderId") Remetente remetente,
                                                         @PathVariable(value = "groupName") String groupName) {
@@ -310,11 +310,10 @@ public class MainAPIResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
-        //PersistentGroup group = Group.parse("U("+ groupName + ")").toPersistentGroup();
         PersistentGroup group = Group.dynamic(groupName).toPersistentGroup();
 
         if (!remetente.getGruposSet().contains(group)) {
-            throw new NotifcenterException(ErrorsAndWarnings.NON_EXISTING_RELATION, "Remetente " + remetente.getExternalId() + " does not have group id " + group.getExternalId() + " permissions!");
+            throw new NotifcenterException(ErrorsAndWarnings.NON_EXISTING_PERMISSIONS_ERROR, "Sender " + remetente.getExternalId() + " does not have group " + group.getPresentationName() + " permissions!");
         }
 
         remetente.removeGroupToSendMesssages(group);
@@ -328,7 +327,7 @@ public class MainAPIResource extends BennuRestResource {
         return jObj;
     }
 
-    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}/groups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}/grouppermissions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listSenderGroups(@PathVariable("applicationId") Aplicacao app, @PathVariable(value = "senderId") Remetente remetente) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
@@ -350,15 +349,14 @@ public class MainAPIResource extends BennuRestResource {
             jArray.add(view(g, PersistentGroupAdapter.class));
         }
 
-        jObj.addProperty("appId", app.getExternalId());
         jObj.addProperty("senderId", remetente.getExternalId());
-        jObj.add("grupos", jArray);
+        jObj.add("groups", jArray);
 
         return jObj;
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}/channels", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}/notificationchannels", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addChannelPermissionsToSender(@PathVariable("applicationId") Aplicacao app,
                                                      @PathVariable(value = "senderId") Remetente remetente,
                                                      @RequestBody JsonElement body) {
@@ -377,16 +375,16 @@ public class MainAPIResource extends BennuRestResource {
 
         Canal canal = UtilsResource.getDomainObjectFromJsonProperty(body.getAsJsonObject(), Canal.class,"channelId");
 
+        for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
+            if (cn.getCanal().equals(canal)) {
+                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_PERMISSIONS_ERROR, "Sender " + remetente.getExternalId() + " has already permissions to send messages to channel " + canal.getExternalId() + "! (Existing notification channel id: " + cn.getExternalId() + ")");
+            }
+        }
+
         JsonObject jObj = new JsonObject();
         jObj.addProperty("app", app.getExternalId());
         jObj.addProperty("remetente", remetente.getExternalId());
         jObj.addProperty("canal", canal.getExternalId());
-
-        for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
-            if (cn.getCanal().equals(canal)) {
-                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_ALLOWED_PERMISSIONS_ERROR, "Sender " + remetente.getExternalId() + " has already permissions to send messages to channel " + canal.getExternalId() + "!");
-            }
-        }
 
         CanalNotificacao pedidoCriacaoCanalNotificacao = create(jObj, CanalNotificacao.class);
 
@@ -398,10 +396,10 @@ public class MainAPIResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}/channels/{channelId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}/notificationchannels/{notificationChannelId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement removeChannelPermissionsFromSender(@PathVariable("applicationId") Aplicacao app,
                                                           @PathVariable("senderId") Remetente remetente,
-                                                          @PathVariable("channelId") Canal canal) {
+                                                          @PathVariable("notificationChannelId") CanalNotificacao cn) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -415,27 +413,19 @@ public class MainAPIResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
-        if (!FenixFramework.isDomainObjectValid(canal)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
+        if (!FenixFramework.isDomainObjectValid(cn) || !remetente.getCanaisNotificacaoSet().contains(cn)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
         }
 
-        for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
-            if (cn.getCanal().equals(canal)) {
+        JsonObject jObj = new JsonObject();
+        jObj.add("removedNotificationChannel", view(cn, CanalNotificacaoAdapter.class));
 
-                JsonObject jObj = new JsonObject();
-                jObj.add("removedChannelPermissions", view(cn, CanalNotificacaoAdapter.class));
+        cn.delete();
 
-                cn.delete();
-
-                return jObj;
-            }
-        }
-
-        throw new NotifcenterException(ErrorsAndWarnings.NON_EXISTING_RELATION, "Remetente " + remetente.getExternalId() + " does not have channel id " + canal.getExternalId() + " permissions!");
+        return jObj;
     }
 
-
-    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}/channels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/applications/{applicationId}/senders/{senderId}/notificationchannels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listSenderNotificationChannels(@PathVariable("applicationId") Aplicacao app, @PathVariable(value = "senderId") Remetente remetente) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
@@ -458,7 +448,7 @@ public class MainAPIResource extends BennuRestResource {
         }
 
         jObj.addProperty("senderId", remetente.getExternalId());
-        jObj.add("channels", jArray);
+        jObj.add("notificationChannels", jArray);
 
         return jObj;
     }

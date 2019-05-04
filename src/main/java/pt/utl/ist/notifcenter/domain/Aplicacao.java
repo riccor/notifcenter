@@ -116,12 +116,15 @@ public class Aplicacao extends Aplicacao_Base {
         for (Remetente r : this.getRemetentesSet()) {
             r.delete();
         }
-
         this.getBennu().removeApplications(this);
         this.setBennu(null);
 
         this.getSistemaNotificacoes().removeAplicacoes(this);
         this.setSistemaNotificacoes(null);
+
+        for (ApplicationUserAuthorization aua : this.getApplicationUserAuthorizationSet()) {
+            aua.delete();
+        }
 
         this.deleteDomainObject();
     }

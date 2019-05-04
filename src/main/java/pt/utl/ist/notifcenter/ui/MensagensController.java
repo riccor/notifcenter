@@ -44,14 +44,19 @@ public class MensagensController {
         UtilsResource.checkIsUserValid(user);
         UtilsResource.checkNotifcenterAdminsGroupPermissions(user);
 
+        String changesMessage = "";
+
         if (!Strings.isNullOrEmpty(request.getParameter("deleteMensagem"))) {
             String id = request.getParameter("deleteMensagem");
             if (FenixFramework.isDomainObjectValid(UtilsResource.getDomainObject(Mensagem.class, id))) {
                 UtilsResource.getDomainObject(Mensagem.class, id).delete();
+
+                changesMessage = "Message was removed!";
             }
         }
 
         model.addAttribute("messages", getExistingMensagens());
+        model.addAttribute("changesmessage", changesMessage);
 
         return "notifcenter/messages";
     }
@@ -86,15 +91,14 @@ public class MensagensController {
     public static HashMap<String, String> MessageToHashMap(Mensagem m){
         HashMap<String, String> map = new LinkedHashMap<>();
         map.put("id", m.getExternalId());
-        map.put("canalnotificacao", m.getCanalNotificacao().getExternalId());
-        map.put("remetente", m.getCanalNotificacao().getRemetente().getExternalId());
-        map.put("gruposDestinatarios", m.getGruposDestinatariosSet().stream().map(PersistentGroup::getExternalId).collect(Collectors.joining(",")));
-        map.put("assunto", m.getAssunto());
-        map.put("textoCurto", m.getTextoCurto());
-        map.put("textoLongo", m.getTextoLongo());
         map.put("dataEntrega", m.getDataEntrega().toString("dd.MM.yyyy HH:mm:ss.SSS"));
+        map.put("canalnotificacao", m.getCanalNotificacao().getExternalId());
+        map.put("remetente", m.getCanalNotificacao().getRemetente().getNome());
+        map.put("gruposDestinatarios", m.getGruposDestinatariosSet().stream().map(PersistentGroup::getPresentationName).collect(Collectors.joining(",")));
+        map.put("assunto", m.getAssunto());
+        //map.put("textoCurto", m.getTextoCurto());
         map.put("callbackUrlEstadoEntrega", m.getCallbackUrlEstadoEntrega());
-        map.put("attachments", m.getAttachmentsSet().stream().map(Attachment::getExternalId).collect(Collectors.joining(",")));
+        map.put("attachments", m.getAttachmentsSet().stream().map(Attachment::getDisplayName).collect(Collectors.joining(",")));
         //map.put("link", NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + m.getExternalId());
         return map;
     }
@@ -105,9 +109,9 @@ public class MensagensController {
         map.put("dataEntrega", m.getDataEntrega().toString("dd.MM.yyyy HH:mm:ss.SSS"));
         map.put("remetente", m.getCanalNotificacao().getRemetente().getNome());
         map.put("assunto", m.getAssunto());
-        map.put("textoCurto", m.getTextoCurto());
-        map.put("textoLongo", m.getTextoLongo());
-        map.put("attachments", m.getAttachmentsSet().stream().map(Attachment::getExternalId).collect(Collectors.joining(",")));
+        //map.put("textoCurto", m.getTextoCurto());
+        //map.put("textoLongo", m.getTextoLongo());
+        map.put("attachments", m.getAttachmentsSet().stream().map(Attachment::getDisplayName).collect(Collectors.joining(",")));
         //map.put("link", NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + m.getExternalId());
         return map;
     }
@@ -210,6 +214,7 @@ public class MensagensController {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_ATTACHMENT_ERROR);
         }
 
+        String changesMessage = "";
         /* Debug
         System.out.println("#############content key: "+ attachment.getContentKey());
         System.out.println("#############checksum algorithm: "+ attachment.getChecksumAlgorithm());

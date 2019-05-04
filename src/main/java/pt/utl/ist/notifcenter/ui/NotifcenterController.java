@@ -20,8 +20,6 @@ public class NotifcenterController {
 
     @RequestMapping
     public String home(Model model, HttpServletResponse response) {
-        //model.addAttribute("world", "World");
-        //return "notifcenter/home";
         return "redirect:/meuscontactos";
     }
 

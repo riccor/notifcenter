@@ -4,33 +4,44 @@
 <head>
     <title>Notifcenter - Applications</title>
 
+    <div class="changes-notifications" id="div0">
+        <br><h4 style="color:#FF8000">${changesmessage}<h4>
+    </div>
+
     <c:set var="urlPrefix" value="/notifcenter/aplicacoes"/>
     <c:set var="slash" value="/"/>
 
-    <style>
-        #table1 {
-          font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-          border-collapse: collapse;
-          width: 100%;
-        }
+        <style>
 
-        #table1 td, #table1 th {
-          border: 1px solid #ddd;
-          padding: 8px;
-        }
+            input:not([type]), input[type="text"] {
+              overflow: scroll;
+              width: 110px;
+              line-height: 1em;
+            }
 
-        #table1 tr:nth-child(even){background-color: #f2f2f2;}
+            #table1 {
+              font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+              border-collapse: collapse;
+              width: 100%;
+            }
 
-        #table1 tr:hover {background-color: #ddd;}
+            #table1 td, #table1 th {
+              border: 1px solid #ddd;
+              padding: 2px;
+            }
 
-        #table1 th {
-          padding-top: 12px;
-          padding-bottom: 12px;
-          text-align: left;
-          background-color: #009FE3;
-          color: white;
-        }
-    </style>
+            #table1 tr:nth-child(even){background-color: #f2f2f2;}
+
+            #table1 tr:hover {background-color: #ddd;}
+
+            #table1 th {
+              padding-top: 2px;
+              padding-bottom: 2px;
+              text-align: left;
+              background-color: #009FE3;
+              color: white;
+            }
+        </style>
 
 </head>
 
@@ -97,7 +108,16 @@
                                 </c:choose>
                             </c:when>
                             <c:otherwise>
-                                <td><c:out value="${entry.value}"/></td>
+
+                                <c:choose>
+                                    <c:when test="${entry.key == 'client_secret'}">
+                                        <td><input type="text" name="<c:out value="${entry.key}"/>" value="<c:out value="${entry.value}"/>"></td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td><c:out value="${entry.value}"/></td>
+                                    </c:otherwise>
+                                </c:choose>
+
                             </c:otherwise>
                         </c:choose>
 

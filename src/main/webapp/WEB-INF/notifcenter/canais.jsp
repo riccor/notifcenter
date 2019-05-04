@@ -15,7 +15,7 @@
 
         #table1 td, #table1 th {
           border: 1px solid #ddd;
-          padding: 8px;
+          padding: 2px;
         }
 
         #table1 tr:nth-child(even){background-color: #f2f2f2;}
@@ -23,8 +23,8 @@
         #table1 tr:hover {background-color: #ddd;}
 
         #table1 th {
-          padding-top: 12px;
-          padding-bottom: 12px;
+          padding-top: 2px;
+          padding-bottom: 2px;
           text-align: left;
           background-color: #009FE3;
           color: white;
@@ -37,7 +37,7 @@
     <h2><b>Channels manager</b></h2>
 
     <div class="changes-notifications" id="div0">
-        <br><h4>${changesNotification}<h4>
+        <br><h4 style="color:#FF8000">${changesmessage}<h4>
     </div>
 
     <div class="list-channels" id="div1">
@@ -47,7 +47,7 @@
         <table id="table1" style="width: 100%, box-sizing: border-box">
             <tr>
                 <th>Id</th>
-                <th>Type</th>
+                <th>Class</th>
                 <th>Authentication parameters</th>
                 <th>Actions</th>
             </tr>
@@ -107,7 +107,7 @@
         <br><h3>Add new channel</h3>
 
         <select id="select2" onchange="onSelect()">
-            <option value="" selected disabled hidden>Channel Type</option>
+            <option value="" selected disabled hidden>Channel class</option>
             <c:forEach var="entry" items="${classes_canais}"> <%-- same as ${classes_canais.entrySet()} --%>
                 <option value="<c:out value="${entry.key}"/>"><c:out value="${entry.key}"/></option>
             </c:forEach>

@@ -4,6 +4,10 @@
 <head>
     <title>Notifcenter - Applications/Senders</title>
 
+    <div class="changes-notifications" id="div0">
+        <br><h4 style="color:#FF8000">${changesmessage}<h4>
+    </div>
+
     <c:set var="urlPrefix" value="/notifcenter/aplicacoes/"/>
     <c:set var="gruposDestinatarios" value="gruposdestinatarios"/>
     <c:set var="canaisNotificacao" value="canaisnotificacao"/>
@@ -18,7 +22,7 @@
 
         #table1 td, #table1 th {
           border: 1px solid #ddd;
-          padding: 8px;
+          padding: 2px;
         }
 
         #table1 tr:nth-child(even){background-color: #f2f2f2;}
@@ -26,8 +30,8 @@
         #table1 tr:hover {background-color: #ddd;}
 
         #table1 th {
-          padding-top: 12px;
-          padding-bottom: 12px;
+          padding-top: 2px;
+          padding-bottom: 2px;
           text-align: left;
           background-color: #009FE3;
           color: white;
