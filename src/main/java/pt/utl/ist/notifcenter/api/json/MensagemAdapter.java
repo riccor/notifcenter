@@ -54,7 +54,7 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
 
         //verify params
         if (!FenixFramework.isDomainObjectValid(canalNotificacao) || !app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "Such canalnotificacao doesnt exist.");
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "Such canalnotificacao does not exist.");
         }
 
         if (app.getPermissoesAplicacao().equals(AppPermissions.RREQUIRES_APPROVAL) && !canalNotificacao.getRemetente().isApproved()) {
@@ -66,14 +66,12 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         }
 
         for (PersistentGroup group : gruposDestinatarios) {
-            ///////group.toGroup().toPersistentGroup().toGroup().toPersistentGroup();
-
             if (!FenixFramework.isDomainObjectValid(group)) {
-                throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group id " + group.toString() + " doesnt exist.");
+                throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group " + group.toString() + " does not exist.");
             }
 
             if (canalNotificacao.getRemetente().getGruposSet().stream().noneMatch(e -> e.equals(group))) {
-                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "No permissions to send messages to group id " + group.getExternalId() + " ! Add them first.");
+                throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "No permissions to send messages to group " + group.getPresentationName() + "! Add them first.");
             }
         }
 
@@ -112,14 +110,14 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
 
         JsonObject jObj = new JsonObject();
         jObj.addProperty("id", obj.getExternalId());
-        jObj.addProperty("canalnotificacao", obj.getCanalNotificacao().getExternalId());
-        jObj.addProperty("remetente", obj.getCanalNotificacao().getRemetente().getExternalId());
-        jObj.add("gruposDestinatarios", jArrayGruposDestinatarios);
-        jObj.addProperty("assunto", obj.getAssunto());
-        jObj.addProperty("textoCurto", obj.getTextoCurto());
-        jObj.addProperty("textoLongo", obj.getTextoLongo());
-        jObj.addProperty("dataEntrega", obj.getDataEntrega().toString("dd.MM.yyyy HH:mm:ss.SSS"));
-        jObj.addProperty("callbackUrlEstadoEntrega", obj.getCallbackUrlEstadoEntrega());
+        jObj.addProperty("notificationChannel", obj.getCanalNotificacao().getExternalId());
+        jObj.addProperty("sender", obj.getCanalNotificacao().getRemetente().getExternalId());
+        jObj.add("recipientGroups", jArrayGruposDestinatarios);
+        jObj.addProperty("subject", obj.getAssunto());
+        jObj.addProperty("shortText", obj.getTextoCurto());
+        jObj.addProperty("longText", obj.getTextoLongo());
+        jObj.addProperty("deliveryDate", obj.getDataEntrega().toString("dd.MM.yyyy HH:mm:ss.SSS"));
+        jObj.addProperty("deliveryStatusCallback", obj.getCallbackUrlEstadoEntrega());
         jObj.add("attachments", jArrayAttachments);
         jObj.addProperty("link",NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + obj.getExternalId());
 

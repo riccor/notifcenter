@@ -45,7 +45,8 @@ public enum ErrorsAndWarnings {
     UNKNOWN_MESSAGE_ID ("unknownMessageId", "Unknown message ID.", HttpStatus.NOT_FOUND),
     ALREADY_EXISTING_RESOURCE ("resourceAlreadyExists", "Resource already exists.", HttpStatus.CONFLICT),
     ALREADY_EXISTING_RELATION_ERROR ("relationAlreadyExists", "Such relation already exists.", HttpStatus.CONFLICT),
-    NON_EXISTING_RELATION ("nonExistingRelation", "Such relation does not exist.", HttpStatus.CONFLICT);
+    NON_EXISTING_RELATION ("nonExistingRelation", "Such relation does not exist.", HttpStatus.CONFLICT),
+    ALREADY_ALLOWED_PERMISSIONS_ERROR ("alreadyAllowedPermissions", "Such permissions were already added.", HttpStatus.CONFLICT);
 
     private final String codeId;
     private final String errorDescription;

@@ -102,6 +102,7 @@ public class MensagensController {
     public static HashMap<String, String> UserMessageToHashMap(Mensagem m){
         HashMap<String, String> map = new LinkedHashMap<>();
         map.put("id", m.getExternalId());
+        map.put("dataEntrega", m.getDataEntrega().toString("dd.MM.yyyy HH:mm:ss.SSS"));
         map.put("remetente", m.getCanalNotificacao().getRemetente().getNome());
         map.put("assunto", m.getAssunto());
         map.put("textoCurto", m.getTextoCurto());

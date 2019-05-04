@@ -64,7 +64,7 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         jObj.addProperty("clientId", obj.getExternalId());
         jObj.addProperty("name", obj.getName());
         jObj.addProperty("author", obj.getAuthorName());
-        jObj.addProperty("permissoes", obj.getPermissoesAplicacao().name());
+        jObj.addProperty("permissions", obj.getPermissoesAplicacao().name());
         jObj.addProperty("description", obj.getDescription());
         jObj.addProperty("site_url", obj.getSiteUrl());
         jObj.addProperty("redirect_uri", obj.getRedirectUrl());

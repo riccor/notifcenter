@@ -45,6 +45,7 @@
         <table id="table1" style="width: 100%, box-sizing: border-box">
             <tr>
                 <th>Id</th>
+                <th>Delivery date</th>
                 <th>Sender</th>
                 <th>Subject</th>
                 <th>Short text</th>

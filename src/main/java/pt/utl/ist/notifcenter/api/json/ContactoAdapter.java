@@ -55,9 +55,9 @@ public class ContactoAdapter implements JsonAdapter<Contacto> {
     public JsonElement view(Contacto obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("id", obj.getExternalId());
-        jObj.addProperty("utilizador", obj.getUtilizador().getExternalId());
-        jObj.addProperty("canal", obj.getCanal().getExternalId());
-        jObj.addProperty("dados", obj.getDadosContacto());
+        jObj.addProperty("user", obj.getUtilizador().getExternalId());
+        jObj.addProperty("channel", obj.getCanal().getExternalId());
+        jObj.addProperty("data", obj.getDadosContacto());
         return jObj;
     }
 
