@@ -29,8 +29,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
-import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -40,8 +38,6 @@ import pt.utl.ist.notifcenter.api.HTTPClient;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Telegram extends Telegram_Base {
 
@@ -85,68 +81,6 @@ public class Telegram extends Telegram_Base {
             HTTPClient.restASyncClientBody(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
         }
     }
-
-    /*
-    @Override
-    public void sendMessage(Mensagem msg){
-
-        //Get all user contacts for this channel
-        for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
-            group.getMembers().forEach(user -> {
-
-                //Debug
-                ///System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
-
-                boolean userHasNoContactForThisChannel = true;
-
-                //prevent duplicated message for same user:
-                if (user.getUserMessageDeliveryStatusSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
-                    System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
-                    userHasNoContactForThisChannel = false;
-                }
-                else {
-                    for (Contacto contacto : user.getContactosSet()) {
-                        if (contacto.getCanal().equals(this)) {
-
-                            //Debug
-                            //System.out.println("has dadosContacto " + contacto.getDadosContacto());
-
-                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "none_yet", "none_yet");
-
-                            HttpHeaders httpHeaders = new HttpHeaders();
-                            httpHeaders.set("Content-type", "application/json");
-                            String bodyContent = HTTPClient.stringToJson(createTelegramBody(msg.createSimpleMessageNotificationWithLink(), contacto.getDadosContacto())).toString();
-
-                            //debug:
-                            //System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
-
-                            String url = String.format(URL, this.getConfigAsJson().get("access_token").getAsString());
-
-                            DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-                            deferredResult.setResultHandler((Object responseEntity) -> {
-
-                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, user);
-
-                            });
-
-                            //send message
-                            HTTPClient.restASyncClientBody(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
-
-                            userHasNoContactForThisChannel = false;
-
-                            break; //no need to search more contacts for this user on this channel.
-                        }
-                    }
-                }
-
-                if (userHasNoContactForThisChannel) {
-                    System.out.println("WARNING: user " + user.getUsername() + " has no contact for " + this.getClass().getSimpleName());
-                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
-                }
-
-            });
-        }
-    }*/
 
     public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm, User user) {
 

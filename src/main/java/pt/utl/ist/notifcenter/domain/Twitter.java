@@ -17,7 +17,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.springframework.http.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import pt.utl.ist.notifcenter.api.HTTPClient;
@@ -82,72 +81,6 @@ public class Twitter extends Twitter_Base {
             HTTPClient.restASyncClientBody(HttpMethod.POST, URL, httpHeaders, bodyContent, deferredResult);
         }
     }
-
-    /*
-    //Note: only one recipient per message!
-    @Override
-    public void sendMessage(Mensagem msg){
-
-        //No proper "message adaption to the channel" feature is implemented, so, at least, verify message params length restrictions to this channel
-        if (msg.createSimpleMessageNotificationWithLink().length() > 10000) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto must be at most " + (10000-59) + " characters long.");
-        }
-
-        //Get all user contacts for this channel
-        for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
-            group.getMembers().forEach(user -> {
-
-                //Debug
-                ///System.out.println("LOG: user: " + user.getUsername() + " with email: " + user.getEmail());
-
-                boolean userHasNoContactForThisChannel = true;
-
-                //prevent duplicated message for same user:
-                if (user.getUserMessageDeliveryStatusSet().stream().anyMatch(e -> e.getMensagem().equals(msg))) {
-                    System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
-                    userHasNoContactForThisChannel = false;
-                }
-                else {
-                    for (Contacto contacto : user.getContactosSet()) {
-                        if (contacto.getCanal().equals(this)) {
-
-                            //Debug
-                            ///System.out.println("has dadosContacto " + contacto.getDadosContacto());
-
-                            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "none_yet", "none_yet");
-
-                            HttpHeaders httpHeaders = createTwitterOAuthHeader("POST", edm.getExternalId());
-                            httpHeaders.set("Content-type", "application/json");
-                            String bodyContent = HTTPClient.stringToJson(createTwitterBody(msg.createSimpleMessageNotificationWithLink(), contacto.getDadosContacto())).toString();
-
-                            //debug:
-                            ///System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
-
-                            DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-                            deferredResult.setResultHandler((Object responseEntity) -> {
-
-                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, user);
-
-                            });
-
-                            //send message
-                            HTTPClient.restASyncClientBody(HttpMethod.POST, URL, httpHeaders, bodyContent, deferredResult);
-
-                            userHasNoContactForThisChannel = false;
-
-                            break; //no need to search more contacts for this user on this channel.
-                        }
-                    }
-                }
-
-                if (userHasNoContactForThisChannel) {
-                    System.out.println("WARNING: user " + user.getUsername() + " has no contact for " + this.getClass().getSimpleName());
-                    UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "userHasNoContactForSuchChannel", "userHasNoContactForSuchChannel");
-                }
-
-            });
-        }
-    }*/
 
     public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm, User user) {
 
@@ -264,8 +197,7 @@ public class Twitter extends Twitter_Base {
         }
 
         //debug
-        ////System.out.println();
-        ////System.out.println(Utils.MAGENTA + "Parameter String:\n" + Utils.CYAN + sb.toString() + Utils.WHITE);
+        //System.out.println(Utils.MAGENTA + "Parameter String:\n" + Utils.CYAN + sb.toString() + Utils.WHITE);
 
         return sb.toString();
     }
@@ -298,41 +230,6 @@ public class Twitter extends Twitter_Base {
             sb2.append(a);
         }
 
-        //debug
-        String b = HTTPClient.percentEncode(signature);
-        ////System.out.println(Utils.MAGENTA + "HTTPClient.percentEncoded(Signature):\n" + Utils.CYAN + b + Utils.WHITE);
-        ////System.out.println(Utils.MAGENTA + "Signature:\n" + Utils.CYAN + signature + Utils.WHITE);
-
-        //debug
-        /*
-        if (signature.equals(twitterSignatureResultExample)) {
-            ////System.out.println(GREEN + "GOOD =D SIGNATURE IS EQUAL TO TWITTER EXAMPLE!");
-        }
-        else {
-            ////System.out.println(RED + "Signatures do not match =(");
-            ////System.out.println(RED + "Signature string SHOULD BE:\n" + Utils.WHITE + twitterSignatureResultExample);
-        }
-
-        if (b.equals(twitterSignatureResultExampleENCODED)) {
-            ////System.out.println(GREEN + "GOOD =D SIGNATURE ENCODED IS EQUAL TO TWITTER EXAMPLE!");
-        }
-        else {
-            ////System.out.println(RED + "And obviously encoded signatures do not match too =(");
-        }
-
-        //debug 2
-        if (sb2.toString().equals(twitteHeaderStringExample)) {
-            ////System.out.println(GREEN + "GOOD =D HEADER STRING IS EQUAL TO TWITTER EXAMPLE!");
-        }
-        else {
-            ////System.out.println(RED + "\nHeader strings do not match =(");
-            ////System.out.println(RED + "Header string SHOULD BE:\n" + Utils.WHITE + twitteHeaderStringExample);
-        }*/
-
-        //debug
-        ////System.out.println();
-        ////System.out.println(Utils.MAGENTA + "Header String:\n" + Utils.CYAN + sb2.toString() + Utils.WHITE);
-
         return sb2.toString();
     }
 
@@ -345,16 +242,12 @@ public class Twitter extends Twitter_Base {
         sb.append("&");
         sb.append(HTTPClient.percentEncode(parameterString));
 
-        //debug
-        ////System.out.println();
-        ////System.out.println(Utils.MAGENTA + "Signature Base String:\n" + Utils.CYAN + sb.toString() + Utils.WHITE);
-
         /* uncomment this for the example case from https://developer.twitter.com/en/docs/basics/authentication/guides/creating-a-signature.html
         if (sb.toString().equals(twitterBaseStringExample)) {
-            ////System.out.println(GREEN + "GOOD =D BASE STRING IS EQUAL TO TWITTER EXAMPLE!");
+            System.out.println(GREEN + "GOOD =D BASE STRING IS EQUAL TO TWITTER EXAMPLE!");
         }
         else {
-            ////System.out.println(RED + "Signatures do not match =(");
+            System.out.println(RED + "Signatures do not match =(");
         }*/
 
         return sb.toString();
@@ -386,110 +279,9 @@ public class Twitter extends Twitter_Base {
             return "error";
         }
 
-        //System.out.println(">>>>>>>>>signature: " + bytesToString(signature));
-
         String signatureBase64 = HTTPClient.bytesBase64Encode(signature);
-
-        //ystem.out.println(Utils.WHITE + ">>>>>>>>>signature_Base64: " + signatureBase64);
 
         return signatureBase64;
     }
 
 }
-
-//IGNORE FROM HERE
-
-//example response:
-
-    /*
-     body:{
-       "event":{
-          "type":"message_create",
-          "id":"1086130419588845574",
-          "created_timestamp":"1547788646014",
-          "message_create":{
-             "target":{
-                "recipient_id":"1085250046176702466"
-             },
-             "sender_id":"1085250046176702466",
-             "message_data":{
-                "text":"hello??",
-                "entities":{
-                   "hashtags":[
-
-                   ],
-                   "symbols":[
-
-                   ],
-                   "user_mentions":[
-
-                   ],
-                   "urls":[
-
-                   ]
-                }
-             }
-          }
-       }
-    }
-    */
-
-    /*
-
-Known response errors:
-{"errors":[{"code":150,"message":"You cannot send messages to users who are not following you."}]}
-{"errors":[{"code":108,"message":"Cannot find specified user."}]}
-
-
-request:
-    twurl authorize --consumer-key .... --consumer-secret ...
-
-response:
-    https://api.twitter.com/oauth/authorize?
-    oauth_consumer_key=XI1Kkm9b
-    &oauth_nonce=gJm8Bf7sRScSUK
-    &oauth_signature=5Kddnbgx9DmC
-    &oauth_signature_method=HMAC-SHA1
-    &oauth_timestamp=1547769472
-    &oauth_token=nWioT6g
-    &oauth_version=1.0
-
-
-request:
-     twurl -A 'Content-type: application/json' -X POST /1.1/direct_messages/events/new.json
-     -d '{"event": {"type": "message_create", "message_create": {"target": {"recipient_id": "1085250046176702466"}, "message_data": {"text": "Hello World!"}}}}'
-
-response:
-    {
-       "event":{
-          "type":"message_create",
-          "id":"1086052839703629829",
-          "created_timestamp":"1547770149528",
-          "message_create":{
-             "target":{
-                "recipient_id":"1085250046176702466"
-             },
-             "sender_id":"1085250046176702466",
-             "message_data":{
-                "text":"Hello World!",
-                "entities":{
-                   "hashtags":[
-
-                   ],
-                   "symbols":[
-
-                   ],
-                   "user_mentions":[
-
-                   ],
-                   "urls":[
-
-                   ]
-                }
-             }
-          }
-       }
-    }
-
-    */
-
