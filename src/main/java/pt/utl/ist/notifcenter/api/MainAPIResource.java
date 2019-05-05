@@ -120,20 +120,17 @@ public class MainAPIResource extends BennuRestResource {
             //If message parameter callbackUrlEstadoEntrega is not "none", then send message delivery status to the application
             if (!ede.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
 
-                MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-                MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-
-                header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-                body.put("MessageId", Collections.singletonList(ede.getMensagem().getExternalId()));
-                body.put("User", Collections.singletonList(ede.getUtilizador().getUsername()));
-                body.put("MessageStatus", Collections.singletonList(ede.getEstadoEntrega()));
+                JsonObject jObj = new JsonObject();
+                jObj.addProperty("MessageId", ede.getMensagem().getExternalId());
+                jObj.addProperty("User", ede.getUtilizador().getUsername());
+                jObj.addProperty("MessageStatus", ede.getEstadoEntrega());
 
                 DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
                 deferredResult.setResultHandler((Object responseEntity) -> {
                     HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity);
                 });
 
-                HTTPClient.restASyncClient(HttpMethod.POST, ede.getMensagem().getCallbackUrlEstadoEntrega(), header, body, deferredResult);
+                HTTPClient.restASyncClientJSON(HttpMethod.POST, ede.getMensagem().getCallbackUrlEstadoEntrega(), jObj, deferredResult);
             }
 
             throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);

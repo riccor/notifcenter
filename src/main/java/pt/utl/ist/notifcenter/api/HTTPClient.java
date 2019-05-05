@@ -186,6 +186,42 @@ public class HTTPClient {
         });
     }
 
+    //ASYNC client JSON
+    public static void restASyncClientJSON(final HttpMethod method,
+                                       final String uri,
+                                       final JsonObject json,
+                                       DeferredResult<ResponseEntity<String>> deferredResult) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> entity = new HttpEntity<>(json.toString(), headers);
+
+        AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+
+        restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+            protected boolean hasError(HttpStatus statusCode) {
+                System.out.println(Utils.WHITE + "\nHTTP async request status code: " + statusCode);
+                return false;
+            }
+        });
+
+        ListenableFuture<ResponseEntity<String>> futureEntity = restTemplate.exchange(uri, method, entity, String.class);
+        futureEntity.addCallback(new ListenableFutureCallback<ResponseEntity<String>>() {
+            @Override
+            public void onSuccess(ResponseEntity<String> result) {
+                deferredResult.setResult(result);
+            }
+
+            @Override
+            public void onFailure(Throwable ex) {
+                ///deferredResult.setErrorResult(ex);
+                ResponseEntity<String> re = new ResponseEntity<>("error", new HttpHeaders() {{ this.set("error", "service is unavailable this moment"); }}, HttpStatus.SERVICE_UNAVAILABLE);
+                deferredResult.setResult(re);
+            }
+        });
+    }
+
     public static void restASyncClientBody(final HttpMethod method,
                                            final String uri,
                                            final HttpHeaders headers,
