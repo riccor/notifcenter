@@ -74,14 +74,14 @@ public enum ErrorsAndWarnings {
 
     public JsonElement toJson() {
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("errorCode", this.codeId);
+        jObj.addProperty("error", this.codeId);
         jObj.addProperty("errorDescription", this.errorDescription);
         return jObj;
     }
 
     public JsonElement toJsonWithDetails(String details) {
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("errorCode", this.codeId);
+        jObj.addProperty("error", this.codeId);
         jObj.addProperty("errorDescription", this.errorDescription);
         jObj.addProperty("details", details);
         return jObj;
@@ -89,14 +89,14 @@ public enum ErrorsAndWarnings {
 
     public String toHTML() {
         String str = "<br><b>HTTP Status " + this.httpStatus + "</b></br>";
-        str = str + "<br>errorCode: " + this.codeId + "</br>";
+        str = str + "<br>error: " + this.codeId + "</br>";
         str = str + "<br>errorDescription: " + this.errorDescription + "</br>";
         return str;
     }
 
     public String toHTMLWithDetails(String details) {
         String str = "<br><b>HTTP Status " + this.httpStatus + "</b></br>";
-        str = str + "<br>errorCode: " + this.codeId + "</br>";
+        str = str + "<br>error: " + this.codeId + "</br>";
         str = str + "<br>errorDescription: " + this.errorDescription + "</br>";
         str = str + "<br>details: " + details + "</br>";
         return str;

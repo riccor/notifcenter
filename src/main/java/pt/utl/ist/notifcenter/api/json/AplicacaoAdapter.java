@@ -1,5 +1,6 @@
 package pt.utl.ist.notifcenter.api.json;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
@@ -7,6 +8,7 @@ import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.domain.Aplicacao;
+import pt.utl.ist.notifcenter.domain.Remetente;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
@@ -69,6 +71,15 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         jObj.addProperty("site_url", obj.getSiteUrl());
         jObj.addProperty("redirect_uri", obj.getRedirectUrl());
         jObj.addProperty("clientSecret", obj.getSecret());
+
+        JsonArray jArray = new JsonArray();
+
+        for (Remetente r : obj.getRemetentesSet()) {
+            jArray.add(r.getExternalId());
+        }
+
+        jObj.add("senders", jArray);
+
         return jObj;
     }
 

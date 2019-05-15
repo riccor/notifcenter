@@ -44,8 +44,6 @@ import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
 import org.springframework.http.*;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,7 +59,6 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import javax.naming.SizeLimitExceededException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/apiv1")
@@ -148,16 +145,6 @@ public class MainAPIResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
         }
 
-        JsonObject jObj = new JsonObject();
-        JsonArray jArray = new JsonArray();
-
-        for (Remetente r : app.getRemetentesSet()) {
-            jArray.add(r.getExternalId());
-        }
-
-        jObj.addProperty("applicationId", app.getExternalId());
-        jObj.add("senders", jArray);
-
         return view(app, AplicacaoAdapter.class);
     }
 
@@ -172,17 +159,13 @@ public class MainAPIResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
         }
 
-        JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
         for (Remetente r : app.getRemetentesSet()) {
             jArray.add(view(r, RemetenteAdapter.class));
         }
 
-        jObj.addProperty("applicationId", app.getExternalId());
-        jObj.add("senders", jArray);
-
-        return jObj;
+        return jArray;
     }
 
     @SkipCSRF
@@ -286,7 +269,6 @@ public class MainAPIResource extends BennuRestResource {
 
         JsonObject jObj = new JsonObject();
 
-        jObj.addProperty("applicationId", app.getExternalId());
         jObj.addProperty("senderId", remetente.getExternalId());
         jObj.add("addedGroup", view(group, PersistentGroupAdapter.class));
 
@@ -325,7 +307,6 @@ public class MainAPIResource extends BennuRestResource {
 
         JsonObject jObj = new JsonObject();
 
-        jObj.addProperty("applicationId", app.getExternalId());
         jObj.addProperty("senderId", remetente.getExternalId());
         jObj.add("removedGroup", view(group, PersistentGroupAdapter.class));
 
@@ -347,17 +328,13 @@ public class MainAPIResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
-        JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
         for (PersistentGroup g : remetente.getGruposSet()) {
             jArray.add(view(g, PersistentGroupAdapter.class));
         }
 
-        jObj.addProperty("senderId", remetente.getExternalId());
-        jObj.add("groups", jArray);
-
-        return jObj;
+        return jArray;
     }
 
     @SkipCSRF
@@ -386,18 +363,22 @@ public class MainAPIResource extends BennuRestResource {
             }
         }
 
-        JsonObject jObj = new JsonObject();
-        jObj.addProperty("app", app.getExternalId());
-        jObj.addProperty("remetente", remetente.getExternalId());
-        jObj.addProperty("canal", canal.getExternalId());
+        JsonObject jObjTemp = new JsonObject();
+        jObjTemp.addProperty("app", app.getExternalId());
+        jObjTemp.addProperty("remetente", remetente.getExternalId());
+        jObjTemp.addProperty("canal", canal.getExternalId());
 
-        CanalNotificacao pedidoCriacaoCanalNotificacao = create(jObj, CanalNotificacao.class);
+        CanalNotificacao pedidoCriacaoCanalNotificacao = create(jObjTemp, CanalNotificacao.class);
 
         if (app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
             pedidoCriacaoCanalNotificacao.approveCanalNotificacao();
         }
 
-        return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("senderId", remetente.getExternalId());
+        jObj.add("addedNotificationChannel", view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class));
+
+        return jObj;
     }
 
     @SkipCSRF
@@ -423,6 +404,7 @@ public class MainAPIResource extends BennuRestResource {
         }
 
         JsonObject jObj = new JsonObject();
+        jObj.addProperty("senderId", remetente.getExternalId());
         jObj.add("removedNotificationChannel", view(cn, CanalNotificacaoAdapter.class));
 
         cn.delete();
@@ -445,17 +427,13 @@ public class MainAPIResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
-        JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
         for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
             jArray.add(view(cn, CanalNotificacaoAdapter.class));
         }
 
-        jObj.addProperty("senderId", remetente.getExternalId());
-        jObj.add("notificationChannels", jArray);
-
-        return jObj;
+        return jArray;
     }
 
     @SkipCSRF
@@ -526,17 +504,13 @@ public class MainAPIResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR);
         }
 
-        JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
         for (UserMessageDeliveryStatus e : msg.getUserMessageDeliveryStatusSet()) {
             jArray.add(view(e, UserMessageDeliveryStatusAdapter.class));
         }
 
-        jObj.addProperty("messageId", msg.getExternalId());
-        jObj.add("status", jArray);
-
-        return jObj;
+        return jArray;
     }
 
     @RequestMapping(value = "/applications/{applicationId}/messages/{messageId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -570,7 +544,6 @@ public class MainAPIResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.BLOCKED_APP_ERROR);
         }
 
-        JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
         for (Remetente r : app.getRemetentesSet()) {
@@ -581,10 +554,7 @@ public class MainAPIResource extends BennuRestResource {
             }
         }
 
-        jObj.addProperty("applicationId", app.getExternalId());
-        jObj.add("messages", jArray);
-
-        return jObj;
+        return jArray;
     }
 
     //Called when NotifcenterException is thrown due to some error or warning
