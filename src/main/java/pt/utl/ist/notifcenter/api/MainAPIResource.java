@@ -272,6 +272,10 @@ public class MainAPIResource extends BennuRestResource {
 
         String name = UtilsResource.getRequiredValue(body.getAsJsonObject(), "name");
 
+        if (!Group.dynamic(name).isDefined()) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group " + name + " does not exist.");
+        }
+
         PersistentGroup group = Group.dynamic(name).toPersistentGroup();
 
         if (remetente.getGruposSet().contains(group)) {
@@ -305,6 +309,10 @@ public class MainAPIResource extends BennuRestResource {
 
         if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
+        }
+
+        if (!Group.dynamic(groupName).isDefined()) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group " + groupName + " does not exist.");
         }
 
         PersistentGroup group = Group.dynamic(groupName).toPersistentGroup();

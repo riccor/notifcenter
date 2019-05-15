@@ -38,7 +38,9 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         //PersistentGroup[] gruposDestinatarios = UtilsResource.getDomainObjectsArray(PersistentGroup.class, gd).toArray(new PersistentGroup[0]);
         ArrayList<PersistentGroup> al = new ArrayList<>();
         for (String g : gd) {
-            //al.add(Group.parse("U("+ g + ")").toPersistentGroup());
+            if (!Group.dynamic(g).isDefined()) {
+                throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group " + g + " does not exist.");
+            }
             al.add(Group.dynamic(g).toPersistentGroup());
         }
         PersistentGroup[] gruposDestinatarios = al.toArray(new PersistentGroup[0]);
@@ -66,10 +68,6 @@ public class MensagemAdapter implements JsonAdapter<Mensagem> {
         }
 
         for (PersistentGroup group : gruposDestinatarios) {
-            if (!FenixFramework.isDomainObjectValid(group)) {
-                throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group " + group.toString() + " does not exist.");
-            }
-
             if (canalNotificacao.getRemetente().getGruposSet().stream().noneMatch(e -> e.equals(group))) {
                 throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_GROUP_ERROR, "No permissions to send messages to group " + group.getPresentationName() + "! Add them first.");
             }
