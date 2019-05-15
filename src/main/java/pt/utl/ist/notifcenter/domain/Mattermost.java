@@ -19,7 +19,7 @@ public class Mattermost extends Mattermost_Base {
 
     //This method is invoked when a message delivery status is received from a channel via HTTP
     @Override
-    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithDeliveryStatusNotifications(HttpServletRequest request) {
 
         return null;
     }

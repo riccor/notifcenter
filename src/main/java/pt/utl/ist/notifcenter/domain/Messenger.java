@@ -54,7 +54,7 @@ public class Messenger extends Messenger_Base {
         Canal.CHANNELS.put(Messenger.class, provider);
     }
 
-    private static String URL = "https://graph.facebook.com/v2.6/me/messages?access_token=%s";
+    private static String URI = "https://graph.facebook.com/v2.6/me/messages?access_token=%s";
 
     public Messenger(final String config) {
         super();
@@ -64,9 +64,9 @@ public class Messenger extends Messenger_Base {
     @Override
     public void sendMessage(Mensagem msg){
 
-        //No proper "message adaption to the channel" feature is implemented, so, at least, we verify message params length restrictions to this channel
+        //Verifying message params length restrictions to this channel
         if (msg.createSimpleMessageNotificationWithLink().length() > 2000) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto must be at most " + (2000-59) + " characters long.");
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto for Messenger must be at most " + (2000-59) + " characters long.");
         }
 
         for (Contacto contact : getContactsFromMessageRecipientUsers(msg)) {
@@ -79,7 +79,7 @@ public class Messenger extends Messenger_Base {
             //debug:
             //System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
 
-            String url = String.format(URL, this.getConfigAsJson().get("access_token"));
+            String url = String.format(URI, this.getConfigAsJson().get("access_token"));
             url = url.replace("\"", ""); //remove double quotes
 
             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
@@ -90,7 +90,7 @@ public class Messenger extends Messenger_Base {
             });
 
             //send message
-            HTTPClient.restASyncClientBody(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
+            HTTPClient.restASyncClient(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
         }
     }
 
@@ -133,7 +133,7 @@ public class Messenger extends Messenger_Base {
         }
         else {
             estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "error");
-            ///System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
 
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
@@ -159,11 +159,11 @@ public class Messenger extends Messenger_Base {
     }
 
     @Override
-    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithDeliveryStatusNotifications(HttpServletRequest request) {
 
         MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);
 
-        //NOTE: Not tested because "A secure Callback URL (https) is required"
+        //NOTE: Not tested because "A secure Callback URL (https) is required" by Facebook
         //"verify token": hub_verify_token -> set by us on https://developers.facebook.com/apps/<appId>/webhooks/
         String hub_challenge = UtilsResource.getRequiredValueFromMultiValueMapOrReturnNullInstead(requestParams, "hub_challenge");
         if (hub_challenge != null) {

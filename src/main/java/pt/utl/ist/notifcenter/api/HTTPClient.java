@@ -153,7 +153,7 @@ public class HTTPClient {
     }
 
     //ASYNC client
-    public static void restASyncClient(final HttpMethod method,
+    public static void restASyncClientMultiValueMap(final HttpMethod method,
                                         final String uri,
                                         final MultiValueMap<String, String> headerParameters,
                                         final MultiValueMap<String, String> bodyParameters,
@@ -222,7 +222,7 @@ public class HTTPClient {
         });
     }
 
-    public static void restASyncClientBody(final HttpMethod method,
+    public static void restASyncClient(final HttpMethod method,
                                            final String uri,
                                            final HttpHeaders headers,
                                            final String body,

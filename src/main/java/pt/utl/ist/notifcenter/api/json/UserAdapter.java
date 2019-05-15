@@ -17,11 +17,6 @@ public class UserAdapter implements JsonAdapter<User> {
 
     @Override
     public User update(JsonElement jsonElement, User user, JsonBuilder ctx) {
-        /* debug:
-        UserProfile up = user.getProfile();
-        up.setEmail("awd");
-        user.setProfile(up);
-        */
         return null;
     }
 
@@ -30,7 +25,6 @@ public class UserAdapter implements JsonAdapter<User> {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("username", obj.getUsername());
-        jObj.addProperty("name", obj.getName());
         jObj.addProperty("displayName", obj.getDisplayName());
         jObj.addProperty("email", obj.getEmail());
         return jObj;

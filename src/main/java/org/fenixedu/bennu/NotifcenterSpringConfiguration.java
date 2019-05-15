@@ -27,14 +27,10 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport
         @ConfigurationProperty(key = "notifcenter.group.admins.name", defaultValue = "notifcenterAdmins")
         public String notifcenterAdminsGroupName();
 
-        //Debug (example group for users with no adminstration role)
-        @ConfigurationProperty(key = "notifcenter.group.example.public", defaultValue = "exampleGroup")
-        public String notifcenterExampleGroup();
-
-        @ConfigurationProperty(key = "notifcenter.url", defaultValue = "localhost:8080/notifcenter")
+        @ConfigurationProperty(key = "notifcenter.url", defaultValue = "notifcentre.com:8080/notifcenter")
         public String notifcenterUrl();
 
-        @ConfigurationProperty(key = "notifcenter.url.attachments", defaultValue = "localhost:8080/notifcenter/mensagens/attachments/")
+        @ConfigurationProperty(key = "notifcenter.url.attachments", defaultValue = "notifcentre:8080/notifcenter/mensagens/attachments/")
         public String notifcenterUrlForAttachments();
 
         @ConfigurationProperty(key = "notifcenter.domain", defaultValue = "pt.utl.ist.notifcenter.domain")
@@ -49,8 +45,9 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport
         @ConfigurationProperty(key = "notifcenter.mensagem.attachment.maxsize", defaultValue = "25000000") //bytes
         public String notifcenterMensagemAttachmentMaxSizeBytes();
 
-        @ConfigurationProperty(key = "notifcenter.filestorage.name", defaultValue = "notistore-1")
-        public String notifcenterFileStorageName();
+        //Debug (example group for users with no adminstration role)
+        @ConfigurationProperty(key = "notifcenter.group.example.public", defaultValue = "exampleGroup")
+        public String notifcenterExampleGroup();
     }
 
     public static ConfigurationProperties getConfiguration() {

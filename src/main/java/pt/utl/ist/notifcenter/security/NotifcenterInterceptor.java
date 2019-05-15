@@ -65,11 +65,10 @@ public class NotifcenterInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        ///super.preHandle(request, response, handler);
-
         if (isAccessTokenRequired && !doesHandlerHasAnnotation(handler, SkipAccessTokenValidation.class)) {
             String accessToken = findToken(OAuthUtils.ACCESS_TOKEN, request);
 
+            //Debug
             //System.out.println("scopes: " + FenixFramework.getDomainRoot().getBennu().getScopesSet().toString());
 
             Optional<ApplicationUserSession> session = extractUserSession(accessToken);

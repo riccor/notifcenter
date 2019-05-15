@@ -120,7 +120,7 @@ public class Email extends Email_Base {
     }
 
     @Override
-    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithDeliveryStatusNotifications(HttpServletRequest request) {
 
         return null;
     }

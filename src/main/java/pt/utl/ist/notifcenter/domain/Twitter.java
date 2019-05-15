@@ -42,7 +42,7 @@ public class Twitter extends Twitter_Base {
         Canal.CHANNELS.put(Twitter.class, provider);
     }
 
-    private static String URL = "https://api.twitter.com/1.1/direct_messages/events/new.json";
+    private static String URI = "https://api.twitter.com/1.1/direct_messages/events/new.json";
 
     public Twitter(final String config) {
         super();
@@ -54,9 +54,9 @@ public class Twitter extends Twitter_Base {
     @Override
     public void sendMessage(Mensagem msg){
 
-        //No proper "message adaption to the channel" feature is implemented, so, at least, verify message params length restrictions to this channel
+        //Verifying message params length restrictions to this channel
         if (msg.createSimpleMessageNotificationWithLink().length() > 10000) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto must be at most " + (10000-59) + " characters long.");
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_TEXTO_LONGO_ERROR, "TextoCurto for Twitter must be at most " + (10000-59) + " characters long.");
         }
 
         for (Contacto contact : getContactsFromMessageRecipientUsers(msg)) {
@@ -78,7 +78,7 @@ public class Twitter extends Twitter_Base {
             });
 
             //send message
-            HTTPClient.restASyncClientBody(HttpMethod.POST, URL, httpHeaders, bodyContent, deferredResult);
+            HTTPClient.restASyncClient(HttpMethod.POST, URI, httpHeaders, bodyContent, deferredResult);
         }
     }
 
@@ -124,7 +124,7 @@ public class Twitter extends Twitter_Base {
     }
 
     @Override
-    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithDeliveryStatusNotifications(HttpServletRequest request) {
 
         return null;
     }
@@ -144,7 +144,7 @@ public class Twitter extends Twitter_Base {
 
         String parameterString = createParameterString(map);
 
-        String baseString = createOAuthBaseString(httpMethod, URL, parameterString);
+        String baseString = createOAuthBaseString(httpMethod, URI, parameterString);
 
         String signingKey = createOAuthSigningKey(this.getConfigAsJson().get("oauth_consumer_secret").getAsString(), this.getConfigAsJson().get("oauth_token_secret").getAsString());
 

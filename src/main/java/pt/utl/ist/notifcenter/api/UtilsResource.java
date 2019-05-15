@@ -7,17 +7,14 @@ package pt.utl.ist.notifcenter.api;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
-import org.fenixedu.bennu.core.groups.DynamicGroup;
-import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.joda.time.DateTime;
 import org.springframework.util.MultiValueMap;
-import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
+import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
@@ -31,8 +28,6 @@ public class UtilsResource {
 
         if (toReturn == null) {
             for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
-
-                //System.out.println("key: " + entry.getKey() + " | value: " + entry.getValue().toString());
 
                 if (entry.getValue() instanceof JsonObject) {
                     toReturn = getRequiredValueOrReturnNullInsteadRecursive(entry.getValue().getAsJsonObject(), property);
@@ -144,21 +139,21 @@ public class UtilsResource {
 
     public static void checkBennuManagersGroupPermissions(User user) {
 
-        DynamicGroup gm = Group.managers();
+        PersistentGroup pg = SistemaNotificacoes.getInstance().getNotifcenterDevelopersGroup();
 
         //debug
         //g.getMembers().forEach(e -> System.out.println("admin member: " + e.getUsername()));
 
-        if (!gm.isMember(user)) {
+        if (!pg.isMember(user)) {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR, "You are not a Bennu manager.");
         }
     }
 
     public static boolean isUserBennuManager(User user) {
 
-        DynamicGroup gm = Group.managers();
+        PersistentGroup pg = SistemaNotificacoes.getInstance().getNotifcenterDevelopersGroup();
 
-        if (gm.isMember(user)) {
+        if (pg.isMember(user)) {
             return true;
         }
 
@@ -168,9 +163,9 @@ public class UtilsResource {
 
     public static boolean isUserNotifcenterAdmin(User user) {
 
-        DynamicGroup ga = Group.dynamic(NotifcenterSpringConfiguration.getConfiguration().notifcenterAdminsGroupName());
+        PersistentGroup pg = SistemaNotificacoes.getInstance().getNotifcenterAdminsGroup();
 
-        if (ga.isMember(user)) {
+        if (pg.isMember(user)) {
             return true;
         }
 
@@ -179,12 +174,13 @@ public class UtilsResource {
 
     public static void checkNotifcenterAdminsGroupPermissions(User user) {
 
-        DynamicGroup gm = Group.managers(); //managers can do anything
+        //managers can change anything in the system
+        PersistentGroup pgm = SistemaNotificacoes.getInstance().getNotifcenterDevelopersGroup();
 
-        if (!gm.isMember(user)) { //if not a manager, check if user is a notifcenter administrator
-            DynamicGroup ga = Group.dynamic(NotifcenterSpringConfiguration.getConfiguration().notifcenterAdminsGroupName());
+        if (!pgm.isMember(user)) { //if not a manager, check if user is a notifcenter administrator
+            PersistentGroup pga = SistemaNotificacoes.getInstance().getNotifcenterAdminsGroup();
 
-            if (!ga.isMember(user)) {
+            if (!pga.isMember(user)) {
                 throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_PAGE_ERROR, "You are not a Notifcenter administrator.");
             }
         }

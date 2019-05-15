@@ -60,7 +60,7 @@ public class Mensagem extends Mensagem_Base {
         this.addAttachments(at);
     }
 
-    //Simulating "message content adaptation to a channel" feature
+    //"message content adaptation to a channel" feature
     public String createSimpleMessageNotificationWithLink() {
         String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/messages/" + this.getExternalId();
         String simple = this.getTextoCurto() + linkForMessage;

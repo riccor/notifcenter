@@ -77,7 +77,7 @@ public abstract class Canal extends Canal_Base {
     public abstract void sendMessage(Mensagem msg);
 
     //This method is invoked when a message delivery status is received from a channel via HTTP
-    public abstract UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request);
+    public abstract UserMessageDeliveryStatus dealWithDeliveryStatusNotifications(HttpServletRequest request);
 
     //IMPORTANT: the following method can only be called from inside sendMessage()
     //This method:

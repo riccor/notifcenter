@@ -32,12 +32,8 @@ public class NotifcenterInitializer implements ServletContextListener {
 
     }
 
-}
-
-
-    /*
-    //My scopes:
-    private static final Locale enUS = Locale.forLanguageTag("en-US");
+    //Uncomment to allow Notifcenter own scopes
+    /*private static final Locale enUS = Locale.forLanguageTag("en-US");
     private static final String[] scopeKeys = {"scope1", "scope2", "scope3"};
 
     @Atomic
@@ -55,4 +51,9 @@ public class NotifcenterInitializer implements ServletContextListener {
             }
         }
     }*/
+
+}
+
+
+
 

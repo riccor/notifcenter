@@ -48,7 +48,7 @@ public class Telegram extends Telegram_Base {
         Canal.CHANNELS.put(Telegram.class, provider);
     }
 
-    private static String URL = "https://api.telegram.org/bot%s/sendMessage";
+    private static String URI = "https://api.telegram.org/bot%s/sendMessage";
 
     public Telegram(final String config) {
         super();
@@ -68,7 +68,7 @@ public class Telegram extends Telegram_Base {
             //debug:
             //System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
 
-            String url = String.format(URL, this.getConfigAsJson().get("access_token").getAsString());
+            String url = String.format(URI, this.getConfigAsJson().get("access_token").getAsString());
 
             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
             deferredResult.setResultHandler((Object responseEntity) -> {
@@ -78,7 +78,7 @@ public class Telegram extends Telegram_Base {
             });
 
             //send message
-            HTTPClient.restASyncClientBody(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
+            HTTPClient.restASyncClient(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
         }
     }
 
@@ -123,7 +123,7 @@ public class Telegram extends Telegram_Base {
     }
 
     @Override
-    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request) {
+    public UserMessageDeliveryStatus dealWithDeliveryStatusNotifications(HttpServletRequest request) {
 
         return null;
     }

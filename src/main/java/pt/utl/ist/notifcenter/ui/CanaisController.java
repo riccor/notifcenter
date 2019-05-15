@@ -41,8 +41,6 @@ public class CanaisController {
         UtilsResource.checkIsUserValid(user);
         UtilsResource.checkBennuManagersGroupPermissions(user);
 
-        //System.out.println("tipo: " + request.getParameter());
-
         if (!Strings.isNullOrEmpty(request.getParameter("createChannel"))) {
             Canal c = CanalAdapter.create2(HTTPClient.getHttpServletRequestParamsAsJson(request));
             model.addAttribute("changesmessage", "Channel " + c.getClass().getSimpleName() + " with id " + c.getExternalId() + " was successfully created!");
@@ -85,11 +83,9 @@ public class CanaisController {
         JsonArray jArray = new JsonArray();
 
         list.forEach((k, v) -> {
-            //System.out.println("class: " + k);
 
             JsonArray jA = new JsonArray();
             v.forEach(i -> {
-                //System.out.println("param: " + i);
                 jA.add(i);
             });
 

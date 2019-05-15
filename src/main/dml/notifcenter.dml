@@ -29,8 +29,7 @@ class Remetente {
 }
 
 /*
-* Os anexos devem quanto muito ser instâncias de GenericFile, de modo a não serem persistidos na base de 
-* dados.
+*   Message
 */
 class Mensagem{
     String assunto; //Message subject
@@ -96,7 +95,7 @@ class UserMessageDeliveryStatus {
 
 /** Relations **/
 
-relation BennuTemSistemaNotificacoes {
+relation FenixEduTemSistemaNotificacoes {
     .pt.ist.fenixframework.DomainRoot playsRole root { multiplicity 1..1; }
     SistemaNotificacoes playsRole sistemaNotificacoes { multiplicity 0..1; }
 }
@@ -164,4 +163,13 @@ relation EstadoDeEntregaDeMensagemTemMensagem {
 relation EstadoDeEntregaDeMensagemTemUtilizador {
     .org.fenixedu.bennu.core.domain.User playsRole utilizador { multiplicity 1..1; }
     UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
+}
+
+relation SistemaNotificacoesTemGrupoAdministradores{
+    SistemaNotificacoes playsRole sistemaNotificacoes { multiplicity 0..*; }
+    .org.fenixedu.bennu.core.domain.groups.PersistentGroup playsRole notifcenterAdminsGroup { multiplicity 1..1; }
+}
+relation SistemaNotificacoesTemGrupoDesenvolvedores{
+    SistemaNotificacoes playsRole sistemaNotificacoess { multiplicity 0..*; }
+    .org.fenixedu.bennu.core.domain.groups.PersistentGroup playsRole notifcenterDevelopersGroup { multiplicity 1..1; }
 }

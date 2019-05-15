@@ -110,7 +110,7 @@ public class MainAPIResource extends BennuRestResource {
         System.out.println("Got new message delivery status message!!");
         System.out.println(HTTPClient.getHttpServletRequestParamsAsJson(request).toString());
 
-        UserMessageDeliveryStatus ede = canal.dealWithMessageDeliveryStatusNotificationsFromChannel(request);
+        UserMessageDeliveryStatus ede = canal.dealWithDeliveryStatusNotifications(request);
 
         if (ede == null) {
             throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_ID);

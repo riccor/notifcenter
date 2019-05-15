@@ -4,7 +4,6 @@ package pt.utl.ist.notifcenter.domain;
 Twilio - Whatsapp chat
 
 Configuration link: https://www.twilio.com/console/sms/whatsapp/sandbox
-STATUS CALLBACK URL for the created example (used to receive message delivery statuses from Twilio): http://www.notifcentre.com:8080/notifcenter/apicanais/281835753963522/messagedeliverystatus
 USERID (dadosContacto): whatsapp:+351<phoneNumber>
 
 */
@@ -37,7 +36,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         Canal.CHANNELS.put(TwilioWhatsapp.class, provider);
     }
 
-    private static String URL = "https://api.twilio.com/2010-04-01/Accounts/%s/Messages.json";
+    private static String URI = "https://api.twilio.com/2010-04-01/Accounts/%s/Messages.json";
 
     public TwilioWhatsapp(final String config) {
         super();
@@ -72,7 +71,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                         if (contacto.getCanal().equals(this)) {
 
                             body.remove("To");
-                            body.put("To", Collections.singletonList(contacto.getDadosContacto()));
+                            body.put("To", Collections.singletonList("whatsapp:" + contacto.getDadosContacto()));
 
                             UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "none_yet", "none_yet");
 
@@ -83,10 +82,10 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
                             });
 
-                            String uri = String.format(URL, this.getConfigAsJson().get("accountSID").getAsString());
+                            String uri = String.format(URI, this.getConfigAsJson().get("accountSID").getAsString());
 
                             //send message
-                            HTTPClient.restASyncClient(HttpMethod.POST, uri, header, body, deferredResult);
+                            HTTPClient.restASyncClientMultiValueMap(HttpMethod.POST, uri, header, body, deferredResult);
 
                             userHasNoContactForThisChannel = false;
 
@@ -132,7 +131,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
     }
 
     @Override
-    public UserMessageDeliveryStatus dealWithMessageDeliveryStatusNotificationsFromChannel(HttpServletRequest request){
+    public UserMessageDeliveryStatus dealWithDeliveryStatusNotifications(HttpServletRequest request){
 
         MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);
 
@@ -187,7 +186,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
             });
 
-            String uri = String.format(URL, this.getConfigAsJson().get("accountSID").getAsString());
+            String uri = String.format(URI, this.getConfigAsJson().get("accountSID").getAsString());
 
             //send message
             HTTPClient.restASyncClient(HttpMethod.POST, uri, header, body, deferredResult);

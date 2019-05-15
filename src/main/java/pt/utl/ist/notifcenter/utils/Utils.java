@@ -97,8 +97,6 @@ public class Utils {
             if(entry.getValue().equals("null")) {
                 return false;
             }
-
-            //System.out.println("key = " + entry.getKey() + ", value = " + entry.getValue() + ";");
         }
 
         return true;
