@@ -2,11 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
-    <title>Notifcenter - Applications/Senders</title>
-
-    <div class="changes-notifications" id="div0">
-        <br><h4 style="color:#FF8000">${changesmessage}<h4>
-    </div>
+    <title>Notifcenter - Applications->Senders</title>
 
     <c:set var="urlPrefix" value="/notifcenter/aplicacoes/"/>
     <c:set var="gruposDestinatarios" value="gruposdestinatarios"/>
@@ -41,7 +37,11 @@
 </head>
 
 <body>
-    <h2><b>Applications/Senders manager</b></h2>
+    <h2><b>Applications->Senders</b></h2>
+
+    <div class="changes-notifications" id="div0">
+        <br><h4 style="color:#FF8000">${changesmessage}<h4>
+    </div>
 
     <div class="list-applications-senders" id="div1">
 

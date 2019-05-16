@@ -2,11 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
-    <title>Notifcenter - Applications/Senders/Recipient Groups</title>
-
-    <div class="changes-notifications" id="div0">
-        <br><h4 style="color:#FF8000">${changesmessage}<h4>
-    </div>
+    <title>Notifcenter - Applications->Senders->Recipient Groups Permissions</title>
 
     <c:set var="urlPrefix" value="/notifcenter/aplicacoes/"/>
     <c:set var="grupsDest" value="gruposdestinatarios"/>
@@ -42,7 +38,11 @@
 </head>
 
 <body>
-    <h2><b>Applications/Senders/Recipient groups manager</b></h2>
+    <h2><b>Applications->Senders->Recipient Groups Permissions</b></h2>
+
+    <div class="changes-notifications" id="div0">
+        <br><h4 style="color:#FF8000">${changesmessage}<h4>
+    </div>
 
     <div class="list-applications-senders-recipientgroups" id="div1">
 

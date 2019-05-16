@@ -4,10 +4,6 @@
 <head>
     <title>Notifcenter - Applications</title>
 
-    <div class="changes-notifications" id="div0">
-        <br><h4 style="color:#FF8000">${changesmessage}<h4>
-    </div>
-
     <c:set var="urlPrefix" value="/notifcenter/aplicacoes"/>
     <c:set var="slash" value="/"/>
 
@@ -46,7 +42,11 @@
 </head>
 
 <body>
-    <h2><b>Applications manager</b></h2>
+    <h2><b>Applications</b></h2>
+
+    <div class="changes-notifications" id="div0">
+        <br><h4 style="color:#FF8000">${changesmessage}<h4>
+    </div>
 
     <div class="list-applications" id="div1">
 

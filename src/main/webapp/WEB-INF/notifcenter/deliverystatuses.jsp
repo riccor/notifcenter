@@ -2,7 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
-    <title>Notifcenter - Messages/Delivery Statuses</title>
+    <title>Notifcenter - Messages->Delivery Statuses</title>
 
     <style>
         #table1 {
@@ -32,7 +32,7 @@
 </head>
 
 <body>
-    <h2><b>Messages/Delivery statuses</b></h2>
+    <h2><b>Messages->Delivery Statuses</b></h2>
 
     <div class="list-messages-delivery-statuses" id="div1">
 

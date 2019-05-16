@@ -34,7 +34,7 @@
 </head>
 
 <body>
-    <h2><b>Channels manager</b></h2>
+    <h2><b>Channels</b></h2>
 
     <div class="changes-notifications" id="div0">
         <br><h4 style="color:#FF8000">${changesmessage}<h4>

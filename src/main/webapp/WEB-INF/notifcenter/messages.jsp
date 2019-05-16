@@ -4,10 +4,6 @@
 <head>
     <title>Notifcenter - Messages</title>
 
-    <div class="changes-notifications" id="div0">
-        <br><h4 style="color:#FF8000">${changesmessage}<h4>
-    </div>
-
     <c:set var="urlPrefix" value="/notifcenter/mensagens"/>
     <c:set var="slash" value="/"/>
     <c:set var="status" value="deliverystatuses"/>
@@ -46,7 +42,11 @@
 </head>
 
 <body>
-    <h2><b>Messages manager</b></h2>
+    <h2><b>Messages</b></h2>
+
+    <div class="changes-notifications" id="div0">
+        <br><h4 style="color:#FF8000">${changesmessage}<h4>
+    </div>
 
     <div class="list-users-contacts" id="div1">
 

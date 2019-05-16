@@ -3,10 +3,6 @@
 <head>
     <title>Notifcenter - Users</title>
 
-    <div class="changes-notifications" id="div0">
-        <br><h4 style="color:#FF8000">${changesmessage}<h4>
-    </div>
-
     <c:set var="urlPrefix" value="/notifcenter/utilizadores/"/>
     <c:set var="slash" value="/"/>
     <c:set var="messages" value="messages"/>
@@ -40,6 +36,10 @@
 
 <body>
     <h2><b>Users</b></h2>
+
+    <div class="changes-notifications" id="div0">
+        <br><h4 style="color:#FF8000">${changesmessage}<h4>
+    </div>
 
     <div class="list-users" id="div1">
 

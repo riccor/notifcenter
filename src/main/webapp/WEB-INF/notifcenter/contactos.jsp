@@ -2,11 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
-    <title>Notifcenter - Users/Contacts</title>
-
-    <div class="changes-notifications" id="div0">
-        <br><h4 style="color:#FF8000">${changesmessage}<h4>
-    </div>
+    <title>Notifcenter - Users->Contacts</title>
 
     <c:set var="urlPrefix" value="/notifcenter/utilizadores/"/>
     <c:set var="slash" value="/"/>
@@ -41,7 +37,11 @@
 </head>
 
 <body>
-    <h2><b>Users/Contacts manager</b></h2>
+    <h2><b>Users->Contacts</b></h2>
+
+    <div class="changes-notifications" id="div0">
+        <br><h4 style="color:#FF8000">${changesmessage}<h4>
+    </div>
 
     <div class="list-users-contacts" id="div1">
 
