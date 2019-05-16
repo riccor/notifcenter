@@ -114,7 +114,25 @@ public class Twitter extends Twitter_Base {
 
                 edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
-                MainAPIResource.notificateAppViaWebhook(edm);
+                //MainAPIResource.notificateAppViaWebhook(edm); //Does not work calling this method. Using its code here:
+                //If message parameter callbackUrlEstadoEntrega is not "none", then send message delivery status to the application
+                if (!edm.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
+
+                    JsonObject jObjj = new JsonObject();
+                    jObjj.addProperty("MessageId", edm.getMensagem().getExternalId());
+                    jObjj.addProperty("User", edm.getUtilizador().getUsername());
+                    jObjj.addProperty("MessageStatus", edm.getEstadoEntrega());
+
+                    DeferredResult<ResponseEntity<String>> deferredResultt = new DeferredResult<>();
+                    deferredResultt.setResultHandler((Object responseEntityy) -> {
+                        HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntityy);
+                    });
+
+                    //Debug
+                    System.out.println("sent to channel webhook: " + jObj.toString());
+
+                    HTTPClient.restASyncClientJSON(HttpMethod.POST, edm.getMensagem().getCallbackUrlEstadoEntrega(), jObjj, deferredResultt);
+                }
             });
 
             //send message
