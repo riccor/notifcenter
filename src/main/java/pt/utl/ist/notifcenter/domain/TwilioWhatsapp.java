@@ -76,10 +76,33 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                             UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, user, "none_yet", "none_yet");
 
                             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-                            deferredResult.setResultHandler((Object responseEntity) -> {
+                            deferredResult.setResultHandler((Object responseEntityOrigin) -> {
 
-                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, user);
+                                ResponseEntity<String> responseEntity = (ResponseEntity<String>) responseEntityOrigin;
 
+                                //Debug
+                                HTTPClient.printResponseEntity(responseEntity);
+
+                                JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
+                                String idExterno = UtilsResource.getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "sid");
+                                String estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "status");
+
+                                if (idExterno == null) {
+                                    idExterno = "null";
+                                }
+
+                                if (estadoEntrega == null) {
+                                    estadoEntrega = "null";
+                                }
+
+                                edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
+
+                                if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
+                                    //System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+                                }
+                                else {
+                                    System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+                                }
                             });
 
                             String uri = String.format(URI, this.getConfigAsJson().get("accountSID").getAsString());
@@ -100,33 +123,6 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                 }
 
             });
-        }
-    }
-
-    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm, User user) {
-
-        //Debug
-        HTTPClient.printResponseEntity(responseEntity);
-
-        JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
-        String idExterno = UtilsResource.getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "sid");
-        String estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "status");
-
-        if (idExterno == null) {
-            idExterno = "null";
-        }
-
-        if (estadoEntrega == null) {
-            estadoEntrega = "null";
-        }
-
-        edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
-
-        if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
-            //System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
-        }
-        else {
-            System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
     }
 
@@ -152,45 +148,5 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
         return null;
     }
-
-
-    /*
-    NOTE:
-    handleDeliveryStatus() won't get called using the following code due to an unknown reason.
-    Keeping this code here for future analysis.
-
-    @Override
-    public void sendMessage(Mensagem msg){
-
-        MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-
-        header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-        header.add("Authorization", HTTPClient.createBasicAuthString(this.getConfigAsJson().get("accountSID").getAsString(), this.getConfigAsJson().get("authToken").getAsString()));
-
-        body.put("To", Collections.singletonList("initializing...")); ///
-        body.put("From", Collections.singletonList(this.getConfigAsJson().get("fromPhoneNumber").getAsString()));
-        body.put("Body", Collections.singletonList(msg.createSimpleMessageNotificationWithLink()));
-
-        for (Contacto contact : getContactsFromMessageRecipientUsers(msg)) {
-
-            body.remove("To");
-            body.put("To", Collections.singletonList(contact.getDadosContacto()));
-
-            UserMessageDeliveryStatus edm = UserMessageDeliveryStatus.createUserMessageDeliveryStatus(msg, contact.getUtilizador(), "none_yet", "none_yet");
-
-            DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-            deferredResult.setResultHandler((Object responseEntity) -> {
-
-                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, contact.getUtilizador());
-
-            });
-
-            String uri = String.format(URI, this.getConfigAsJson().get("accountSID").getAsString());
-
-            //send message
-            HTTPClient.restASyncClient(HttpMethod.POST, uri, header, body, deferredResult);
-        }
-    }*/
 
 }

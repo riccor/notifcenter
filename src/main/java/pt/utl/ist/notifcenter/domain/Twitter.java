@@ -71,56 +71,53 @@ public class Twitter extends Twitter_Base {
             ///System.out.println(Utils.MAGENTA + "\n\nJson body:\n" + Utils.CYAN + bodyContent);
 
             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-            deferredResult.setResultHandler((Object responseEntity) -> {
+            deferredResult.setResultHandler((Object responseEntityOrigin) -> {
 
-                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, contact.getUtilizador());
+                ResponseEntity<String> responseEntity = (ResponseEntity<String>) responseEntityOrigin;
+
+                //Debug
+                HTTPClient.printResponseEntity(responseEntity);
+
+                /*
+
+                Twitter response body:
+                body: {"event":{"type":"message_create","id":"1086481292764606471","created_timestamp":"1547872300698",
+                "message_create":{"target":{"recipient_id":"1085250046176702466"},"sender_id":"1085250046176702466",
+                "message_data":{"text":"3anexosmensagem Check localhost:8080\/notifcenter\/mensagens\/281681135140903",
+                "entities":{"hashtags":[],"symbols":[],"user_mentions":[],"urls":[]}}}}}
+
+                */
+
+                /*
+                Known response errors:
+                {"errors":[{"code":150,"message":"You cannot send messages to users who are not following you."}]}
+                {"errors":[{"code":108,"message":"Cannot find specified user."}]}
+                */
+
+                JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
+                String idExterno = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "id");
+                String estadoEntrega;
+
+                if (idExterno == null) {
+                    idExterno = "null";
+                }
+
+                if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
+                    estadoEntrega = "Delivered";
+                    ///System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+                }
+                else {
+                    estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "errors");
+                    System.out.println("Failed to send message to user id " + contact.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+                }
+
+                edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
             });
 
             //send message
             HTTPClient.restASyncClient(HttpMethod.POST, URI, httpHeaders, bodyContent, deferredResult);
         }
-    }
-
-    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm, User user) {
-
-        //Debug
-        HTTPClient.printResponseEntity(responseEntity);
-
-        /*
-
-        Twitter response body:
-        body: {"event":{"type":"message_create","id":"1086481292764606471","created_timestamp":"1547872300698",
-        "message_create":{"target":{"recipient_id":"1085250046176702466"},"sender_id":"1085250046176702466",
-        "message_data":{"text":"3anexosmensagem Check localhost:8080\/notifcenter\/mensagens\/281681135140903",
-        "entities":{"hashtags":[],"symbols":[],"user_mentions":[],"urls":[]}}}}}
-
-        */
-
-        /*
-        Known response errors:
-        {"errors":[{"code":150,"message":"You cannot send messages to users who are not following you."}]}
-        {"errors":[{"code":108,"message":"Cannot find specified user."}]}
-        */
-
-        JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
-        String idExterno = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "id");
-        String estadoEntrega;
-
-        if (idExterno == null) {
-            idExterno = "null";
-        }
-
-        if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
-            estadoEntrega = "Delivered";
-            ///System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
-        }
-        else {
-            estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "errors");
-            System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
-        }
-
-        edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
     }
 
     @Override

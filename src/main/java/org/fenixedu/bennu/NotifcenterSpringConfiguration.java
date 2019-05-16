@@ -24,14 +24,12 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport
     @ConfigurationManager(description = "Notifcenter Configuration")
     public interface ConfigurationProperties {
 
-        @ConfigurationProperty(key = "notifcenter.group.admins.name", defaultValue = "notifcenterAdmins")
-        public String notifcenterAdminsGroupName();
-
+        //Needed for method createSimpleMessageNotificationWithLink
         @ConfigurationProperty(key = "notifcenter.url", defaultValue = "notifcentre.com:8080/notifcenter")
         public String notifcenterUrl();
 
-        @ConfigurationProperty(key = "notifcenter.url.attachments", defaultValue = "notifcentre:8080/notifcenter/mensagens/attachments/")
-        public String notifcenterUrlForAttachments();
+        @ConfigurationProperty(key = "notifcenter.group.admins.name", defaultValue = "notifcenterAdmins")
+        public String notifcenterAdminsGroupName();
 
         @ConfigurationProperty(key = "notifcenter.domain", defaultValue = "pt.utl.ist.notifcenter.domain")
         public String notifcenterDomain();

@@ -232,7 +232,6 @@ public class HTTPClient {
 
         AsyncRestTemplate restTemplate = new AsyncRestTemplate();
 
-        //because of errors like "WARN  o.s.web.client.AsyncRestTemplate - Async POST request for "https://api.twitter.com/1.1/direct_messages/events/new.json" resulted in 403 (Forbidden); invoking error handler"
         restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
             protected boolean hasError(HttpStatus statusCode) {
                 System.out.println(Utils.WHITE + "\nHTTP async request status code: " + statusCode);

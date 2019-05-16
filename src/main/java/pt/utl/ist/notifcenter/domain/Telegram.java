@@ -71,51 +71,47 @@ public class Telegram extends Telegram_Base {
             String url = String.format(URI, this.getConfigAsJson().get("access_token").getAsString());
 
             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-            deferredResult.setResultHandler((Object responseEntity) -> {
+            deferredResult.setResultHandler((Object responseEntityOrigin) -> {
 
-                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, contact.getUtilizador());
+                ResponseEntity<String> responseEntity = (ResponseEntity<String>) responseEntityOrigin;
 
+                //Debug
+                HTTPClient.printResponseEntity(responseEntity);
+
+                /*
+                    example success response:
+                        {"ok":true,"result":{"message_id":15,"from":{"id":710606157,"is_bot":true,
+                        "first_name":"notifcentre_bot","username":"notifcentre_bot"},"chat":{"id":720595986,
+                        "first_name":"NofifCentre","type":"private"},"date":1547953154,
+                        "text":"testingapi1 Check localhost:8080/notifcenter/mensagens/281681135140942"}}
+
+                    example error response:
+                        {"ok":false,"error_code":403,"description":"Forbidden: bot can't send messages to bots"}
+                */
+
+                JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
+                String idExterno = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "message_id");
+                String estadoEntrega;
+
+                if (idExterno == null) {
+                    idExterno = "null";
+                }
+
+                if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
+                    estadoEntrega = "Delivered";
+                    ///System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+                }
+                else {
+                    estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "error_code") + " " + UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "description");
+                    System.out.println("Failed to send message to user id " + contact.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+                }
+
+                edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
             });
 
             //send message
             HTTPClient.restASyncClient(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
         }
-    }
-
-    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm, User user) {
-
-        //Debug
-        HTTPClient.printResponseEntity(responseEntity);
-
-        /*
-            example success response:
-                {"ok":true,"result":{"message_id":15,"from":{"id":710606157,"is_bot":true,
-                "first_name":"notifcentre_bot","username":"notifcentre_bot"},"chat":{"id":720595986,
-                "first_name":"NofifCentre","type":"private"},"date":1547953154,
-                "text":"testingapi1 Check localhost:8080/notifcenter/mensagens/281681135140942"}}
-
-            example error response:
-                {"ok":false,"error_code":403,"description":"Forbidden: bot can't send messages to bots"}
-        */
-
-        JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
-        String idExterno = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "message_id");
-        String estadoEntrega;
-
-        if (idExterno == null) {
-            idExterno = "null";
-        }
-
-        if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
-            estadoEntrega = "Delivered";
-            ///System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
-        }
-        else {
-            estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "error_code") + " " + UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "description");
-            System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
-        }
-
-        edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
     }
 
     public String createTelegramBody(String text, String recipient) {

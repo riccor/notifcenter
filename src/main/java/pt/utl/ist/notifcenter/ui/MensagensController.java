@@ -148,7 +148,7 @@ public class MensagensController {
             map.put("id", e.getExternalId());
             map.put("channel", e.getMensagem().getCanalNotificacao().getCanal().getExternalId()); //UML SIMPLIFIED
             //map.put("contact", e.getContacto().getExternalId());
-            map.put("user", e.getUtilizador().getExternalId());
+            map.put("user", e.getUtilizador().getUsername() + "(" + e.getUtilizador().getExternalId() + ")");
             map.put("externalId", e.getIdExterno());
             map.put("deliveryStatus", e.getEstadoEntrega());
 
@@ -179,15 +179,15 @@ public class MensagensController {
         }
 
         model.addAttribute("message", msg);
-        model.addAttribute("attachments_links", getUserFriendlyMessageAttachments(msg));
+        model.addAttribute("attachments_links", getUserFriendlyMessageAttachments(msg, request.getHeader("host"), request.getContextPath()));
 
         return "notifcenter/view-message";
     }
 
-    private HashMap<String, String> getUserFriendlyMessageAttachments(Mensagem msg) {
+    private HashMap<String, String> getUserFriendlyMessageAttachments(Mensagem msg, String host, String context) {
         HashMap<String, String> attachmentsLinks = new LinkedHashMap<>();
         for (Attachment at : msg.getAttachmentsSet()) {
-            attachmentsLinks.put(at.getDisplayName(), "http://" + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrlForAttachments() + at.getExternalId());
+            attachmentsLinks.put(at.getDisplayName(), host + context + "/mensagens/attachments/" + at.getExternalId());
         }
         return attachmentsLinks;
     }
@@ -214,7 +214,6 @@ public class MensagensController {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_ATTACHMENT_ERROR);
         }
 
-        String changesMessage = "";
         /* Debug
         System.out.println("#############content key: "+ attachment.getContentKey());
         System.out.println("#############checksum algorithm: "+ attachment.getChecksumAlgorithm());

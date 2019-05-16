@@ -440,7 +440,8 @@ public class MainAPIResource extends BennuRestResource {
     @RequestMapping(value = "/applications/{applicationId}/messages", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement sendMessage(@PathVariable("applicationId") Aplicacao app,
                                    @RequestPart(value = "json", required = true) String json,
-                                   @RequestPart(value = "attachment", required = false) MultipartFile[] anexos) {
+                                   @RequestPart(value = "attachment", required = false) MultipartFile[] anexos,
+                                   HttpServletRequest request) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -486,7 +487,10 @@ public class MainAPIResource extends BennuRestResource {
         Canal ic = msg.getCanalNotificacao().getCanal();
         ic.sendMessage(msg);
 
-        return view(msg, MensagemAdapter.class);
+        JsonObject jObjF = view(msg, MensagemAdapter.class).getAsJsonObject();
+        jObjF.addProperty("link", request.getHeader("host") + request.getContextPath() + "/mensagens/" + msg.getExternalId());
+
+        return jObjF;
     }
 
     @RequestMapping(value = "/applications/{applicationId}/messages/{messageId}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -514,7 +518,7 @@ public class MainAPIResource extends BennuRestResource {
     }
 
     @RequestMapping(value = "/applications/{applicationId}/messages/{messageId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement viewMessage(@PathVariable("applicationId") Aplicacao app, @PathVariable("messageId") Mensagem msg) {
+    public JsonElement viewMessage(@PathVariable("applicationId") Aplicacao app, @PathVariable("messageId") Mensagem msg, HttpServletRequest request) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -529,6 +533,7 @@ public class MainAPIResource extends BennuRestResource {
         }
 
         JsonObject jObj = view(msg, MensagemAdapter.class).getAsJsonObject();
+        jObj.addProperty("link", request.getHeader("host") + request.getContextPath() + "/mensagens/" + msg.getExternalId());
 
         return jObj;
     }

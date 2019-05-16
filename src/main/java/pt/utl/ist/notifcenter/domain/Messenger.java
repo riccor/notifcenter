@@ -83,60 +83,56 @@ public class Messenger extends Messenger_Base {
             url = url.replace("\"", ""); //remove double quotes
 
             DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-            deferredResult.setResultHandler((Object responseEntity) -> {
+            deferredResult.setResultHandler((Object responseEntityOrigin) -> {
 
-                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm, contact.getUtilizador());
+                ResponseEntity<String> responseEntity = (ResponseEntity<String>) responseEntityOrigin;
+
+                //Debug
+                HTTPClient.printResponseEntity(responseEntity);
+
+                /*
+                    example success response:
+                        {
+                          "recipient_id": "1254477777772919",
+                          "message_id": "m_AG5Hz2Uq7tuwNEhXfYYKj8mJEM_QPpz5jdCK48PnKAjSdjfipqxqMvK8ma6AC8fplwlqLP_5cgXIbu7I3rBN0P"
+                        }
+
+                    example error response:
+                        {
+                          "error": {
+                            "message": "Invalid OAuth access token.",
+                            "type": "OAuthException",
+                            "code": 190,
+                            "error_subcode": 1234567,
+                            "fbtrace_id": "BLBz/WZt8dN"
+                          }
+                        }
+                */
+
+                JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
+                String idExterno = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "message_id");
+                String estadoEntrega;
+
+                if (idExterno == null) {
+                    idExterno = "null";
+                }
+
+                if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
+                    estadoEntrega = "Delivered";
+                    ///System.out.println("Success on sending message to user id " + contact.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+                }
+                else {
+                    estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "error");
+                    System.out.println("Failed to send message to user id " + contact.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+                }
+
+                edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
             });
 
             //send message
             HTTPClient.restASyncClient(HttpMethod.POST, url, httpHeaders, bodyContent, deferredResult);
         }
-    }
-
-
-    public void handleDeliveryStatus(ResponseEntity<String> responseEntity, UserMessageDeliveryStatus edm, User user) {
-
-        //Debug
-        HTTPClient.printResponseEntity(responseEntity);
-
-        /*
-            example success response:
-                {
-                  "recipient_id": "1254477777772919",
-                  "message_id": "m_AG5Hz2Uq7tuwNEhXfYYKj8mJEM_QPpz5jdCK48PnKAjSdjfipqxqMvK8ma6AC8fplwlqLP_5cgXIbu7I3rBN0P"
-                }
-
-            example error response:
-                {
-                  "error": {
-                    "message": "Invalid OAuth access token.",
-                    "type": "OAuthException",
-                    "code": 190,
-                    "error_subcode": 1234567,
-                    "fbtrace_id": "BLBz/WZt8dN"
-                  }
-                }
-        */
-
-        JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
-        String idExterno = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "message_id");
-        String estadoEntrega;
-
-        if (idExterno == null) {
-            idExterno = "null";
-        }
-
-        if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
-            estadoEntrega = "Delivered";
-            System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
-        }
-        else {
-            estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(jObj.getAsJsonObject(), "error");
-            System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
-        }
-
-        edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
     }
 
     /*

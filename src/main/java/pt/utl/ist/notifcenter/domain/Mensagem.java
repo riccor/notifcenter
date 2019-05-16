@@ -6,6 +6,7 @@ import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.joda.time.DateTime;
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class Mensagem extends Mensagem_Base {
 
@@ -62,7 +63,7 @@ public class Mensagem extends Mensagem_Base {
 
     //"message content adaptation to a channel" feature
     public String createSimpleMessageNotificationWithLink() {
-        String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/messages/" + this.getExternalId();
+        String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + this.getExternalId();
         String simple = this.getTextoCurto() + linkForMessage;
         return simple;
     }
