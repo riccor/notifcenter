@@ -20,6 +20,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.async.DeferredResult;
 import pt.utl.ist.notifcenter.api.HTTPClient;
+import pt.utl.ist.notifcenter.api.MainAPIResource;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -95,14 +96,16 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                                     estadoEntrega = "null";
                                 }
 
-                                edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
-
                                 if (responseEntity.getStatusCode() == HttpStatus.OK || responseEntity.getStatusCode() == HttpStatus.CREATED) {
                                     //System.out.println("Success on sending message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
                                 }
                                 else {
                                     System.out.println("Failed to send message to user id " + user.getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
                                 }
+
+                                edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
+
+                                MainAPIResource.notificateAppViaWebhook(edm);
                             });
 
                             String uri = String.format(URI, this.getConfigAsJson().get("accountSID").getAsString());

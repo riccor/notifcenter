@@ -35,6 +35,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
 import pt.utl.ist.notifcenter.api.HTTPClient;
+import pt.utl.ist.notifcenter.api.MainAPIResource;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -107,6 +108,8 @@ public class Telegram extends Telegram_Base {
                 }
 
                 edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
+
+                MainAPIResource.notificateAppViaWebhook(edm);
             });
 
             //send message

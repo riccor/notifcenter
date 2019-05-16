@@ -39,6 +39,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.async.DeferredResult;
 import pt.utl.ist.notifcenter.api.HTTPClient;
+import pt.utl.ist.notifcenter.api.MainAPIResource;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
@@ -128,6 +129,7 @@ public class Messenger extends Messenger_Base {
 
                 edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
+                MainAPIResource.notificateAppViaWebhook(edm);
             });
 
             //send message

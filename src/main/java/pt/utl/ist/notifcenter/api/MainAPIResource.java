@@ -113,24 +113,27 @@ public class MainAPIResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_ID);
         }
         else {
-
-            //If message parameter callbackUrlEstadoEntrega is not "none", then send message delivery status to the application
-            if (!ede.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
-
-                JsonObject jObj = new JsonObject();
-                jObj.addProperty("MessageId", ede.getMensagem().getExternalId());
-                jObj.addProperty("User", ede.getUtilizador().getUsername());
-                jObj.addProperty("MessageStatus", ede.getEstadoEntrega());
-
-                DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-                deferredResult.setResultHandler((Object responseEntity) -> {
-                    HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity);
-                });
-
-                HTTPClient.restASyncClientJSON(HttpMethod.POST, ede.getMensagem().getCallbackUrlEstadoEntrega(), jObj, deferredResult);
-            }
-
+            notificateAppViaWebhook(ede);
             throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
+        }
+    }
+
+    public static void notificateAppViaWebhook(UserMessageDeliveryStatus ede) {
+
+        //If message parameter callbackUrlEstadoEntrega is not "none", then send message delivery status to the application
+        if (!ede.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
+
+            JsonObject jObj = new JsonObject();
+            jObj.addProperty("MessageId", ede.getMensagem().getExternalId());
+            jObj.addProperty("User", ede.getUtilizador().getUsername());
+            jObj.addProperty("MessageStatus", ede.getEstadoEntrega());
+
+            DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+            deferredResult.setResultHandler((Object responseEntity) -> {
+                HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity);
+            });
+
+            HTTPClient.restASyncClientJSON(HttpMethod.POST, ede.getMensagem().getCallbackUrlEstadoEntrega(), jObj, deferredResult);
         }
     }
 
