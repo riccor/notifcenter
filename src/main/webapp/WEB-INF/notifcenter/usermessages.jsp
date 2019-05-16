@@ -2,7 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <head>
-    <title>Notifcenter - User Messages</title>
+    <title>Notifcenter - User->Messages</title>
 
     <c:set var="urlPrefix" value="/notifcenter/mensagens"/>
     <c:set var="slash" value="/"/>
@@ -36,7 +36,7 @@
 </head>
 
 <body>
-    <h2><b>User Messages</b></h2>
+    <h2><b>User->Messages</b></h2>
 
     <div class="changes-notifications" id="div0">
         <br><h4 style="color:#FF8000">${changesmessage}<h4>
