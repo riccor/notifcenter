@@ -187,7 +187,7 @@ public class MensagensController {
     private HashMap<String, String> getUserFriendlyMessageAttachments(Mensagem msg, String host, String context) {
         HashMap<String, String> attachmentsLinks = new LinkedHashMap<>();
         for (Attachment at : msg.getAttachmentsSet()) {
-            attachmentsLinks.put(at.getDisplayName(), host + context + "/mensagens/attachments/" + at.getExternalId());
+            attachmentsLinks.put(at.getDisplayName(), "http://" + host + context + "/mensagens/attachments/" + at.getExternalId());
         }
         return attachmentsLinks;
     }

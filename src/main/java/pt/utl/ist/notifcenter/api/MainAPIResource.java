@@ -133,6 +133,9 @@ public class MainAPIResource extends BennuRestResource {
                 HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity);
             });
 
+            //Debug
+            System.out.println("sent to channel webhook: " + jObj.toString());
+
             HTTPClient.restASyncClientJSON(HttpMethod.POST, ede.getMensagem().getCallbackUrlEstadoEntrega(), jObj, deferredResult);
         }
     }
