@@ -22,6 +22,7 @@ import pt.utl.ist.notifcenter.api.json.ContactoAdapter;
 import pt.utl.ist.notifcenter.domain.Canal;
 import pt.utl.ist.notifcenter.domain.Contacto;
 import pt.utl.ist.notifcenter.domain.Mensagem;
+import pt.utl.ist.notifcenter.security.SkipAccessTokenValidation;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import pt.utl.ist.notifcenter.utils.Utils;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 public class UtilizadoresController {
 
     @SkipCSRF
+    @SkipAccessTokenValidation
     @RequestMapping("/{user}")
     public String contactos(Model model, HttpServletRequest request, @PathVariable("user") User user) {
 
@@ -115,6 +117,7 @@ public class UtilizadoresController {
         return list;
     }
 
+    @SkipAccessTokenValidation
     @RequestMapping("/{user}/messages")
     public String userMensagens(Model model, HttpServletRequest request, @PathVariable("user") User user) {
 
@@ -139,6 +142,7 @@ public class UtilizadoresController {
         return "notifcenter/usermessages";
     }
 
+    @SkipAccessTokenValidation
     @RequestMapping
     public String utilizadores(Model model, HttpServletRequest request) {
 

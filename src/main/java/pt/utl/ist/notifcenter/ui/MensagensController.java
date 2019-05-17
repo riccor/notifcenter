@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.domain.*;
+import pt.utl.ist.notifcenter.security.SkipAccessTokenValidation;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 public class MensagensController {
 
     @SkipCSRF
+    @SkipAccessTokenValidation
     @RequestMapping
     public String mensagens(Model model, HttpServletRequest request) {
 
@@ -117,6 +119,7 @@ public class MensagensController {
     }
 
     //Message delivery status
+    @SkipAccessTokenValidation
     @RequestMapping("/{msg}/deliverystatuses")
     public String mensagemDeliveryStatus(@PathVariable("msg") Mensagem msg, Model model, HttpServletRequest request) {
 
@@ -159,6 +162,7 @@ public class MensagensController {
     }
 
     //View message
+    @SkipAccessTokenValidation
     @RequestMapping("/{msg}")
     public String mensagem(@PathVariable("msg") Mensagem msg, Model model, HttpServletRequest request) {
 
@@ -192,6 +196,7 @@ public class MensagensController {
         return attachmentsLinks;
     }
 
+    @SkipAccessTokenValidation
     @RequestMapping(value = "/attachments/{fileId}", method = RequestMethod.GET)
     public HttpEntity<byte[]> downloadAttachment(@PathVariable("fileId") Attachment attachment) {
 

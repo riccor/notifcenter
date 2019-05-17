@@ -15,8 +15,7 @@ public class NotifcenterSpringConfiguration /*extends WebMvcConfigurationSupport
     public static final String BUNDLE = "resources.NotifcenterResources";
 
     //NOTE: Uncomment following code to enable NotifcenterInterceptor (in order to make OAuth work):
-    /*
-    @Override
+    /*@Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new NotifcenterInterceptor());
     }*/

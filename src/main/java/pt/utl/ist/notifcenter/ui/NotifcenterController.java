@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import pt.utl.ist.notifcenter.api.UtilsResource;
+import pt.utl.ist.notifcenter.security.SkipAccessTokenValidation;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter")
 public class NotifcenterController {
 
+    @SkipAccessTokenValidation
     @RequestMapping
     public String home(Model model, HttpServletResponse response) {
         return "redirect:/meuscontactos";

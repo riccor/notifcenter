@@ -19,6 +19,7 @@ import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
 import pt.utl.ist.notifcenter.api.json.CanalNotificacaoAdapter;
 import pt.utl.ist.notifcenter.api.json.RemetenteAdapter;
 import pt.utl.ist.notifcenter.domain.*;
+import pt.utl.ist.notifcenter.security.SkipAccessTokenValidation;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 public class AplicacoesController {
 
     @SkipCSRF
+    @SkipAccessTokenValidation
     @RequestMapping("/{app}/{remetente}/gruposdestinatarios")
     public String gruposDestinatarios(Model model, HttpServletRequest request,
                                     @PathVariable("app") Aplicacao app,
@@ -113,6 +115,7 @@ public class AplicacoesController {
     }
 
     @SkipCSRF
+    @SkipAccessTokenValidation
     @RequestMapping("/{app}/{remetente}/canaisnotificacao")
     public String canaisNotificacao(Model model, HttpServletRequest request,
                                     @PathVariable("app") Aplicacao app,
@@ -202,6 +205,7 @@ public class AplicacoesController {
     }
 
     @SkipCSRF
+    @SkipAccessTokenValidation
     @RequestMapping("/{app}")
     public String remetentes(Model model, HttpServletRequest request, @PathVariable("app") Aplicacao app) {
 
@@ -283,6 +287,7 @@ public class AplicacoesController {
     }
 
     @SkipCSRF
+    @SkipAccessTokenValidation
     @RequestMapping
     public String aplicacoes(Model model, HttpServletRequest request) {
 
