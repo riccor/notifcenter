@@ -112,8 +112,6 @@ public class Twitter extends Twitter_Base {
                     System.out.println("Failed to send message to user id " + contact.getUtilizador().getExternalId() + "! external id is: " + idExterno + ", and delivery status is: " + estadoEntrega);
                 }
 
-                edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
-
                 //Debug
                 System.out.println("aquiv1");
 
@@ -124,11 +122,10 @@ public class Twitter extends Twitter_Base {
                     //Debug
                     System.out.println("aquiv4");
 
-
                     JsonObject jObjj = new JsonObject();
                     jObjj.addProperty("MessageId", msg.getExternalId());
                     jObjj.addProperty("User", contact.getUtilizador().getUsername());
-                    jObjj.addProperty("MessageStatus", edm.getEstadoEntrega());
+                    jObjj.addProperty("MessageStatus", estadoEntrega);
 
                     DeferredResult<ResponseEntity<String>> deferredResultt = new DeferredResult<>();
                     deferredResultt.setResultHandler((Object responseEntityy) -> {
@@ -138,14 +135,12 @@ public class Twitter extends Twitter_Base {
                     //Debug
                     System.out.println("sent to channel webhook: " + jObjj.toString());
 
-                    HTTPClient.restASyncClientJSON(HttpMethod.POST, edm.getMensagem().getCallbackUrlEstadoEntrega(), jObjj, deferredResultt);
+                    HTTPClient.restASyncClientJSON(HttpMethod.POST, msg.getCallbackUrlEstadoEntrega(), jObjj, deferredResultt);
                 }
-                else {
 
-                    //Debug
-                    System.out.println("aquiv3");
 
-                }
+                edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
+
 
                 //Debug
                 System.out.println("aquiv2");
