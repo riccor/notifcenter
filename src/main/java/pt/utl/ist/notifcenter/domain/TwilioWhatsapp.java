@@ -105,7 +105,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
                                 edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
-                                MainAPIResource.notificateAppViaWebhook(edm);
+                                MainAPIResource.notificateAppViaWebhook(edm); //Might not be called for unknown reasons.
                             });
 
                             String uri = String.format(URI, this.getConfigAsJson().get("accountSID").getAsString());

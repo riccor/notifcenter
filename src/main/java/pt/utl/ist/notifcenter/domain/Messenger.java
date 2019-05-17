@@ -129,7 +129,7 @@ public class Messenger extends Messenger_Base {
 
                 edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
-                MainAPIResource.notificateAppViaWebhook(edm);
+                MainAPIResource.notificateAppViaWebhook(edm); //Might not be called for unknown reasons.
             });
 
             //send message
