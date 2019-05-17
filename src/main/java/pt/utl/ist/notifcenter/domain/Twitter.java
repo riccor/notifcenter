@@ -114,9 +114,16 @@ public class Twitter extends Twitter_Base {
 
                 edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
+                //Debug
+                System.out.println("aquiv1");
+
                 //MainAPIResource.notificateAppViaWebhook(edm); //Does not work calling this method. Using its code here:
                 //If message parameter callbackUrlEstadoEntrega is not "none", then send message delivery status to the application
                 if (!edm.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
+
+                    //Debug
+                    System.out.println("aquiv4");
+
 
                     JsonObject jObjj = new JsonObject();
                     jObjj.addProperty("MessageId", edm.getMensagem().getExternalId());
@@ -129,10 +136,20 @@ public class Twitter extends Twitter_Base {
                     });
 
                     //Debug
-                    System.out.println("sent to channel webhook: " + jObj.toString());
+                    System.out.println("sent to channel webhook: " + jObjj.toString());
 
                     HTTPClient.restASyncClientJSON(HttpMethod.POST, edm.getMensagem().getCallbackUrlEstadoEntrega(), jObjj, deferredResultt);
                 }
+                else {
+
+                    //Debug
+                    System.out.println("aquiv3");
+
+                }
+
+                //Debug
+                System.out.println("aquiv2");
+
             });
 
             //send message
