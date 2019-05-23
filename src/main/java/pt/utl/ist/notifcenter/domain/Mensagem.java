@@ -68,6 +68,13 @@ public class Mensagem extends Mensagem_Base {
         return simple;
     }
 
+    //"message content adaptation to a channel" feature (static version)
+    public static String createSimpleMessageNotificationWithLink(Mensagem msg) {
+        String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + msg.getExternalId();
+        String simple = msg.getTextoCurto() + linkForMessage;
+        return simple;
+    }
+
     @Atomic
     public void delete() {
         this.getCanalNotificacao().removeMensagem(this);
