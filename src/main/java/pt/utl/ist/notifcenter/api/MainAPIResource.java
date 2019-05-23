@@ -36,6 +36,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
+import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.domain.UserProfile;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
@@ -47,6 +49,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
+import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.*;
 
@@ -59,6 +62,7 @@ import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import javax.naming.SizeLimitExceededException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/apiv1")
@@ -580,6 +584,33 @@ public class MainAPIResource extends BennuRestResource {
         else {
             return new ResponseEntity<>(ex.getErrorsAndWarnings().toJson(), header, ex.getErrorsAndWarnings().getHttpStatus());
         }
+    }
+
+    //Performance tests
+    @Atomic
+    public static void createOneHundredUsers(int ii, int f) {
+        Locale l = new Locale("pt");
+
+        for (int i = ii; i < f; i++) {
+            UserProfile up = new UserProfile("a", "b", "a b", "c@ccc.com", l);
+            User u = new User("user-" + i, up);
+        }
+    }
+
+    @RequestMapping(value = "/test", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement test(@RequestParam(value = "i", required = true) int i, @RequestParam(value = "f", required = true) int f) {
+
+        createOneHundredUsers(i, f);
+
+        JsonObject jObj = new JsonObject();
+        JsonArray jArray = new JsonArray();
+
+        for (User u : FenixFramework.getDomainRoot().getBennu().getUserSet()) {
+            jArray.add(view(u, UserAdapter.class));
+        }
+
+        jObj.add("users", jArray);
+        return jObj;
     }
 
 }
